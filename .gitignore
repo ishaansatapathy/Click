@@ -18,3 +18,7 @@ dist/
 *.tgz
 *.log
 .DS_Store
+
+# Pair mode (PLAN §14)
+coord/
+.pair.json
