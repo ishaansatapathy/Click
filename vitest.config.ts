@@ -7,5 +7,9 @@ export default defineConfig({
     include: ['packages/*/{src,test}/**/*.test.ts', 'bench/{src,scripts,e2e}/**/*.test.ts', 'scripts/**/*.test.ts'],
     exclude: ['**/fixtures/**', '**/node_modules/**', '**/dist/**', '**/*.slow.test.ts'],
     environment: 'node',
+    // Safety nets, not perf assertions (perf budgets are SPEC §18). Real git/IO tests need headroom when
+    // both pair-mode seats run pnpm check at once on one laptop.
+    testTimeout: 20_000,
+    hookTimeout: 30_000,
   },
 });
