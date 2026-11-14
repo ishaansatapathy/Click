@@ -1,6 +1,7 @@
 # Planning docs (kept local). README.md is the one exception: it ships.
 *.md
 !README.md
+!docs/*.md
 
 # Click runtime + secrets
 .click/
