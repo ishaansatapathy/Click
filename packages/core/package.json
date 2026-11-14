@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/pipeline.ts",
   "dependencies": {
+    "ignore": "^7.0.14",
     "js-tiktoken": "^1.0.21",
     "zod": "^4.6.7"
   }
