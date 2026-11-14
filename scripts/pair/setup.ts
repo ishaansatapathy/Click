@@ -1,8 +1,8 @@
 // `pnpm pair:setup [--a-agent codex] [--b-agent claude] [--skip-check] [--no-install]`  (PROMPTS 015, PLAN §14.2)
 // Run in MAIN. Idempotent: safe to run again; existing worktrees and status files are kept.
 
-import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   SEATS,
@@ -153,6 +153,7 @@ export async function setup(o: SetupOptions): Promise<SetupResult> {
       if (r.code !== 0) throw new Error(`pnpm install failed in ${wt}\n${tail(r.stdout + r.stderr)}`);
     }
     writeJsonAtomic(join(wt, '.pair.json'), { seat, main, worktree: wt });
+    for (const linked of linkShared(main, wt)) log(`Linked ${linked} → MAIN`);
     const preamble = renderPreamble({ seat, agent: o.agents[seat], main, worktree: wt });
     writeFileSync(join(wt, 'CLAUDE.md'), preamble, 'utf8');
     writeFileSync(join(wt, 'AGENTS.md'), preamble, 'utf8');
@@ -174,6 +175,34 @@ export async function setup(o: SetupOptions): Promise<SetupResult> {
 
   log(`Pair mode ready. Seat A (${o.agents.a}): ${pair.seats.a.worktree}  Seat B (${o.agents.b}): ${pair.seats.b.worktree}`);
   return { created, existing, gitignoreCommitted: gi.changed };
+}
+
+/**
+ * Gitignored resources both seats must share, linked from each worktree to MAIN (PLAN §14.11):
+ * - bench/repo: one clone of the benchmark repo;
+ * - .click/cache: content-addressed API-response cache (atomic writes), so no paid call is made twice.
+ * Junctions on Windows need no admin rights. Existing paths are left alone.
+ */
+export const SHARED_LINKS = [
+  { path: 'bench/repo', createInMain: false },
+  { path: '.click/cache', createInMain: true },
+] as const;
+
+export function linkShared(main: string, wt: string): string[] {
+  const linked: string[] = [];
+  for (const { path, createInMain } of SHARED_LINKS) {
+    const target = join(main, path);
+    const link = join(wt, path);
+    if (!existsSync(target)) {
+      if (!createInMain) continue;
+      mkdirSync(target, { recursive: true });
+    }
+    if (existsSync(link)) continue;
+    mkdirSync(dirname(link), { recursive: true });
+    symlinkSync(target, link, process.platform === 'win32' ? 'junction' : 'dir');
+    linked.push(path);
+  }
+  return linked;
 }
 
 const tail = (s: string, n = 30): string => s.trim().split(/\r?\n/).slice(-n).join('\n');

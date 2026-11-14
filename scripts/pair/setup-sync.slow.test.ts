@@ -27,8 +27,11 @@ async function makeEnv(): Promise<Env> {
   await git(['config', 'core.autocrlf', 'false'], main);
   writeFileSync(join(main, 'README.md'), 'x\n');
   writeFileSync(join(main, 'package.json'), '{"name":"x"}\n');
+  writeFileSync(join(main, '.gitignore'), '.click/\nbench/repo/\n'); // as in the real repo
   await git(['add', '-A'], main);
   await git(['commit', '-q', '-m', 'init'], main);
+  mkdirSync(join(main, 'bench', 'repo'), { recursive: true }); // gitignored in the real repo; untracked here
+  writeFileSync(join(main, 'bench', 'repo', 'marker.txt'), 'shared clone');
   await setup({ main, agents: { a: 'codex', b: 'claude' }, log: quiet });
   return { root, main, a: worktreePath(main, 'a'), b: worktreePath(main, 'b') };
 }
@@ -69,7 +72,10 @@ describe('setup (PROMPTS 015)', () => {
       expect(claude).toContain(`Seat ${seat.toUpperCase()}`);
       expect(claude).toContain(env.main);
       expect(readFileSync(join(wt, 'AGENTS.md'), 'utf8')).toBe(claude);
+      expect(readFileSync(join(wt, 'bench', 'repo', 'marker.txt'), 'utf8')).toBe('shared clone'); // linked, not copied
+      writeFileSync(join(wt, '.click', 'cache', `from-${seat}.json`), '{}');
     }
+    expect(existsSync(join(env.main, '.click', 'cache', 'from-a.json')) && existsSync(join(env.main, '.click', 'cache', 'from-b.json'))).toBe(true);
     const pair = JSON.parse(readFileSync(pairJsonPath(env.main), 'utf8'));
     expect(pair.seats.a).toMatchObject({ branch: 'lane/a', agent: 'codex' });
     expect(readStatus(env.main, 'b').state).toBe('idle');
