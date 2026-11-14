@@ -1,0 +1,48 @@
+{
+  "root": "bench/repo",
+  "tsconfigPaths": {
+    "@components/*": [
+      "packages/client/src/components/*"
+    ]
+  },
+  "baseUrl": null,
+  "viteAliases": {
+    "@components": "packages/client/src/components",
+    "vue": "@vue/runtime-dom"
+  },
+  "entryFile": "packages/client/src/main.ts",
+  "routerFiles": [
+    "packages/client/src/router.ts",
+    "playground/basic/src/router.ts"
+  ],
+  "storeFiles": [
+    "playground/basic/src/stores/counter.ts",
+    "playground/basic/src/stores/lab.ts"
+  ],
+  "testGlobs": [
+    "packages/*/tests/**/*.test.ts",
+    "tests/integration/**/*.test.ts",
+    "tests/unit/**/*.test.ts"
+  ],
+  "autoImport": {
+    "components": {},
+    "imports": {}
+  },
+  "counts": {
+    ".css": 5,
+    ".html": 14,
+    ".js": 1,
+    ".json": 21,
+    ".md": 22,
+    ".mjs": 2,
+    ".png": 25,
+    ".svg": 5,
+    ".toml": 1,
+    ".ts": 248,
+    ".vue": 70,
+    ".woff2": 1,
+    ".yaml": 2,
+    ".yml": 4,
+    "<none>": 6
+  }
+}
