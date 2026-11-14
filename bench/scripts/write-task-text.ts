@@ -63,15 +63,18 @@ interface GenerateOptions {
   concurrency?: number;
   git?: typeof spawnGit;
   sleep?: (milliseconds: number) => Promise<void>;
+  promptVersion?: string;
+  systemPrompt?: string;
 }
 
 export async function generateTaskTexts(
   candidates: CandidateCommit[],
   options: GenerateOptions,
 ): Promise<GenerationSummary> {
+  const promptVersion = options.promptVersion ?? TASK_TEXT_PROMPT_VERSION;
   const stats = { cacheHits: 0, apiCalls: 0, inputTokens: 0, outputTokens: 0 };
   const records = await mapLimit(candidates, options.concurrency ?? TASK_TEXT_CONCURRENCY, async (candidate) => {
-    const cacheKey = hashOf({ sha: candidate.sha, promptVersion: TASK_TEXT_PROMPT_VERSION });
+    const cacheKey = hashOf({ sha: candidate.sha, promptVersion });
     const hit = await options.cache.get<TaskTextRecord['taskText'] & { text: string }>(cacheKey);
     if (hit) {
       stats.cacheHits++;
@@ -90,7 +93,7 @@ export async function generateTaskTexts(
         model: TASK_TEXT_MODEL,
         max_tokens: 180,
         temperature: 0,
-        system: SYSTEM_PROMPT,
+        system: options.systemPrompt ?? TASK_TEXT_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: prompt }],
       }),
       options.sleep,
@@ -100,7 +103,7 @@ export async function generateTaskTexts(
     const value = {
       text,
       model: TASK_TEXT_MODEL,
-      promptVersion: TASK_TEXT_PROMPT_VERSION,
+      promptVersion,
       inputTokens: response.usage.input_tokens ?? 0,
       outputTokens: response.usage.output_tokens,
     };
@@ -119,7 +122,7 @@ export async function generateTaskTexts(
   };
 }
 
-const SYSTEM_PROMPT = `Turn a historical commit into a plausible developer task request.
+export const TASK_TEXT_SYSTEM_PROMPT = `Turn a historical commit into a plausible developer task request.
 Write 1-3 concise sentences in the developer's voice and describe intent, not implementation.
 Never mention paths, file names, extensions, directories, line numbers, commits, diffs, or patches.
 Only use a code symbol name when that exact symbol appears in the commit message.
