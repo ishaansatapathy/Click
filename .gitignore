@@ -1,0 +1,19 @@
+# Planning docs (kept local). README.md is the one exception: it ships.
+*.md
+!README.md
+
+# Click runtime + secrets
+.click/
+.env
+.env.*
+!.env.example
+
+# Bench
+bench/repo/
+
+# Node / build
+node_modules/
+dist/
+*.tgz
+*.log
+.DS_Store

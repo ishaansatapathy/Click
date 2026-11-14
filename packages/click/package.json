@@ -1,0 +1,8 @@
+{
+  "name": "click",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": { "click": "dist/click.js" },
+  "dependencies": { "@click/core": "workspace:*" }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "click-monorepo",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "check": "pnpm typecheck && pnpm lint && pnpm test",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "bench": "tsx bench/src/runner.ts",
+    "click": "tsx packages/click/src/cli/index.ts",
+    "drill": "tsx bench/scripts/drill.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "eslint": "^10.15.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0"
+  }
+}
