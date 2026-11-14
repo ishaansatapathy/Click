@@ -3,5 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "dependencies": { "@click/core": "workspace:*" }
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "@click/core": "workspace:*"
+  }
 }
