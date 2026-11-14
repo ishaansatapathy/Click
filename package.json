@@ -16,7 +16,12 @@
     "bench:review": "tsx bench/src/review.ts",
     "bench:validate": "tsx bench/src/task.ts",
     "click": "tsx packages/click/src/cli/index.ts",
-    "drill": "tsx bench/scripts/drill.ts"
+    "drill": "tsx bench/scripts/drill.ts",
+    "test:slow": "vitest run --config vitest.slow.config.ts",
+    "pair:setup": "tsx scripts/pair/setup.ts",
+    "pair:sync": "tsx scripts/pair/sync.ts",
+    "pair:status": "tsx scripts/pair/status.ts",
+    "pair:mark": "tsx scripts/pair/mark.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
