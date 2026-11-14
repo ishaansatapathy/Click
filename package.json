@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "bench": "tsx bench/src/runner.ts",
+    "bench:validate": "tsx bench/src/task.ts",
     "click": "tsx packages/click/src/cli/index.ts",
     "drill": "tsx bench/scripts/drill.ts"
   },

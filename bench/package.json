@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
-    "@click/core": "workspace:*"
+    "@click/core": "workspace:*",
+    "zod": "^4.6.7"
   }
 }
