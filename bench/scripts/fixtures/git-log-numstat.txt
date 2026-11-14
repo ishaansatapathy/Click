@@ -1,0 +1,7 @@
+11111111111111111111111111111111111111112026-01-02T03:04:05+00:00Ada Lovelaceada@example.testAdd dashboard
+
+Includes the first widgets.
+12	0	src/Dashboard.vue
+2	1	src/{old.ts => new.ts}
+22222222222222222222222222222222222222222026-01-01T00:00:00+00:00Grace Hoppergrace@example.testFix store
+-	-	src/image.png
