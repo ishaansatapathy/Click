@@ -16,6 +16,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["packages/*/src", "packages/*/test", "bench/src", "bench/scripts", "bench/e2e"],
+  "include": ["packages/*/src", "packages/*/test", "bench/src", "bench/scripts", "bench/e2e", "scripts"],
   "exclude": ["**/fixtures/**", "**/node_modules", "**/dist"]
 }
