@@ -75,6 +75,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : '';
 if (import.meta.url === invokedPath) {
+  void main();
+}
+
+async function main(): Promise<void> {
   const config = loadBenchConfig();
   const sha = await ensureBenchmarkRepo(config);
   process.stdout.write(`Benchmark repository ready at ${sha}\n`);

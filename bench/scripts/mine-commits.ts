@@ -9,7 +9,7 @@ import { loadBenchConfig } from './fetch-repo.js';
 
 const RECORD_SEPARATOR = '\x1e';
 const FIELD_SEPARATOR = '\x1f';
-const LOG_FORMAT = `${RECORD_SEPARATOR}%H${FIELD_SEPARATOR}%aI${FIELD_SEPARATOR}%an${FIELD_SEPARATOR}%ae${FIELD_SEPARATOR}%B${FIELD_SEPARATOR}`;
+export const GIT_LOG_FORMAT = `${RECORD_SEPARATOR}%H${FIELD_SEPARATOR}%aI${FIELD_SEPARATOR}%an${FIELD_SEPARATOR}%ae${FIELD_SEPARATOR}%B${FIELD_SEPARATOR}`;
 
 export interface ChangedFile {
   status: string;
@@ -41,7 +41,7 @@ const benchDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 export async function mineCommits(repo: string, beforeSha: string): Promise<MinedCommit[]> {
   const revision = `${beforeSha}^`;
-  const common = ['log', '--no-merges', '-M', `--format=${LOG_FORMAT}`, revision];
+  const common = ['log', '--no-merges', '-M', `--format=${GIT_LOG_FORMAT}`, revision];
   const names = await collect(parseNameStatusRecords(spawnGit(repo, [...common, '--name-status'])));
   const stats = await collect(parseNumstatRecords(spawnGit(repo, [...common, '--numstat'])));
   if (names.length !== stats.length) {
@@ -157,6 +157,10 @@ async function writeJsonLines(path: string, commits: MinedCommit[]): Promise<voi
 
 const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : '';
 if (import.meta.url === invokedPath) {
+  void main();
+}
+
+async function main(): Promise<void> {
   const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
   const commits = await mineCommits(resolve(benchDir, 'repo'), config.pinnedSha);
   const output = resolve(benchDir, 'data', 'commits.jsonl');
