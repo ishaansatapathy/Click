@@ -3,5 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "src/pipeline.ts"
+  "main": "src/pipeline.ts",
+  "dependencies": {
+    "js-tiktoken": "^1.0.21",
+    "zod": "^4.6.7"
+  }
 }
