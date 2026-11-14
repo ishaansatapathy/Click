@@ -122,7 +122,7 @@ async function taskFiles(root: string): Promise<string[]> {
   return paths.sort();
 }
 
-async function loadRejected(path: string): Promise<Set<string>> {
+export async function loadRejected(path: string): Promise<Set<string>> {
   try {
     return new Set((await readFile(path, 'utf8')).split(/\r?\n/).map((line) => line.trim()).filter((line) => line && !line.startsWith('#')));
   } catch (error) {

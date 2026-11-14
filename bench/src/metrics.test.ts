@@ -52,6 +52,11 @@ describe('retrieval metrics', () => {
     expect(symbolRecall(task([]), packed, symbols)).toBeNull();
   });
 
+  it('counts an exact packed symbol without requiring a graph location lookup', () => {
+    const id = 'sym:src/a.ts#one';
+    expect(symbolRecall(task([id]), context([item(id, 'src/a.ts', 'body', 10)]), new Map())).toBe(1);
+  });
+
   it('computes token precision while excluding refs from the denominator', () => {
     const packed = context([
       item('a', 'src/a.ts', 'body', 40),

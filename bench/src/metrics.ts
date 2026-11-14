@@ -41,6 +41,10 @@ export function symbolRecall(
   if (task.groundTruth.symbols.length === 0) return null;
   let covered = 0;
   for (const id of new Set(task.groundTruth.symbols)) {
+    if (context.items.some((item) => (item.mode === 'body' || item.mode === 'file') && item.nodeId === id)) {
+      covered++;
+      continue;
+    }
     const symbol = symbolsById.get(id);
     if (!symbol) continue;
     if (context.items.some((item) => coversSymbol(item, symbol))) covered++;
