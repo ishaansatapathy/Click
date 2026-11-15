@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { configHash, resolveConfig } from '../../packages/core/src/config.js';
 import { FakeGraphStore, FakeStore } from '../../packages/core/src/testing/fakes.js';
 import type { Graph, PackedContext } from '../../packages/core/src/types.js';
 import type { BenchTask } from './task.js';
@@ -65,6 +66,21 @@ describe('retriever adapters', () => {
     });
 
     expect(graphStore.calls).toBe(1);
+  });
+
+  it('validates and applies benchmark-only config overrides', async () => {
+    const graph: Graph = {
+      version: 'test-v1', repoCommit: null,
+      nodes: [{ id: 'file:src/a.ts', kind: 'file', name: 'a.ts', path: 'src/a.ts', tokens: 10, sigTokens: 0, fileHash: 'a' }],
+      edges: [], chunks: [],
+    };
+    const retriever = await realInProcessRetriever('V2', {
+      root: '.', graphSnapshot: graph, store: new FakeStore(), graph: null, embedder: null,
+      configOverrides: { seeds: { count: 16 } },
+    });
+
+    const result = await retriever(task, 4_000);
+    expect(result.configHash).toBe(configHash(resolveConfig(null, 'V2', { seeds: { count: 16 } })));
   });
 
   it('maps a benchmark task to the daemon context request', async () => {

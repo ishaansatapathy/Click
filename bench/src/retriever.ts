@@ -1,4 +1,4 @@
-import { PRESETS, resolveConfig, type PresetName } from '../../packages/core/src/config.js';
+import { PRESETS, resolveConfig, type DeepPartial, type PresetName, type VariantConfig } from '../../packages/core/src/config.js';
 import { GraphHolder } from '../../packages/core/src/graph/holder.js';
 import { buildLexical, getContext, type Lexical } from '../../packages/core/src/pipeline.js';
 import { OpenAIEmbedder } from '../../packages/core/src/store/embed.js';
@@ -41,6 +41,8 @@ export interface RealInProcessRetrieverOptions {
   graph?: GraphStore | null;
   /** `null` deliberately disables embeddings. Local-only repositories always override this to disabled. */
   embedder?: Embedder | null;
+  /** Benchmark-only one-knob tuning overrides, validated by the production config schema. */
+  configOverrides?: DeepPartial<VariantConfig>;
 }
 
 /** Build the production pipeline dependencies once, then call core getContext directly for every benchmark task. */
@@ -66,6 +68,7 @@ export async function realInProcessRetriever(variant: string, options: RealInPro
       ? { ...repo.config.variant, semantic: { ...(repo.config.variant.semantic ?? {}), mode: 'off' } }
       : repo.config.variant,
     variant as PresetName,
+    options.configOverrides,
   );
 
   // HydraDB lazily discovers node keys. Do that once outside the timed benchmark requests; otherwise the pipeline's
