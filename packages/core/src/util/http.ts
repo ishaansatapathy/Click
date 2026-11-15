@@ -116,6 +116,12 @@ export interface FetchJsonOptions {
   maxRetryAfterMs?: number;
   random?: () => number;
   fetch?: typeof fetch;
+  /**
+   * Set false when several HTTP requests together make ONE higher-level logical call (e.g. a graph neighbourhood
+   * fetched as parallel per-type queries): the caller records that single logical call itself with netCounter.call().
+   * Attempts are always counted.
+   */
+  countLogical?: boolean;
 }
 
 type Attempt<T> =
@@ -145,7 +151,7 @@ export async function fetchJson<T = unknown>(url: string, opts: FetchJsonOptions
     }
   }
 
-  netCounter.call();
+  if (opts.countLogical !== false) netCounter.call();
 
   for (let attempt = 1; ; attempt++) {
     if (deadline?.expired || opts.signal?.aborted) {

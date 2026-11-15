@@ -163,6 +163,23 @@ describe('netCounter', () => {
     expect(attempts).toBe(3);
   });
 
+  it('countLogical: false counts the attempt but not the logical call (several requests = one logical call)', async () => {
+    const one = await netCounter.run(() => fetchJson(`${base}/ok`, { countLogical: false }));
+    expect(one).toMatchObject({ calls: 0, attempts: 1 });
+
+    const grouped = await netCounter.run(async () => {
+      netCounter.call(); // the caller's single logical call
+      await Promise.all([fetchJson(`${base}/ok`, { countLogical: false }), fetchJson(`${base}/ok`, { countLogical: false }), fetchJson(`${base}/ok`, { countLogical: false })]);
+    });
+    expect(grouped).toMatchObject({ calls: 1, attempts: 3 });
+
+    const retried = await netCounter.run(() => fetchJson(`${base}/flaky?fails=1`, { ...fast, countLogical: false }));
+    expect(retried).toMatchObject({ calls: 0, attempts: 2 }); // retries still count as attempts
+
+    const defaults = await netCounter.run(() => fetchJson(`${base}/ok`));
+    expect(defaults).toMatchObject({ calls: 1, attempts: 1 }); // the default is unchanged
+  });
+
   it('keeps concurrent scopes separate and rolls nested counts up', async () => {
     const [a, b] = await Promise.all([
       netCounter.run(() => fetchJson(`${base}/ok`)),
