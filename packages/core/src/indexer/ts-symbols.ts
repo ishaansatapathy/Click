@@ -10,7 +10,7 @@
 
 import ts from 'typescript';
 import type { LineRange } from '../types.js';
-import { hasModifier, lineOf } from './ts-parse.js';
+import { hasModifier, lineOf, stringValue } from './ts-parse.js';
 
 export type TsSymbolKind = 'function' | 'class' | 'method' | 'interface' | 'type' | 'enum' | 'const';
 export type InitializerKind = 'arrow' | 'function' | 'call' | 'object' | 'array' | 'literal' | 'other';
@@ -26,6 +26,7 @@ export interface TsSymbol {
   parent?: string; // class name, for methods
   initializer?: InitializerKind; // for variables
   callee?: string; // for call initializers: 'defineStore', 'createRouter', 'defineComponent'…
+  value?: string; // for string-literal consts: lets other files resolve `path: REDIRECT_PATH` (router)
 }
 
 export interface SymbolOptions {
@@ -176,7 +177,7 @@ export function extractTsSymbols(sf: ts.SourceFile, opts: SymbolOptions = {}): T
         if (ts.isArrowFunction(fn)) sig = `${head(startNode.getStart(sf), fn.body.getStart(sf))}${ts.isBlock(fn.body) ? '{ … }' : '…'}`;
         else if (ts.isFunctionExpression(fn)) sig = `${head(startNode.getStart(sf), fn.body.getStart(sf))}{ … }`;
         else sig = `${head(startNode.getStart(sf), init.getStart(sf))}${summarize(init, sf)}`;
-        push({
+        const sym: TsSymbol = {
           name,
           kind: isFn ? 'function' : 'const',
           exported,
@@ -186,7 +187,10 @@ export function extractTsSymbols(sf: ts.SourceFile, opts: SymbolOptions = {}): T
           doc: firstDocLine(single ? s : d),
           initializer: ik,
           callee: calleeName(init, sf),
-        });
+        };
+        const v = stringValue(init);
+        if (v !== undefined) sym.value = v;
+        push(sym);
       }
     } else if (ts.isExportAssignment(s) && !s.isExportEquals && !ts.isIdentifier(s.expression)) {
       const ik = initializerKind(s.expression);
