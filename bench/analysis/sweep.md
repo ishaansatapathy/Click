@@ -22,3 +22,12 @@ Winner: **seeds=4**, train strict 67.04%.
 | test, 4k | 62.02% | 79.23% | 52.46% | 14.17% | 260.0 | 354.9 | 0/75 |
 
 For context after selection, the post-fix default V3 test row `20261115T173556851Z-db21c3` scored 63.43% strict. The frozen `seeds=4` winner is 1.41 percentage points lower on test; this comparison did not alter the train-only selection.
+
+## V1 companion baseline
+
+| Split | Budget | V1 run | V1 strict | V3 default strict | V3 sweep winner strict |
+|---|---:|---|---:|---:|---:|
+| train | 4k | `20261115T181402338Z-fc8554` | 83.80% | 61.87% | 67.04% |
+| test | 4k | `20261115T181423935Z-f519ff` | 77.01% | 63.43% | 62.02% |
+
+V1 remains the recall ceiling; tuning conclusions above are V3-internal and do not imply V3 has closed that gap.

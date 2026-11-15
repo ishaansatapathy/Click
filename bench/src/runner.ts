@@ -22,6 +22,7 @@ export interface RunnerOptions {
   types?: BenchTask['type'][];
   limit?: number;
   retriever: RetrieverKind;
+  seedReserve?: number;
 }
 
 export interface TaskDetail {
@@ -81,7 +82,7 @@ export function parseRunnerArgs(args: readonly string[]): RunnerOptions {
     if (!flag?.startsWith('--') || value === undefined || value.startsWith('--')) throw new Error(`Expected --flag value, got: ${flag ?? '<end>'}`);
     values.set(flag.slice(2), value);
   }
-  const allowed = new Set(['variant', 'budget', 'split', 'types', 'limit', 'retriever']);
+  const allowed = new Set(['variant', 'budget', 'split', 'types', 'limit', 'retriever', 'seed-reserve']);
   for (const key of values.keys()) if (!allowed.has(key)) throw new Error(`Unknown option: --${key}`);
   const variant = required(values, 'variant');
   const budget = positiveInteger(required(values, 'budget'), 'budget');
@@ -93,7 +94,8 @@ export function parseRunnerArgs(args: readonly string[]): RunnerOptions {
   const validTypes = new Set(['single-file', 'multi-file', 'multi-hop', 'impact', 'convention']);
   if (types?.some((type) => !validTypes.has(type))) throw new Error(`Invalid task type list: ${values.get('types')}`);
   const limit = values.has('limit') ? positiveInteger(values.get('limit')!, 'limit') : undefined;
-  return { variant, budget, split: split as BenchSplit, types, limit, retriever: retriever as RetrieverKind };
+  const seedReserve = values.has('seed-reserve') ? nonnegativeInteger(values.get('seed-reserve')!, 'seed-reserve', 8) : undefined;
+  return { variant, budget, split: split as BenchSplit, types, limit, retriever: retriever as RetrieverKind, seedReserve };
 }
 
 export function selectTasks(tasks: BenchTask[], options: RunnerOptions): BenchTask[] {
@@ -228,6 +230,11 @@ const positiveInteger = (value: string, name: string): number => {
   if (!Number.isInteger(parsed) || parsed < 1) throw new Error(`--${name} must be a positive integer`);
   return parsed;
 };
+const nonnegativeInteger = (value: string, name: string, max: number): number => {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 0 || parsed > max) throw new Error(`--${name} must be an integer between 0 and ${max}`);
+  return parsed;
+};
 
 const benchDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : '';
@@ -265,7 +272,11 @@ async function main(): Promise<void> {
       : options.retriever === 'oracle' ? oracleRetriever(baseline)
         : options.retriever === 'http' && process.env.CLICK_DAEMON_URL
           ? httpRetriever({ baseUrl: process.env.CLICK_DAEMON_URL, variant: options.variant, token: process.env.CLICK_DAEMON_TOKEN })
-          : options.retriever === 'http' ? httpRetriever() : await realInProcessRetriever(options.variant, { root: repo, graphSnapshot: index.graph });
+          : options.retriever === 'http' ? httpRetriever() : await realInProcessRetriever(options.variant, {
+              root: repo,
+              graphSnapshot: index.graph,
+              ...(options.seedReserve === undefined ? {} : { configOverrides: { seeds: { reserve: options.seedReserve } } }),
+            });
   const gitSha = (await spawnGit(['rev-parse', 'HEAD'], resolve(benchDir, '..'))).trim();
   const run = await runBenchmark(tasks, retriever, options, {
     gitSha,

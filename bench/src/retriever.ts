@@ -53,6 +53,9 @@ export async function realInProcessRetriever(variant: string, options: RealInPro
 
   const paths = pushPaths(options.root);
   const store = options.store ?? new MemoryStore(paths.memstore);
+  // Loading the persisted semantic index is setup, not retrieval latency. Without this warmup, the first concurrent
+  // semantic-only requests can consume their 400 ms deadline parsing the snapshot and produce spurious timeouts.
+  await store.getWeights();
   const graph = options.graph === undefined ? defaultGraphStore() : options.graph;
   const localOnly = repo.config.privacy.localOnly;
   const embedder = localOnly || options.embedder === null

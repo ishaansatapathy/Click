@@ -22,9 +22,13 @@ const options: RunnerOptions = { variant: 'oracle', budget: 4_000, split: 'test'
 
 describe('runner options', () => {
   it('parses the documented CLI and filters tasks', () => {
-    const parsed = parseRunnerArgs(['--variant', 'V3', '--budget', '8000', '--split', 'test', '--types', 'impact', '--limit', '1', '--retriever', 'http']);
-    expect(parsed).toEqual({ variant: 'V3', budget: 8_000, split: 'test', types: ['impact'], limit: 1, retriever: 'http' });
+    const parsed = parseRunnerArgs(['--variant', 'V3', '--budget', '8000', '--split', 'test', '--types', 'impact', '--limit', '1', '--retriever', 'http', '--seed-reserve', '0']);
+    expect(parsed).toEqual({ variant: 'V3', budget: 8_000, split: 'test', types: ['impact'], limit: 1, retriever: 'http', seedReserve: 0 });
     expect(selectTasks([task(1), task(2), task(3, 'train')], parsed).map((value) => value.id)).toEqual(['h-02']);
+  });
+
+  it('validates the semantic reserve range', () => {
+    expect(() => parseRunnerArgs(['--variant', 'V3', '--budget', '4000', '--split', 'train', '--seed-reserve', '9'])).toThrow('between 0 and 8');
   });
 });
 
