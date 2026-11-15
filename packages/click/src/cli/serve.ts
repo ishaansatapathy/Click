@@ -12,6 +12,7 @@ import { HydraDbGraphStore } from '../../../core/src/store/hydradb-graph.js';
 import { MemoryStore } from '../../../core/src/store/memory.js';
 import type { Embedder, GraphStore, Store } from '../../../core/src/store/types.js';
 import { DiskCache } from '../../../core/src/util/diskCache.js';
+import { PRESETS, type PresetName } from '../../../core/src/config.js';
 import { loadRepoConfig } from '../repo-config.js';
 import { VERSION } from '../version.js';
 import { parseArgs } from './args.js';
@@ -83,8 +84,10 @@ export async function runServe(argv: readonly string[], io: ServeIo, cwd: string
   const embedder: Embedder | undefined =
     localOnly || deps.embedder === null ? undefined : (deps.embedder ?? (process.env.OPENAI_API_KEY ? new OpenAIEmbedder({ cache: new DiskCache('embed', { dir: paths.cacheDir }) }) : undefined));
 
+  // CLICK_VARIANT pins the preset the daemon answers with (the E2E harness compares V1 and the delivery preset); unknown names are ignored
+  const pinned = process.env.CLICK_VARIANT && process.env.CLICK_VARIANT in PRESETS ? (process.env.CLICK_VARIANT as PresetName) : undefined;
   const daemon = createDaemon({
-    root, store, graph, embedder, version: VERSION, idleMinutes: cfg.config.daemon.idleMinutes,
+    root, store, graph, embedder, version: VERSION, idleMinutes: cfg.config.daemon.idleMinutes, ...(pinned ? { defaultVariant: pinned } : {}),
     ...(cfg.config.variant.learn?.gitCoChange ? { coChange: {} } : {}),
     repoConfig: localOnly ? { ...cfg.config.variant, semantic: { ...(cfg.config.variant.semantic ?? {}), mode: 'off' } } : cfg.config.variant,
     ...(deps.handleSignals !== undefined ? { handleSignals: deps.handleSignals } : {}),

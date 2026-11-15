@@ -1,0 +1,294 @@
+// PROMPTS 190-192: the end-to-end harness. Does a coding agent that gets Click's context solve real tasks with fewer tokens
+// than the same agent without it?
+//
+// For each (task, variant):
+//   1. a git worktree of the benchmark repo at the task's PARENT commit (the code before the real change was made)
+//   2. variant V0 = the agent as it is; "delivery" / "V1" = Click installed (index, daemon, prompt hook), with that preset pinned
+//   3. Claude Code headless on the task text, with a hard wall-clock cap and a spend cap
+//   4. the task's check (vue-tsc must not get worse, and the task's vitest file must pass) decides "solved"
+//   5. tokens are read from the agent's own JSON: input, output, cache read and cache creation stay separate
+// Rows go to docs/e2e/<runId>.jsonl and a summary to docs/e2e/<runId>.json; the dashboard exporter turns them into e2e rows.
+// A real run spends API budget (each agent run is a real Claude session): the defaults are small and every run is capped.
+//
+//   pnpm e2e --tasks 3 --variants V0,delivery [--model <id>] [--max-usd 1.5] [--timeout-min 10] [--dry]
+//   --dry runs the whole pipeline (worktree, index, check, cleanup) with a no-op agent: it costs nothing and proves the plumbing.
+
+import { spawn, spawnSync } from 'node:child_process';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const worktreeRoot = resolve(here, '..', '..', '..', '..');
+
+export interface E2eTask {
+  id: string;
+  text: string;
+  parentCommit: string;
+  checkTests: string[];
+}
+export interface AgentUsage {
+  input: number;
+  output: number;
+  cacheRead: number;
+  cacheCreation: number;
+}
+export interface AgentResult {
+  usage: AgentUsage;
+  turns: number;
+  costUsd: number;
+  isError: boolean;
+  timedOut: boolean;
+  wallMs: number;
+}
+export interface E2eRow extends AgentResult {
+  runId: string;
+  taskId: string;
+  variant: string;
+  solved: boolean;
+  tscErrorsBefore: number;
+  tscErrorsAfter: number;
+  testPassed: boolean;
+  note?: string;
+}
+export interface VariantSummary {
+  variant: string;
+  n: number;
+  solved: number;
+  solveRate: number;
+  /** Tokens spent per solved task: input + output + cache creation of ALL runs (solved or not) divided by solved runs. Cache reads are reported on their own. */
+  tokensPerSolved: number | null;
+  cacheReadPerSolved: number | null;
+  turnsPerSolved: number | null;
+  wallSecPerSolved: number | null;
+  costUsdPerSolved: number | null;
+}
+
+// ------------------------------------------------------------------ pure parts (tested)
+
+const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+
+/** The JSON `claude -p --output-format json` prints. Missing fields count as 0; a non-JSON answer is an error result. */
+export function parseClaudeJson(stdout: string): Omit<AgentResult, 'wallMs' | 'timedOut'> {
+  const empty = { usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 }, turns: 0, costUsd: 0, isError: true };
+  let j: Record<string, unknown>;
+  try {
+    const text = stdout.trim();
+    const parsed = JSON.parse(text.slice(text.indexOf('{'))) as unknown;
+    if (typeof parsed !== 'object' || parsed === null) return empty;
+    j = parsed as Record<string, unknown>;
+  } catch {
+    return empty;
+  }
+  const u = (j.usage ?? {}) as Record<string, unknown>;
+  return {
+    usage: { input: num(u.input_tokens), output: num(u.output_tokens), cacheRead: num(u.cache_read_input_tokens), cacheCreation: num(u.cache_creation_input_tokens) },
+    turns: num(j.num_turns),
+    costUsd: num(j.total_cost_usd),
+    isError: j.is_error === true,
+  };
+}
+
+export const countTscErrors = (output: string): number => output.split('\n').filter((l) => /error TS\d+/.test(l)).length;
+
+/** A task is solved when the type-check got no worse and the task's own test passes. */
+export const isSolved = (before: number, after: number, testPassed: boolean): boolean => testPassed && after <= before;
+
+const mean = (xs: number[]): number | null => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+
+export function summarise(rows: readonly E2eRow[]): VariantSummary[] {
+  const variants = [...new Set(rows.map((r) => r.variant))];
+  return variants.map((variant) => {
+    const mine = rows.filter((r) => r.variant === variant);
+    const solved = mine.filter((r) => r.solved);
+    const spent = mine.reduce((s, r) => s + r.usage.input + r.usage.output + r.usage.cacheCreation, 0);
+    const per = (f: (r: E2eRow) => number): number | null => (solved.length ? mine.reduce((s, r) => s + f(r), 0) / solved.length : null);
+    return {
+      variant,
+      n: mine.length,
+      solved: solved.length,
+      solveRate: mine.length ? solved.length / mine.length : 0,
+      tokensPerSolved: solved.length ? spent / solved.length : null,
+      cacheReadPerSolved: per((r) => r.usage.cacheRead),
+      turnsPerSolved: per((r) => r.turns),
+      wallSecPerSolved: per((r) => r.wallMs / 1000),
+      costUsdPerSolved: per((r) => r.costUsd),
+    };
+  });
+}
+
+export { mean };
+
+// ------------------------------------------------------------------ the real work
+
+export interface HarnessDeps {
+  /** Run the coding agent in `cwd` on `prompt`. */
+  agent: (cwd: string, prompt: string) => Promise<AgentResult>;
+  /** Make Click available in `cwd` for this variant (index, hook, daemon). Absent for V0. */
+  setupClick?: (cwd: string, variant: string) => void;
+  teardownClick?: (cwd: string) => void;
+}
+
+interface Paths {
+  mainRoot: string;
+  repo: string;
+  cli: string;
+}
+export function resolvePaths(): Paths {
+  const git = spawnSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: worktreeRoot, encoding: 'utf8' });
+  const mainRoot = git.status === 0 ? dirname(git.stdout.trim()) : worktreeRoot;
+  return { mainRoot, repo: process.env.E2E_REPO ?? join(mainRoot, 'bench', 'repo'), cli: join(worktreeRoot, 'packages', 'click', 'dist', 'click.js') };
+}
+
+export function loadTasks(mainRoot: string, limit: number): E2eTask[] {
+  const dir = join(mainRoot, 'bench', 'tasks', 'mined');
+  const out: E2eTask[] = [];
+  for (const f of readdirSafe(join(mainRoot, 'bench', 'e2e', 'checks'))) {
+    const id = f.replace(/\.test\.ts$/, '');
+    const file = join(dir, `${id}.json`);
+    if (!existsSync(file)) continue;
+    const t = JSON.parse(readFileSync(file, 'utf8')) as { text: string; parentCommit: string };
+    out.push({ id, text: t.text, parentCommit: t.parentCommit, checkTests: [join(mainRoot, 'bench', 'e2e', 'checks', f)] });
+  }
+  return out.slice(0, limit);
+}
+function readdirSafe(dir: string): string[] {
+  try {
+    return readdirSync(dir).filter((f) => f.endsWith('.test.ts'));
+  } catch {
+    return [];
+  }
+}
+
+const sh = (cmd: string, args: string[], cwd: string, timeoutMs = 600_000) => spawnSync(cmd, args, { cwd, encoding: 'utf8', timeout: timeoutMs, shell: process.platform === 'win32' && cmd !== process.execPath, maxBuffer: 64 * 1024 * 1024 });
+
+/** Run one task under one variant in its own worktree; the worktree is always removed. */
+export async function runTask(task: E2eTask, variant: string, runId: string, paths: Paths, deps: HarnessDeps): Promise<E2eRow> {
+  const wt = mkdtempSync(join(tmpdir(), `click-e2e-${task.id}-`));
+  rmSync(wt, { recursive: true, force: true }); // git wants to create it
+  const add = sh('git', ['worktree', 'add', '--detach', wt, task.parentCommit], paths.repo, 120_000);
+  if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr.trim()}`);
+  try {
+    // the installed dependencies are shared (read only for our purposes), so a run does not spend minutes on npm install
+    const nm = join(paths.repo, 'node_modules');
+    if (existsSync(nm)) symlinkSync(nm, join(wt, 'node_modules'), 'junction');
+    const tscBefore = countTscErrors(sh('npx', ['vue-tsc', '--noEmit'], wt).stdout ?? '');
+    if (deps.setupClick && variant !== 'V0') deps.setupClick(wt, variant);
+    const agent = await deps.agent(wt, task.text);
+    deps.teardownClick?.(wt);
+    // the check: copy the task's test in, then type-check and run it
+    for (const t of task.checkTests) {
+      mkdirSync(join(wt, 'tests'), { recursive: true });
+      cpSync(t, join(wt, 'tests', `e2e-${task.id}.test.ts`));
+    }
+    const tscAfter = countTscErrors(sh('npx', ['vue-tsc', '--noEmit'], wt).stdout ?? '');
+    const test = sh('npx', ['vitest', 'run', `tests/e2e-${task.id}.test.ts`], wt, 300_000);
+    const testPassed = test.status === 0;
+    return { runId, taskId: task.id, variant, ...agent, solved: isSolved(tscBefore, tscAfter, testPassed), tscErrorsBefore: tscBefore, tscErrorsAfter: tscAfter, testPassed };
+  } finally {
+    sh('git', ['worktree', 'remove', '--force', wt], paths.repo, 120_000);
+    rmSync(wt, { recursive: true, force: true });
+  }
+}
+
+/** Claude Code headless. The caps make a runaway session impossible: wall clock and dollars. */
+export function claudeAgent(opts: { exe: string; model?: string; maxUsd: number; timeoutMs: number }): HarnessDeps['agent'] {
+  return (cwd, prompt) =>
+    new Promise((resolveRun) => {
+      const t0 = Date.now();
+      const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', 'acceptEdits', '--no-session-persistence', '--max-budget-usd', String(opts.maxUsd), '--allowedTools', 'Read', 'Edit', 'Write', 'Glob', 'Grep', 'MultiEdit', 'Bash(npx vitest run:*)', 'Bash(npx vue-tsc:*)', ...(opts.model ? ['--model', opts.model] : [])];
+      const child = spawn(opts.exe, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+      let out = '';
+      let timedOut = false;
+      child.stdout.on('data', (d: Buffer) => (out += d.toString()));
+      const timer = setTimeout(() => {
+        timedOut = true;
+        spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F']);
+        child.kill('SIGKILL');
+      }, opts.timeoutMs);
+      child.on('close', () => {
+        clearTimeout(timer);
+        resolveRun({ ...parseClaudeJson(out), timedOut, wallMs: Date.now() - t0 });
+      });
+      child.on('error', () => {
+        clearTimeout(timer);
+        resolveRun({ usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 }, turns: 0, costUsd: 0, isError: true, timedOut: false, wallMs: Date.now() - t0 });
+      });
+    });
+}
+
+/** Click for a worktree: index it, install the hook, start the daemon pinned to the variant's preset. */
+export function clickSetup(paths: Paths): Pick<HarnessDeps, 'setupClick' | 'teardownClick'> {
+  const click = (cwd: string, args: string[], env: NodeJS.ProcessEnv = {}) => spawnSync(process.execPath, [paths.cli, ...args, '--root', cwd], { cwd, encoding: 'utf8', env: { ...process.env, ...env }, timeout: 180_000 });
+  return {
+    setupClick: (cwd, variant) => {
+      click(cwd, ['index']);
+      click(cwd, ['hooks', 'install', '--local']);
+      // the daemon: detached, pinned to the preset under test; the hook never starts one itself
+      const preset = variant === 'delivery' ? 'delivery' : variant;
+      const d = spawn(process.execPath, [paths.cli, 'serve', '--root', cwd], { cwd, detached: true, stdio: 'ignore', env: { ...process.env, CLICK_VARIANT: preset } });
+      d.unref();
+    },
+    teardownClick: (cwd) => {
+      try {
+        const info = JSON.parse(readFileSync(join(cwd, '.click', 'daemon.json'), 'utf8')) as { pid?: number };
+        if (info.pid) spawnSync('taskkill', ['/PID', String(info.pid), '/T', '/F']);
+      } catch {
+        // the daemon already stopped
+      }
+    },
+  };
+}
+
+const dryAgent: HarnessDeps['agent'] = async () => ({ usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 }, turns: 0, costUsd: 0, isError: false, timedOut: false, wallMs: 0 });
+
+function findClaude(): string | undefined {
+  if (process.env.CLAUDE_EXE) return process.env.CLAUDE_EXE;
+  const base = join(homedir(), '.vscode', 'extensions');
+  try {
+    const dir = readdirSync(base).filter((x) => x.startsWith('anthropic.claude-code-')).sort().pop();
+    const p = dir ? join(base, dir, 'resources', 'native-binary', 'claude.exe') : '';
+    return p && existsSync(p) ? p : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function main(): Promise<void> {
+  const a = process.argv.slice(2);
+  const flag = (n: string, d?: string): string | undefined => (a.includes(`--${n}`) ? a[a.indexOf(`--${n}`) + 1] : d);
+  const dry = a.includes('--dry');
+  const limit = Number(flag('tasks', '3'));
+  const variants = (flag('variants', 'V0,delivery') ?? '').split(',').filter(Boolean);
+  const paths = resolvePaths();
+  const tasks = loadTasks(paths.mainRoot, limit);
+  if (!tasks.length) throw new Error('no e2e tasks found (bench/e2e/checks + bench/tasks/mined)');
+  const exe = findClaude();
+  if (!dry && !exe) throw new Error('claude.exe not found: set CLAUDE_EXE, or use --dry');
+  const runId = `${new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z-e2e${dry ? '-dry' : ''}`;
+  const out = join(worktreeRoot, 'docs', 'e2e');
+  mkdirSync(out, { recursive: true });
+  const base = { ...(dry ? {} : clickSetup(paths)) };
+  const deps: HarnessDeps = { agent: dry ? dryAgent : claudeAgent({ exe: exe!, ...(flag('model') ? { model: flag('model')! } : {}), maxUsd: Number(flag('max-usd', '1.5')), timeoutMs: Number(flag('timeout-min', '10')) * 60_000 }), ...base };
+  const rows: E2eRow[] = [];
+  for (const t of tasks) {
+    for (const v of variants) {
+      console.log(`${t.id} · ${v} …`);
+      const row = await runTask(t, v, runId, paths, deps);
+      rows.push(row);
+      writeFileSync(join(out, `${runId}.jsonl`), rows.map((r) => JSON.stringify(r)).join('\n') + '\n');
+      console.log(`  solved=${row.solved} tests=${row.testPassed} tsc ${row.tscErrorsBefore}→${row.tscErrorsAfter} tokens(in/out/cacheR/cacheW)=${row.usage.input}/${row.usage.output}/${row.usage.cacheRead}/${row.usage.cacheCreation} turns=${row.turns} ${Math.round(row.wallMs / 1000)}s $${row.costUsd.toFixed(3)}`);
+    }
+  }
+  const summary = { runId, dry, n: tasks.length, tasks: tasks.map((t) => t.id), variants: summarise(rows) };
+  writeFileSync(join(out, `${runId}.json`), JSON.stringify(summary, null, 2) + '\n');
+  console.log('\n' + JSON.stringify(summary.variants, null, 2));
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e instanceof Error ? e.message : e);
+    process.exit(1);
+  });
+}
