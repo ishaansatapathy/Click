@@ -14,7 +14,7 @@ import { boot, DaemonState, type BootDeps } from './boot.js';
 import { GraphSync } from './graphsync.js';
 import { JsonlWriter } from './jsonl.js';
 import { Persister } from './persist.js';
-import { createReindexer, ReindexQueue, reindexRoute } from './reindex.js';
+import { createReindexer, ReindexQueue, reindexRoute, type ReindexerDeps } from './reindex.js';
 import { createRoutes } from './routes.js';
 import { startDaemon, type DaemonHandle, type Route } from './server.js';
 import { SessionMemory } from './sessions.js';
@@ -37,6 +37,7 @@ export interface DaemonConfig {
   build?: BootDeps['build'];
   handleSignals?: boolean;
   git?: (root: string) => Promise<string | null>;
+  changed?: ReindexerDeps['changed'];
 }
 
 export interface Daemon {
@@ -71,7 +72,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
   // The re-index queue is created first so a stale body (a file edited since it was indexed) can ask for a re-index.
   const queue = new ReindexQueue({ run: async (job) => void (await reindex(job)), log, ...(c.debounceMs !== undefined ? { debounceMs: c.debounceMs } : {}) });
   const bodies = new BodyReader(c.root, { onStale: (path) => void queue.enqueue({ paths: [path] }) });
-  const reindex = createReindexer({ root: c.root, state, persist, bodies, log });
+  const reindex = createReindexer({ root: c.root, state, persist, bodies, log, ...(c.changed ? { changed: c.changed } : {}) });
   const prefix = new SkeletonProvider({ graphStore: c.graph });
 
   const routes: Route[] = [
@@ -92,6 +93,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
         state.source = b.source;
         state.bootMs = b.ms.total ?? 0;
         state.status = 'ready';
+        if (b.source === 'snapshot') queue.enqueue({}); // the repo may have changed while no daemon was running
       } catch (e) {
         log.error('boot failed; staying in warming (requests get an empty context)', { error: e });
       }

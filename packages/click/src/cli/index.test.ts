@@ -8,8 +8,8 @@ function capture(): { io: CliIo; out: () => string; err: () => string } {
 }
 
 describe('click dispatcher', () => {
-  it('registers map, push, pull and probe, and lists each in the usage text', () => {
-    expect(Object.keys(COMMANDS)).toEqual(['map', 'push', 'pull', 'probe']);
+  it('registers every command and lists each in the usage text', () => {
+    expect(Object.keys(COMMANDS)).toEqual(['map', 'push', 'pull', 'probe', 'serve', 'index', 'context', 'reindex', 'status']);
     for (const name of Object.keys(COMMANDS)) expect(USAGE).toMatch(new RegExp(`^  ${name} {1,7}\\S`, 'm'));
   });
 

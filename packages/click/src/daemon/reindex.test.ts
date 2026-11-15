@@ -252,6 +252,20 @@ describe('POST /reindex end to end (PROMPTS 113)', () => {
     expect(Date.now() - t0).toBeLessThan(2_000);
   }, 60_000);
 
+  it('booting from a snapshot checks git once and rebuilds nothing when nothing changed', async () => {
+    const first = await world();
+    const root = first.root;
+    await first.close();
+    let builds = 0;
+    const second = await startWorld({ ref, root, seedGraph: false, config: { build: async () => (builds++, Promise.reject(new Error('must not index'))), changed: async () => ({ ok: true, changes: [] }) } });
+    worlds.push(second);
+    expect(second.daemon.state.source).toBe('snapshot');
+    await second.daemon.queue.idle();
+    expect(second.daemon.queue.stats.runs).toBe(1); // the automatic detect run
+    expect(builds).toBe(0);
+    expect(await graphVersion(second)).toBe(ref.graph.version);
+  }, 60_000);
+
   it('validates the body; paths outside the repo are ignored; an unknown file is a harmless delete', async () => {
     const w = await world();
     expect((await w.json('/reindex', { paths: 'nope' })).status).toBe(400);

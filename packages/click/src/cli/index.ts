@@ -4,10 +4,16 @@
 
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { VERSION } from '../version.js';
+import { runContext } from './context.js';
+import { runIndex } from './indexCmd.js';
 import { runMap } from './map.js';
 import { runProbe } from './probe.js';
 import { runPull } from './pull.js';
 import { runPush } from './push.js';
+import { runReindex } from './reindexCmd.js';
+import { runServe } from './serve.js';
+import { runStatus } from './status.js';
 
 export interface CliIo {
   out: (text: string) => void;
@@ -21,10 +27,15 @@ export const COMMANDS: Readonly<Record<string, { run: CommandRunner; help: strin
   push: { run: runPush, help: 'index the repo and upload the graph to HydraDB' },
   pull: { run: runPull, help: 'rebuild the local replica from HydraDB' },
   probe: { run: runProbe, help: 'time HydraDB queries and the query embedding (p50 / p95)' },
+  serve: { run: runServe, help: 'run the per-repo daemon in the foreground' },
+  index: { run: runIndex, help: 'build the code graph and save it locally [--full]' },
+  context: { run: runContext, help: 'print the context for a task: "<task>" [--stdin] [--json] [--budget N] [--variant V]' },
+  reindex: { run: runReindex, help: 'tell the daemon to refresh its graph [--changed] [paths...]' },
+  status: { run: runStatus, help: 'is the daemon up, what graph, what it last served [--json]' },
 };
 
 export const USAGE = `click <command>\n\n${Object.entries(COMMANDS)
-  .map(([name, c]) => `  ${name.padEnd(7)} ${c.help}`)
+  .map(([name, c]) => `  ${name.padEnd(8)} ${c.help}`)
   .join('\n')}\n`;
 
 /** Returns the process exit code. `commands` is injectable for tests. */
@@ -33,6 +44,10 @@ export async function dispatch(argv: readonly string[], io: CliIo, cwd: string =
   if (cmd === undefined) {
     io.out(USAGE);
     return 2;
+  }
+  if (cmd === '--version' || cmd === '-v') {
+    io.out(VERSION);
+    return 0;
   }
   if (cmd === '-h' || cmd === '--help') {
     io.out(USAGE);

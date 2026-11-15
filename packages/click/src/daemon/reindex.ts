@@ -172,6 +172,15 @@ export function createReindexer(d: ReindexerDeps): (job: ReindexJob) => Promise<
     let files = job.paths.size;
     const prev = d.state.indexState;
 
+    // booted from a snapshot (no IndexState yet) and git says nothing changed since it was taken: nothing to do, no rebuild
+    if (!job.full && !prev && job.detect && job.paths.size === 0) {
+      const found = await (d.changed ?? changedPaths)(d.root, prevGraph.repoCommit);
+      if (found.ok && found.changes.length === 0) {
+        d.log.info('re-index: nothing changed since the snapshot');
+        return { changed: false, mode: 'none', files: 0, ms: Math.round(performance.now() - t0), graphVersion: prevGraph.version };
+      }
+    }
+
     let changes: ChangedPath[] | null = null;
     if (!job.full && prev) {
       if (job.paths.size > 0 || !job.detect) {
