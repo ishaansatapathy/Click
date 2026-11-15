@@ -20,6 +20,7 @@ import type {
 /** Implemented by Lane A (indexer/profile.ts); consumed by the Lane B indexer. */
 export type { RepoProfile } from './indexer/profile.js';
 import type { RepoProfile } from './indexer/profile.js';
+import type { RouteDef } from './indexer/router.js';
 
 // ---------------------------------------------------------------- extraction (SPEC §5.6)
 
@@ -32,10 +33,25 @@ export interface SourceFile {
   class: FileClass;
 }
 
+/** A component reachable from templates: the file that exports it and the export name ('default' for a .vue file). */
+export interface ComponentTarget {
+  path: string;
+  exportName: string;
+}
+
+/** Globally registered components (`app.component('Name', Comp)`), by PascalCase name. */
+export type GlobalComponents = ReadonlyMap<string, ComponentTarget | { pkg: string }>;
+
+/**
+ * contract/2: extraction needs the repo's file list (import resolution) and the global component registrations
+ * (template tag resolution). Both are inputs of the content-addressed extract cache key.
+ */
 export interface ExtractCtx {
   root: string;
   profile: RepoProfile;
   profileHash: string;
+  allPaths: ReadonlySet<string>; // every repo file (assets included), posix and repo-relative
+  globals: GlobalComponents;
 }
 
 export type Resolved =
@@ -65,7 +81,8 @@ export interface FileExtract {
   refs: SymbolRef[]; // cross-file edges awaiting link.ts
   chunks: ChunkRecord[];
   imports: ImportRef[];
-  unresolved: string[];
+  unresolved: string[]; // import specifiers that were meant to be local but did not resolve
+  routes: RouteDef[]; // raw route tables (contract/2); paths are finalised by link.ts
 }
 
 /** Implemented by Lane B (indexer/extract.ts). Lane A uses it for ground-truth symbol ranges (070). Pure. */

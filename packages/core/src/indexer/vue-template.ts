@@ -6,16 +6,13 @@
 
 import { NodeTypes, type ElementNode, type RootNode, type TemplateChildNode } from '@vue/compiler-core';
 import ts from 'typescript';
-import type { SymbolRef } from '../contracts.js';
+import type { ComponentTarget, GlobalComponents, SymbolRef } from '../contracts.js';
 import type { RawImport } from './ts-imports.js';
 import { componentName } from '../util/ids.js';
 import { packageName, type Resolver } from './resolve.js';
 import type { SfcResult } from './vue-sfc.js';
 
-export interface ComponentTarget {
-  path: string; // repo file that exports the component
-  exportName: string; // 'default' for a .vue file; a named export for barrels
-}
+export type { ComponentTarget, GlobalComponents };
 
 export type TagResolution =
   | { kind: 'local'; target: ComponentTarget; via: 'import' | 'global' | 'auto' }
@@ -32,8 +29,6 @@ export interface TemplateUsage {
   events: string[]; // camelCased listener names ('update:modelValue' keeps its colon)
   resolution: TagResolution;
 }
-
-export type GlobalComponents = ReadonlyMap<string, ComponentTarget | { pkg: string }>;
 
 export interface TemplateCtx {
   path: string;
