@@ -98,11 +98,10 @@ export function f(o: Order, sumMinor2: typeof formatPrice) { const x = { sumMino
   });
 
   it('asset imports (images, styles, json) are not graph nodes, so they never become refs', () => {
-    const sf = parseTs("import logo from './logo.png'
-import cfg from './cfg.json'
-import { sumMinor } from '@/utils/money'
-export const f = () => [logo, cfg, sumMinor([])]
-", 'src/x.ts');
+    const sf = parseTs(
+      ["import logo from './logo.png'", "import cfg from './cfg.json'", "import { sumMinor } from '@/utils/money'", 'export const f = () => [logo, cfg, sumMinor([])]', ''].join('\n'),
+      'src/x.ts',
+    );
     const assetAware = (spec: string) => (spec === '@/utils/money' ? resolve(spec, 'src/x.ts') : ({ kind: 'local', path: 'src/' + spec.slice(2) } as const));
     const r = extractUsages(sf, { path: 'src/x.ts', resolve: assetAware, imports: extractTsImports(sf), symbols: extractTsSymbols(sf), ownerDefault: fileId('src/x.ts') });
     expect(r.refs.map((x) => x.targetPath)).toEqual(['src/utils/money.ts']);
