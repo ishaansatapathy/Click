@@ -2,8 +2,9 @@
 //   dist/hooks/stop.js     the Stop hook, same rules
 //   dist/hooks/prompt.js   everything inlined, no dependencies: it starts on every prompt, so it must start fast
 //   dist/click.js          the CLI and daemon; the TypeScript and Vue compilers stay external (dependencies of the package)
-// More entries (hooks/stop.js, mcp.js) are added by their prompts.
+//   dist/mcp.js            the MCP server, built when src/mcp/server.ts exists (prompt 170)
 
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +43,13 @@ export async function bundle(o: BundleOptions = {}): Promise<{ outdir: string; f
     const banner = ['#!/usr/bin/env node', "import { createRequire as __cr } from 'node:module';", 'const require = __cr(import.meta.url);'].join('\n');
     await build({ ...common, entryPoints: [join(SRC, 'cli', 'index.ts')], outfile: cli, banner: { js: banner }, external: EXTERNAL });
     files.push(cli);
+    // the MCP server (prompt 170): one stdio server any MCP host can launch (`node dist/mcp.js`), the SDK bundled in
+    const mcpEntry = join(SRC, 'mcp', 'server.ts');
+    if (existsSync(mcpEntry)) {
+      const mcp = join(outdir, 'mcp.js');
+      await build({ ...common, entryPoints: [mcpEntry], outfile: mcp, banner: { js: banner }, external: EXTERNAL });
+      files.push(mcp);
+    }
   }
   return { outdir, files };
 }
