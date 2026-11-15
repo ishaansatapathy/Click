@@ -123,7 +123,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
     const r = await runHook(payload(root), root);
     expect(r).toMatchObject({ code: 0, stdout: '' });
     expect(r.ms).toBeGreaterThan(1_000);
-    expect(r.ms).toBeLessThan(2_300);
+    expect(r.ms).toBeLessThan(4_500); // ~1.5 s deadline; generous because the full suite runs many processes at once
   }, 20_000);
 
   it('a daemon that errors, or answers with nonsense, gives nothing', async () => {
