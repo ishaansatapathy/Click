@@ -22,6 +22,22 @@ describe('variant config presets', () => {
     expect(PRESETS.V4.prune.chain).toEqual(['jev', 'rerank', 'none']);
     expect(PRESETS.delivery.pack).toMatchObject({ prefix: true, sessionDedupe: true });
   });
+
+  it('graph source: HydraDB by default (2 hops, frontier 200, 120 ms deadline); V3r is V3 on the local replica', () => {
+    for (const name of ['V1', 'V2', 'V3', 'V4', 'delivery'] as const) {
+      expect(PRESETS[name].expand, name).toMatchObject({ graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 120 });
+    }
+    expect(PRESETS.V3r.expand).toMatchObject({ kind: 'ppr', usePriors: true, graphSource: 'replica' });
+    // V3r differs from V3 in the graph source and nothing else
+    expect({ ...PRESETS.V3r, id: 'V3', expand: { ...PRESETS.V3r.expand, graphSource: 'hydra' } }).toEqual(PRESETS.V3);
+  });
+
+  it('rejects invalid graph settings', () => {
+    expect(() => resolveConfig(undefined, 'V3', { expand: { hops: 3 as never } })).toThrow();
+    expect(() => resolveConfig(undefined, 'V3', { expand: { graphSource: 'cloud' as never } })).toThrow();
+    expect(() => resolveConfig(undefined, 'V3', { expand: { graphTimeoutMs: 0 } })).toThrow();
+    expect(resolveConfig({ expand: { hops: 1, graphTimeoutMs: 250 } }, 'V3').expand).toMatchObject({ hops: 1, graphTimeoutMs: 250, graphSource: 'hydra' });
+  });
 });
 
 describe('resolveConfig', () => {
@@ -57,5 +73,7 @@ describe('configHash', () => {
 
   it('changes when the config changes', () => {
     expect(configHash(PRESETS.V2)).not.toBe(configHash(PRESETS.V3));
+    expect(configHash(PRESETS.V3)).not.toBe(configHash(PRESETS.V3r));
+    expect(new Set(Object.values(PRESETS).map(configHash)).size).toBe(Object.keys(PRESETS).length);
   });
 });

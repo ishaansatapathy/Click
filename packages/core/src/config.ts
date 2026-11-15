@@ -33,6 +33,14 @@ export const variantConfigSchema = z.object({
     reverseScale: z.number().nonnegative(),
     usePriors: z.boolean(),
     useLearned: z.boolean(),
+    /** 'hydra': GraphStore.neighbourhood (default). 'replica': the full local snapshot (ablation V3r, and the fallback). */
+    graphSource: z.enum(['hydra', 'replica']),
+    /** Neighbourhood depth fetched from HydraDB. */
+    hops: z.union([z.literal(1), z.literal(2)]),
+    /** Cap on the hop-2 frontier. */
+    maxFrontier: z.number().int().positive(),
+    /** HydraDB neighbourhood deadline; on timeout the request falls back to the replica (degraded: graph-replica). */
+    graphTimeoutMs: z.number().int().positive(),
   }),
   candidates: z.number().int().positive(),
   prune: z.object({
@@ -78,6 +86,7 @@ const hybridSeeds: VariantConfig['seeds'] = {
 const noExpand: VariantConfig['expand'] = {
   kind: 'none', alpha: 0.15, epsilon: 1e-6, maxPushes: 200_000,
   reverseScale: 1, usePriors: false, useLearned: false,
+  graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 120,
 };
 
 const pprExpand: VariantConfig['expand'] = {
@@ -126,6 +135,14 @@ const v3: VariantConfig = {
   pack: { ...basePack, neighbourSignatures: true },
 };
 
+// Ablation: V3 over the FULL local snapshot instead of HydraDB's 2-hop neighbourhood. Answers "does the HydraDB
+// fetch lose anything, and what does it cost in latency?", and is also what a request falls back to.
+const v3r: VariantConfig = {
+  ...v3,
+  id: 'V3r',
+  expand: { ...pprExpand, graphSource: 'replica' },
+};
+
 const v4: VariantConfig = {
   ...v3,
   id: 'V4',
@@ -139,7 +156,7 @@ const delivery: VariantConfig = {
   pack: { ...v3.pack, prefix: true, sessionDedupe: true },
 };
 
-export const PRESETS = Object.freeze({ V1: v1, V2: v2, V3: v3, V4: v4, delivery });
+export const PRESETS = Object.freeze({ V1: v1, V2: v2, V3: v3, V3r: v3r, V4: v4, delivery });
 export type PresetName = keyof typeof PRESETS;
 
 export function resolveConfig(
