@@ -89,6 +89,12 @@ export interface WeightSyncOptions {
   log?: Logger;
   /** Backoff between attempts; the last value repeats. */
   retryMs?: readonly number[];
+  /**
+   * The version of the graph HydraDB holds. Pushing learned co_changed edges must not change it: HydraDB keeps ONE index-version
+   * marker (what `click push` compares to know a graph is already there), so writing the weights version into it makes every
+   * later push look like a different graph. Absent: the store is asked, and only if it cannot answer is the weights version used.
+   */
+  graphVersion?: () => string | undefined;
 }
 
 /**
@@ -137,6 +143,18 @@ export class WeightSync {
     this.waiters.splice(0).forEach((r) => r());
   }
 
+  /** The graph version to leave in HydraDB's marker while writing learned edges (never the weights version when it can be avoided). */
+  private async indexVersion(fallback: string): Promise<string> {
+    const known = this.opts.graphVersion?.();
+    if (known) return known;
+    const store = this.graph as Partial<{ getIndexVersion(): Promise<string | null> }>;
+    try {
+      return (await store.getIndexVersion?.()) ?? fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
   private kick(): void {
     if (this.running || this.closed) return;
     this.running = this.drain().finally(() => {
@@ -150,7 +168,7 @@ export class WeightSync {
       const next = this.target;
       try {
         const edges = addedEdgesDiff(this.synced, next);
-        if (edges.length) await this.graph.upsertGraph({ edges }, next.version); // learned co_changed edges first: they must exist to carry a weight
+        if (edges.length) await this.graph.upsertGraph({ edges }, await this.indexVersion(next.version)); // learned co_changed edges first: they must exist to carry a weight
         const updates = multiplierDiff(this.synced, next);
         if (updates.length) await this.graph.setEdgeWeights(updates);
         this.synced = next;

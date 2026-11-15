@@ -116,6 +116,26 @@ describe('WeightSync (PROMPTS 155)', () => {
     expect(s.stats).toEqual({ pushes: 1, failures: 0 });
   });
 
+  it('never leaves the weights version in HydraDB\'s graph-version marker (click push compares that marker to know a graph is already there)', async () => {
+    const g = await world();
+    const versions: string[] = [];
+    const upsert = g.upsertGraph.bind(g);
+    g.upsertGraph = async (b, v) => (versions.push(v), upsert(b, v));
+    const learned = co('file:a', 'file:c');
+    // the daemon knows the graph version it holds
+    const withProvider = new WeightSync(g, { graphVersion: () => 'graph-1' });
+    withProvider.push(doc('weights-1', {}, [learned]));
+    await withProvider.idle();
+    expect(versions).toEqual(['graph-1']);
+    // without a provider the store is asked for what it holds
+    versions.length = 0;
+    const asked = Object.assign(g, { getIndexVersion: async () => 'graph-2' });
+    const viaStore = new WeightSync(asked);
+    viaStore.push(doc('weights-2', {}, [co('file:b', 'file:c')]));
+    await viaStore.idle();
+    expect(versions).toEqual(['graph-2']);
+  });
+
   it('a second document only sends what changed; an older one coming later never overwrites the newer', async () => {
     const g = await world();
     const sent: { key: string; w: number }[][] = [];

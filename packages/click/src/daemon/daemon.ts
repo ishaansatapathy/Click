@@ -109,7 +109,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
   // learning: logs -> check -> learner -> weights
   const outcomes = new EventLog<LogEvent>(outcomesFile);
   const weights = new WeightsFile(dir);
-  const weightSync = c.graph ? new WeightSync(c.graph, { log }) : null;
+  const weightSync = c.graph ? new WeightSync(c.graph, { log, graphVersion: () => state.holder?.current().graph.version }) : null;
   const learner = new Learner({ state, outcomesFile, contextsFile, weights, sync: weightSync, store: c.store, log, ...(c.learnDebounceMs !== undefined ? { debounceMs: c.learnDebounceMs } : {}) });
   const checks = new CheckQueue({ root: c.root, outcomes, log, ...(c.runCheck ? { run: c.runCheck } : {}), onResult: () => learner.notify() });
 
