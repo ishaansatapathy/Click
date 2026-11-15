@@ -1,19 +1,40 @@
 {
-  "name": "click",
-  "version": "0.0.0",
-  "private": true,
+  "name": "click-context",
+  "version": "0.1.0",
+  "description": "Structure-aware context for coding agents on Vue 3 projects: a code graph in a self-hosted HydraDB picks the right code for a task, inside a token budget.",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "click": "dist/click.js"
   },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ishaansatapathy/Click.git"
+  },
+  "homepage": "https://github.com/ishaansatapathy/Click#readme",
+  "keywords": [
+    "coding-agents",
+    "claude-code",
+    "mcp",
+    "context",
+    "vue",
+    "hydradb",
+    "graph"
+  ],
   "dependencies": {
-    "@click/core": "workspace:*",
-    "zod": "^4.6.7",
     "@vue/compiler-core": "^3.5.45",
     "@vue/compiler-sfc": "^3.5.45",
     "typescript": "~5.9.3"
   },
   "devDependencies": {
+    "@click/core": "workspace:*",
+    "zod": "^4.6.7",
     "esbuild": "^0.28.2"
   }
 }
