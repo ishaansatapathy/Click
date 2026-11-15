@@ -34,6 +34,8 @@ export interface PackOptions {
   nodes: ReadonlyMap<string, GraphNode>;
   /** Chunk units (V1): candidate ids that are chunk ids resolve through this map. */
   chunks?: ReadonlyMap<string, ChunkMeta>;
+  /** For `pack.sliceLarge`: chunk ids per node, best first (the semantic hits). Other chunks follow in source order. */
+  chunkHints?: ReadonlyMap<string, readonly string[]>;
   bodies: BodySource;
   /** Node ids already sent in this session (used when `pack.sessionDedupe`). */
   sent?: ReadonlySet<string>;
@@ -185,6 +187,40 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
 
   const blockCost = (b: Block, cost: number): number => cost + BLOCK_OVERHEAD + (opened.has(b.section) ? 0 : SECTION_OVERHEAD);
 
+  // pack.sliceLarge: chunks of each node, to pack the useful part of a symbol that is too big (or no longer fits) as a whole
+  const chunksByNode = new Map<string, ChunkMeta[]>();
+  if (o.pack.sliceLarge && o.chunks) {
+    for (const c of o.chunks.values()) (chunksByNode.get(c.nodeId) ?? chunksByNode.set(c.nodeId, []).get(c.nodeId)!).push(c);
+    for (const list of chunksByNode.values()) list.sort((a, b) => a.range.startLine - b.range.startLine || cmp(a.id, b.id));
+  }
+  const MAX_SLICES = 2;
+  const trySlices = async (u: Unit): Promise<boolean> => {
+    const { node, cand } = u;
+    const all = chunksByNode.get(node.id);
+    if (!all?.length || node.kind === 'file') return false;
+    const hinted = (o.chunkHints?.get(node.id) ?? []).flatMap((id) => all.filter((c) => c.id === id));
+    const ordered = [...hinted, ...all.filter((c) => !hinted.includes(c))].slice(0, 6);
+    const reads = await o.bodies.readMany(ordered.map((c) => ({ id: c.id, path: c.path, range: c.range, fileHash: node.fileHash })));
+    let picked = 0;
+    let used = 0;
+    for (const c of ordered) {
+      const r = reads.get(c.id);
+      if (!r?.ok) continue;
+      const tokens = countTokens(r.text);
+      if (tokens > o.pack.maxBodyTokens || used + tokens > o.pack.maxBodyTokens) continue;
+      const heading = `${c.path}${range(c.range)} · ${node.kind} ${node.name} (part) · ${reasonOf(cand)}`;
+      const cost = countTokens(codeBlock(heading, '', c.path)) + tokens;
+      const b: Block = { section: 'code', text: codeBlock(heading, r.text, c.path), item: { nodeId: node.id, path: c.path, name: node.name, mode: 'body', tokens: cost, range: c.range } };
+      if (blockCost(b, cost) > remaining) continue;
+      add(b, cost);
+      used += tokens;
+      if (picked++ === 0) bodies.push({ unit: u, text: r.text, cost });
+      if (picked >= MAX_SLICES) break;
+    }
+    if (picked > 0) chosenIds.add(node.id);
+    return picked > 0;
+  };
+
   for (const u of units) {
     const { node, cand } = u;
     if (o.pack.sessionDedupe && o.sent?.has(node.id)) {
@@ -215,6 +251,8 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
         continue;
       }
     }
+
+    if (o.pack.sliceLarge && !u.chunk && (await trySlices(u))) continue;
 
     const text = sigLine(node);
     const cost = countTokens(text) + 1;

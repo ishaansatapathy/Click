@@ -69,6 +69,13 @@ export async function gitHead(root: string): Promise<string | null> {
   }
 }
 
+const rangeCache = new WeakMap<object, Map<string, { startLine: number; endLine: number }>>();
+function rangesOf(nodes: readonly { id: string; range?: { startLine: number; endLine: number } }[]): Map<string, { startLine: number; endLine: number }> {
+  let m = rangeCache.get(nodes);
+  if (!m) rangeCache.set(nodes, (m = new Map(nodes.flatMap((n) => (n.range ? [[n.id, n.range] as const] : [])))));
+  return m;
+}
+
 export function warmingContext(cfg: VariantConfig, budget: number, ms: number): PackedContext {
   return {
     contextId: `ctx_warming_${Date.now().toString(36)}`, text: '', tokens: 0, budget, items: [], seeds: [], variant: cfg.id, configHash: configHash(cfg),
@@ -142,7 +149,13 @@ export function createRoutes(d: RouteDeps): Route[] {
       await startCommit;
 
       if (req.sessionId) {
-        d.sessions.record(req.sessionId, packed.items.filter((i) => i.mode === 'body' || i.mode === 'file').map((i) => i.nodeId), packed.tokens);
+        // a slice of a big symbol (pack.sliceLarge) is not the symbol: only whole bodies count as "already sent"
+        const ranges = rangesOf(holder.current().graph.nodes);
+        const whole = (i: PackedContext['items'][number]): boolean => {
+          const r = ranges.get(i.nodeId);
+          return !i.range || !r || (i.range.startLine === r.startLine && i.range.endLine === r.endLine);
+        };
+        d.sessions.record(req.sessionId, packed.items.filter((i) => (i.mode === 'body' || i.mode === 'file') && whole(i)).map((i) => i.nodeId), packed.tokens);
       }
       void d.contexts.append(record);
       d.stats.record(packed, req.sessionId, now() - t0);

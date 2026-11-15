@@ -228,6 +228,11 @@ export async function getContext(task: Task, cfg: VariantConfig, deps: PipelineI
   let seeds: Seed[] = fuseSeeds({ ...lists, semantic }, { sources: cfg.seeds.sources, weights: cfg.seeds.weights, count: cfg.seeds.count, rrfK: cfg.seeds.rrfK, semanticReserve: cfg.seeds.reserve }, resolve);
   seeds = withOpenFiles(seeds, task.openFiles, cg);
 
+  // the semantic hits, per node and best first: when a symbol is too big for the budget, these are the chunks to show
+  const chunkHints = cfg.pack.sliceLarge
+    ? semantic.reduce((m, h) => (chunks.has(h.id) ? m.set(resolve(h.id), [...(m.get(resolve(h.id)) ?? []), h.id]) : m), new Map<string, string[]>())
+    : undefined;
+
   // ---- candidates
   let candidates: Candidate[];
   let neighbours: ((id: string) => Neighbour[]) | undefined;
@@ -302,6 +307,7 @@ export async function getContext(task: Task, cfg: VariantConfig, deps: PipelineI
       header: { graph: state.graph.version, ms: now() - started, degraded },
       nodes: cg.nodes,
       chunks,
+      ...(chunkHints ? { chunkHints } : {}),
       bodies: bodiesFor(deps),
       ...(deps.maxChars ? { maxChars: deps.maxChars } : {}),
       ...(sent ? { sent } : {}),
