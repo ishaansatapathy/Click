@@ -85,9 +85,21 @@ export function decodeVectors(buf: Buffer): VectorTable {
 
 // ---------------------------------------------------------------- store
 
+/**
+ * `click push` / `click pull` (Lane A) write `{ v: 1, graph, chunks }` with chunk TEXT under the same file name; the daemon
+ * writes that format too, so there is one format on disk. Read it here: the graph's chunks are the records without text.
+ */
+function fromPushShape(o: Record<string, unknown>, version: string): Record<string, unknown> | null {
+  const g = o.graph as { version?: unknown; repoCommit?: unknown; nodes?: unknown; edges?: unknown } | undefined;
+  if (o.v !== 1 || !g || typeof g !== 'object' || !Array.isArray(o.chunks) || !Array.isArray(g.nodes) || !Array.isArray(g.edges)) return null;
+  const chunks = (o.chunks as { id: string; nodeId: string; path: string; range: unknown }[]).map(({ id, nodeId, path, range }) => ({ id, nodeId, path, range }));
+  return { v: SNAPSHOT_FORMAT, version: g.version ?? version, repoCommit: g.repoCommit ?? null, createdAt: '', profileHash: '', nodes: g.nodes, edges: g.edges, chunks };
+}
+
 function checkShape(x: unknown, version: string): SnapshotMeta & { nodes: Graph['nodes']; edges: Graph['edges']; chunks: Graph['chunks'] } {
-  const o = x as Record<string, unknown> | null;
+  let o = x as Record<string, unknown> | null;
   if (!o || typeof o !== 'object') throw new Error('not an object');
+  if (o.graph !== undefined) o = fromPushShape(o, version) ?? o;
   if (o.v !== SNAPSHOT_FORMAT) throw new Error(`unsupported snapshot format ${String(o.v)}`);
   if (o.version !== version) throw new Error(`snapshot says version ${String(o.version)}, file name says ${version}`);
   if (!Array.isArray(o.nodes) || !Array.isArray(o.edges) || !Array.isArray(o.chunks)) throw new Error('nodes, edges and chunks must be arrays');

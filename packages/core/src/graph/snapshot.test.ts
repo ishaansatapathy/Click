@@ -136,6 +136,30 @@ describe('SnapshotStore (PROMPTS 080)', () => {
   });
 });
 
+describe('snapshots written by `click push` (Lane A format, same file name)', () => {
+  it('loads { v: 1, graph, chunks-with-text } and strips the chunk text', async () => {
+    const g = graph('vpush');
+    const pushShape = { v: 1, graph: g, chunks: g.chunks.map((c) => ({ ...c, text: 'function f() {}', vector: [0.1, 0.2] })) };
+    writeFileSync(join(dir, 'vpush.json.gz'), gzipSync(JSON.stringify(pushShape)));
+    writeFileSync(join(dir, 'CURRENT'), 'vpush');
+    const r = await new SnapshotStore(dir).load();
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.graph.version).toBe('vpush');
+    expect(r.graph.nodes).toEqual(g.nodes);
+    expect(r.graph.edges).toEqual(g.edges);
+    expect(r.graph.chunks).toEqual(g.chunks); // no text, no vector
+    expect(r.graph.repoCommit).toBe(g.repoCommit);
+  });
+
+  it('a push-shaped file that is not a graph is reported corrupt, not thrown', async () => {
+    writeFileSync(join(dir, 'vbad.json.gz'), gzipSync(JSON.stringify({ v: 1, graph: { nodes: 1 }, chunks: [] })));
+    writeFileSync(join(dir, 'CURRENT'), 'vbad');
+    const r = await new SnapshotStore(dir).load();
+    expect(r).toMatchObject({ ok: false, reason: 'corrupt' });
+  });
+});
+
 describe('vector encoding', () => {
   it('round-trips, including empty tables, unicode ids and ids that are not a multiple of 4 bytes', () => {
     for (const ids of [[], ['a'], ['ab', 'abc', 'é世'], Array.from({ length: 50 }, (_, i) => `chunk:src/f${i}.ts#sym${i}#${i}`)]) {
