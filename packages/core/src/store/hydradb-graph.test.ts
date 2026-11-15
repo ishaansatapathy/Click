@@ -74,7 +74,7 @@ describe('HydraDbGraphStore write side', () => {
     expect(bodies[0]!.query).toContain('SET n:CodeNode');
     expect(bodies[1]!.query).toContain('[:IMPORTS]');
     expect(bodies[2]!.query).toContain('[:CALLS]');
-    expect(bodies[3]!.query).toContain('n.indexVersion = $version');
+    expect(bodies[3]!.query).toContain('n.indexVersion = row.version');
     expect(bodies[0]!.parameters.rows).toEqual(expect.arrayContaining([expect.objectContaining({ id: vid(a.id), key: a.id })]));
   });
 

@@ -212,8 +212,8 @@ export class HydraDbGraphStore implements GraphStore {
     this.projectedVersion = undefined;
     this.hubCache.clear();
     await this.client.query(
-      'MERGE (n {id: $id}) SET n:ClickMeta, n.indexVersion = $version',
-      { id: META_ID, version: indexVersion },
+      'UNWIND $rows AS row MERGE (n {id: row.id}) SET n:ClickMeta, n.indexVersion = row.version',
+      { rows: [{ id: META_ID, version: indexVersion }] },
     );
   }
 
