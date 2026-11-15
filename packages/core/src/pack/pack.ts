@@ -169,8 +169,27 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
     }
   }
 
+  // pack.strategy: 'whole-file' turns every ranked candidate into its whole file (once per path, best rank wins); 'body-only' never
+  // falls back to a signature
+  const strategy = o.pack.strategy ?? 'body-signature';
+  const wholeFile = strategy === 'whole-file';
+  const allowSignatures = strategy === 'body-signature';
+  if (wholeFile) {
+    const files: Unit[] = [];
+    const seenPath = new Set<string>();
+    for (const u of units) {
+      const path = u.node.path;
+      if (!path || seenPath.has(path)) continue;
+      const file = o.nodes.get(`file:${path}`);
+      if (!file) continue;
+      seenPath.add(path);
+      files.push({ node: file, cand: u.cand, chunk: false });
+    }
+    units.splice(0, units.length, ...files);
+  }
+
   const fresh = units.filter((u) => !(o.pack.sessionDedupe && o.sent?.has(u.node.id)));
-  const reads = await o.bodies.readMany(fresh.filter((u) => u.chunk || u.node.tokens <= o.pack.maxBodyTokens).map((u) => u.node));
+  const reads = await o.bodies.readMany(fresh.filter((u) => u.chunk || wholeFile || u.node.tokens <= o.pack.maxBodyTokens).map((u) => u.node));
 
   // ---- selection
   interface Chosen {
@@ -243,7 +262,7 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
       const heading = `${node.path ?? node.name}${range(node.range)} · ${node.kind === 'chunk' ? 'chunk of' : node.kind} ${node.name} · ${reasonOf(cand)}`;
       const text = codeBlock(heading, read.text, node.path);
       const cost = countTokens(codeBlock(heading, '', node.path)) + tokens;
-      if (tokens <= o.pack.maxBodyTokens && blockCost({ section: 'code', text }, cost) <= remaining) {
+      if ((wholeFile || tokens <= o.pack.maxBodyTokens) && blockCost({ section: 'code', text }, cost) <= remaining) {
         const b: Block = { section: 'code', text, item: { nodeId: node.id, path: node.path, name: node.name, mode, tokens: cost, ...(node.range ? { range: node.range } : {}) } };
         add(b, cost);
         bodies.push({ unit: u, text: read.text, cost });
@@ -252,7 +271,8 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
       }
     }
 
-    if (o.pack.sliceLarge && !u.chunk && (await trySlices(u))) continue;
+    if (o.pack.sliceLarge && !u.chunk && !wholeFile && (await trySlices(u))) continue;
+    if (!allowSignatures) continue; // body-only / whole-file: what cannot be shown as code is left out
 
     const text = sigLine(node);
     const cost = countTokens(text) + 1;
@@ -270,7 +290,7 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
   const byPath = new Map<string, Chosen[]>();
   // (chunk units are never merged: V1 is "the retrieved chunks, as they are")
   for (const c of bodies) if (c.unit.node.path && c.unit.node.kind !== 'file' && !c.unit.chunk) (byPath.get(c.unit.node.path) ?? byPath.set(c.unit.node.path, []).get(c.unit.node.path)!).push(c);
-  for (const [path, group] of [...byPath].sort((a, b) => cmp(a[0], b[0]))) {
+  for (const [path, group] of wholeFile ? [] : [...byPath].sort((a, b) => cmp(a[0], b[0]))) {
     if (group.length < 2) continue;
     const fileNode = o.nodes.get(`file:${path}`);
     if (!fileNode || fileNode.tokens > o.pack.smallFileTokens || chosenIds.has(fileNode.id)) continue;
@@ -297,7 +317,7 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
   }
 
   // ---- neighbour signatures: strongest 1-hop neighbours of each body, in body order
-  if (o.pack.neighbourSignatures && o.neighbours) {
+  if (o.pack.neighbourSignatures && o.neighbours && allowSignatures) {
     for (const { unit } of bodies) {
       const ns = [...o.neighbours(unit.node.id)].sort((a, b) => b.weight - a.weight || cmp(a.nodeId, b.nodeId));
       let added = 0;
