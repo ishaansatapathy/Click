@@ -26,6 +26,7 @@ import { Learner, weightsRoutes } from './learner.js';
 import { outcomeRoute } from './outcome.js';
 import { Persister } from './persist.js';
 import { createReindexer, ReindexQueue, reindexRoute, type ReindexerDeps } from './reindex.js';
+import { impactRoutes } from './impact.js';
 import { createRoutes } from './routes.js';
 import { startDaemon, type DaemonHandle, type Route } from './server.js';
 import { SessionMemory } from './sessions.js';
@@ -126,6 +127,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
     reindexRoute(queue, c.root),
     outcomeRoute({ root: c.root, sessions, outcomes, contextsFile, checks, onKnownResult: () => learner.notify(), nodes: () => state.holder?.current().graph.nodes ?? [], git: gitOps, log }),
     ...weightsRoutes(learner, weights),
+    ...impactRoutes({ state, graph: c.graph, store: c.store }),
   ];
 
   let booting: Promise<void> | null = null;

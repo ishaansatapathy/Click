@@ -9,6 +9,8 @@ import type { Logger } from '../../../core/src/util/log.js';
 import type { PackedContext } from '../../../core/src/types.js';
 import { MAX_SESSIONS } from './sessions.js';
 
+const MIN_WRITE_GAP_MS = 1_000;
+
 export interface Stats {
   last: { contextId: string; tokens: number; files: number; ms: number; pruner: string; degraded: string[]; ts: string } | null;
   session: Record<string, { contexts: number; tokens: number }>;
@@ -18,6 +20,8 @@ export interface Stats {
 export class StatsKeeper {
   private stats: Stats = { last: null, session: {}, totals: { contexts: 0, tokens: 0 } };
   private writing: Promise<void> = Promise.resolve();
+  private timer: ReturnType<typeof setTimeout> | undefined;
+  private lastWrite = Number.NEGATIVE_INFINITY;
   private readonly file: string;
 
   constructor(
@@ -58,12 +62,37 @@ export class StatsKeeper {
       const keys = Object.keys(s.session);
       for (const k of keys.slice(0, Math.max(0, keys.length - MAX_SESSIONS))) delete s.session[k];
     }
-    const snapshot = JSON.stringify(s);
+    this.scheduleWrite();
+  }
+
+  /** At most one write per second (SPEC §17.3): a burst of contexts becomes one file write, and the newest numbers always win. */
+  private scheduleWrite(): void {
+    if (this.timer) return; // a write is already scheduled: it will take the latest state
+    const wait = Math.max(0, MIN_WRITE_GAP_MS - (this.now() - this.lastWrite));
+    if (wait === 0) {
+      this.writeNow();
+      return;
+    }
+    this.timer = setTimeout(() => {
+      this.timer = undefined;
+      this.writeNow();
+    }, wait);
+    this.timer.unref?.();
+  }
+
+  private writeNow(): void {
+    this.lastWrite = this.now();
+    const snapshot = JSON.stringify(this.stats);
     this.writing = this.writing.then(() => writeFileAtomic(this.file, snapshot)).catch((e: unknown) => this.log?.warn('could not write stats.json', { error: e }));
   }
 
-  /** Wait for pending writes (tests, shutdown). */
+  /** Write anything still waiting, then wait for pending writes (tests, shutdown). */
   flush(): Promise<void> {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+      this.writeNow();
+    }
     return this.writing;
   }
 }
