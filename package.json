@@ -27,7 +27,8 @@
     "pair:status": "tsx scripts/pair/status.ts",
     "pair:mark": "tsx scripts/pair/mark.ts",
     "build": "tsx packages/click/src/build/run.ts",
-    "demo": "tsx scripts/demo.ts"
+    "demo": "tsx scripts/demo.ts",
+    "e2e": "tsx packages/core/test/e2e/harness.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
