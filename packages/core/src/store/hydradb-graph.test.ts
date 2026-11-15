@@ -98,14 +98,11 @@ describe('HydraDbGraphStore write side', () => {
 });
 
 describe('HydraDbGraphStore read side', () => {
-  it('uses one MSpaths traversal, decodes directed weights, and counts one logical call', async () => {
+  it('uses one SSpaths traversal per seed, decodes directed weights, and counts one logical call', async () => {
     const queries: string[] = [];
     const store = new HydraDbGraphStore({ token: 'secret', fetch: async (_url, init) => {
       const request = JSON.parse(String(init?.body)) as { query: string };
       queries.push(request.query);
-      if (request.query.includes('RETURN n.key AS key')) return json({
-        columns: ['key'], rows: ['target', 'dep', 'second'].map((key) => [{ type: 'string', value: key }]), next_cursor: null,
-      });
       const vertex = (id: number, key: string) => ({ id, properties: { key: { String: key } } });
       const first = { edge_type: 'CALLS', src: 2, dst: 1, properties: { w: { Float: 1.5 } } };
       return json({ columns: ['path'], rows: [
@@ -115,10 +112,10 @@ describe('HydraDbGraphStore read side', () => {
     } });
     const counted = await netCounter.run(() => store.neighbourhood(['target'], { hops: 2, kinds: ['calls'] }));
     expect(counted.calls).toBe(1);
-    expect(counted.attempts).toBe(2);
-    expect(queries).toHaveLength(2);
-    expect(queries[1]).toContain('CALL algo.MSpaths');
-    expect(queries[1]).toContain('pathCount: 1');
+    expect(counted.attempts).toBe(1);
+    expect(queries).toHaveLength(1);
+    expect(queries[0]).toContain('CALL algo.SSpaths');
+    expect(queries[0]).toContain('pathCount: 500');
     expect(counted.result).toEqual([
       { from: 'dep', to: 'target', kind: 'calls', w: 1.5 },
       { from: 'second', to: 'dep', kind: 'calls', w: null },

@@ -265,7 +265,7 @@ async function main(): Promise<void> {
       : options.retriever === 'oracle' ? oracleRetriever(baseline)
         : options.retriever === 'http' && process.env.CLICK_DAEMON_URL
           ? httpRetriever({ baseUrl: process.env.CLICK_DAEMON_URL, variant: options.variant, token: process.env.CLICK_DAEMON_TOKEN })
-          : options.retriever === 'http' ? httpRetriever() : realInProcessRetriever(options.variant, { root: repo, graphSnapshot: index.graph });
+          : options.retriever === 'http' ? httpRetriever() : await realInProcessRetriever(options.variant, { root: repo, graphSnapshot: index.graph });
   const gitSha = (await spawnGit(['rev-parse', 'HEAD'], resolve(benchDir, '..'))).trim();
   const run = await runBenchmark(tasks, retriever, options, {
     gitSha,

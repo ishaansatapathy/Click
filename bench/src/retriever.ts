@@ -44,7 +44,7 @@ export interface RealInProcessRetrieverOptions {
 }
 
 /** Build the production pipeline dependencies once, then call core getContext directly for every benchmark task. */
-export function realInProcessRetriever(variant: string, options: RealInProcessRetrieverOptions): Retriever {
+export async function realInProcessRetriever(variant: string, options: RealInProcessRetrieverOptions): Promise<Retriever> {
   if (!(variant in PRESETS)) throw new Error(`Unknown in-process variant: ${variant}`);
   const repo = loadRepoConfig(options.root);
   if (!repo.ok) throw new Error(repo.error);
@@ -67,6 +67,21 @@ export function realInProcessRetriever(variant: string, options: RealInProcessRe
       : repo.config.variant,
     variant as PresetName,
   );
+
+  // HydraDB lazily discovers node keys. Do that once outside the timed benchmark requests; otherwise the pipeline's
+  // graph deadline can repeatedly abort the cold discovery under concurrency and measure replica fallback instead.
+  if (graph && options.graphSnapshot && cfg.expand.kind !== 'none' && cfg.expand.graphSource === 'hydra') {
+    const degree = new Map<string, number>();
+    for (const edge of options.graphSnapshot.edges) {
+      degree.set(edge.from, (degree.get(edge.from) ?? 0) + 1);
+      degree.set(edge.to, (degree.get(edge.to) ?? 0) + 1);
+    }
+    const seeds = [...degree].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([id]) => id);
+    if (seeds.length) {
+      const rows = await graph.neighbourhood(seeds, { hops: cfg.expand.hops, maxFrontier: cfg.expand.maxFrontier });
+      if (!rows.length) throw new Error('HydraDB warmup returned no edges for connected benchmark seeds');
+    }
+  }
 
   return inProcessRetriever(variant, async (task) => {
     const result = await getContext(

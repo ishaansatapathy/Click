@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { FakeStore } from '../../packages/core/src/testing/fakes.js';
+import { FakeGraphStore, FakeStore } from '../../packages/core/src/testing/fakes.js';
 import type { Graph, PackedContext } from '../../packages/core/src/types.js';
 import type { BenchTask } from './task.js';
 import { RetrieverNotWiredError, httpRetriever, inProcessRetriever, realInProcessRetriever } from './retriever.js';
@@ -36,14 +36,35 @@ describe('retriever adapters', () => {
       }],
       edges: [], chunks: [],
     };
-    const result = await realInProcessRetriever('V2', {
+    const retriever = await realInProcessRetriever('V2', {
       root: '.', graphSnapshot: graph, store: new FakeStore(), graph: null, embedder: null,
-    })(task, 4_000);
+    });
+    const result = await retriever(task, 4_000);
 
     expect(result.variant).toBe('V2');
     expect(result.budget).toBe(4_000);
     expect(result.degraded).toContain('semantic-off');
     expect(result.graphVersion).toBe('test-v1');
+  });
+
+  it('warms a real graph dependency before timing graph-backed variants', async () => {
+    const graph: Graph = {
+      version: 'test-v1', repoCommit: null,
+      nodes: [
+        { id: 'file:src/a.ts', kind: 'file', name: 'a.ts', path: 'src/a.ts', tokens: 10, sigTokens: 0, fileHash: 'a' },
+        { id: 'file:src/b.ts', kind: 'file', name: 'b.ts', path: 'src/b.ts', tokens: 10, sigTokens: 0, fileHash: 'b' },
+      ],
+      edges: [{ key: 'file:src/a.ts|imports|file:src/b.ts', from: 'file:src/a.ts', to: 'file:src/b.ts', kind: 'imports' }],
+      chunks: [],
+    };
+    const graphStore = new FakeGraphStore();
+    await graphStore.upsertGraph({ nodes: graph.nodes, edges: graph.edges }, graph.version);
+
+    await realInProcessRetriever('V3', {
+      root: '.', graphSnapshot: graph, store: new FakeStore(), graph: graphStore, embedder: null,
+    });
+
+    expect(graphStore.calls).toBe(1);
   });
 
   it('maps a benchmark task to the daemon context request', async () => {

@@ -175,7 +175,6 @@ export class HydraDbGraphStore implements GraphStore {
   readonly client: HydraHttpClient;
   private indexVersion: string | undefined;
   private projectedVersion: string | undefined;
-  private nodeKeys: string[] | undefined;
   private readonly hubCache = new Map<number, { id: string; score: number }[]>();
 
   constructor(options: HydraDbGraphStoreOptions = {}) {
@@ -212,7 +211,6 @@ export class HydraDbGraphStore implements GraphStore {
     this.indexVersion = indexVersion;
     this.projectedVersion = undefined;
     this.hubCache.clear();
-    this.nodeKeys = undefined;
     await this.client.query(
       'UNWIND $rows AS row MERGE (n {id: row.id}) SET n:ClickMeta, n.indexVersion = row.version',
       { rows: [{ id: META_ID, version: indexVersion }] },
@@ -245,7 +243,6 @@ export class HydraDbGraphStore implements GraphStore {
     }
     this.projectedVersion = undefined;
     this.hubCache.clear();
-    this.nodeKeys = undefined;
   }
 
   async neighbourhood(ids: string[], opts: NeighbourhoodOptions, signal?: AbortSignal): Promise<EdgeRow[]> {
@@ -253,12 +250,11 @@ export class HydraDbGraphStore implements GraphStore {
     const kinds = opts.kinds ?? EDGE_KINDS;
     assertEdgeKinds(kinds);
     netCounter.call();
-    const targets = await this.allNodeKeys(signal);
     const relTypes = kinds.map((kind) => cypherString(relationshipType(kind))).join(',');
-    const sources = ids.map(cypherString).join(',');
     const maxEdges = opts.maxEdges ?? 2_000;
-    const parts = await Promise.all(chunks(targets, 1_000).map((targetChunk) => this.client.query(
-      `CALL algo.MSpaths({sourceLabel: 'CodeNode', sourceProperty: 'key', sourceValues: [${sources}], targetValues: [${targetChunk.map(cypherString).join(',')}], relTypes: [${relTypes}], relDirection: 'both', maxLen: ${opts.hops}, pathCount: 1, pairwise: false, resultLimit: ${Math.max(maxEdges, 500)}}) YIELD path RETURN path`,
+    const pathCount = Math.min(maxEdges, 500);
+    const parts = await Promise.all(ids.map((id) => this.client.query(
+      `CALL algo.SSpaths({sourceNode: ${vid(id)}, relTypes: [${relTypes}], relDirection: 'both', maxLen: ${opts.hops}, pathCount: ${pathCount}}) YIELD path RETURN path`,
       {}, { signal, countLogical: false },
     )));
     const decoded = new Map<string, EdgeRow>();
@@ -274,13 +270,6 @@ export class HydraDbGraphStore implements GraphStore {
     return [...decoded.values()]
       .filter((edge) => seeds.has(edge.from) || seeds.has(edge.to) || frontier.has(edge.from) || frontier.has(edge.to))
       .slice(0, maxEdges);
-  }
-
-  private async allNodeKeys(signal?: AbortSignal): Promise<string[]> {
-    if (this.nodeKeys) return this.nodeKeys;
-    const rows = await this.client.query('MATCH (n:CodeNode) RETURN n.key AS key', {}, { signal, countLogical: false });
-    this.nodeKeys = rows.map((row) => requiredString(row.key, 'key'));
-    return this.nodeKeys;
   }
 
   async impact(id: string, opts: ImpactOptions, signal?: AbortSignal): Promise<{ path: string[]; kinds: EdgeKind[] }[]> {
