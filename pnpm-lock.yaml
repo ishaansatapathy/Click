@@ -53,6 +53,15 @@ importers:
       '@click/core':
         specifier: workspace:*
         version: link:../core
+      '@vue/compiler-core':
+        specifier: ^3.5.45
+        version: 3.5.45
+      '@vue/compiler-sfc':
+        specifier: ^3.5.45
+        version: 3.5.45
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
       zod:
         specifier: ^4.6.7
         version: 4.6.7
