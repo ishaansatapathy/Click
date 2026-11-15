@@ -147,6 +147,7 @@ export interface ReindexerDeps {
   bodies: { invalidate(path?: string): void };
   log: Logger;
   build?: (root: string, opts?: BuildOptions) => Promise<BuildResult>;
+  buildOptions?: BuildOptions | undefined;
   update?: typeof updateIndex;
   changed?: typeof changedPaths;
 }
@@ -206,7 +207,7 @@ export function createReindexer(d: ReindexerDeps): (job: ReindexJob) => Promise<
       files = changes.length;
     } else {
       // first re-index after booting from a snapshot, a full request, or git could not tell us: rebuild (extract cache keeps it fast)
-      const b = await (d.build ?? buildIndex)(d.root);
+      const b = await (d.build ? d.build(d.root, d.buildOptions) : buildIndex(d.root, undefined, d.buildOptions));
       nextState = b.state;
       delta = diffGraphs({ graph: prevGraph, chunks: prevGraph.chunks as ChunkRecord[] }, { graph: b.graph, chunks: b.chunks });
       mode = 'full';

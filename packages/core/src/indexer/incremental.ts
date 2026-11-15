@@ -15,7 +15,7 @@ import type { FileExtract, SourceFile } from '../contracts.js';
 import type { ChunkRecord, Graph, GraphDelta } from '../types.js';
 import { stableStringify } from '../util/hash.js';
 import { normPath } from '../util/ids.js';
-import { assembleGraph, buildIndex, graphVersion, repoCommit, type BuildOptions, type IndexState } from './build.js';
+import { assembleGraph, buildIndex, graphVersion, repoCommit, withExtraEdges, type BuildOptions, type IndexState } from './build.js';
 import { isCandidate, readSourceFile } from './discover.js';
 import { extractFile, fileRegistrations, makeExtractCtx, mergeRegistrations, type Registrations } from './extract.js';
 import { makeResolver } from './resolve.js';
@@ -103,7 +103,7 @@ const deltaCounts = (d: GraphDelta): UpdateStats['delta'] => ({
 });
 
 async function fullRebuild(prev: IndexState, changed: number, reason: string, opts: BuildOptions, t0: number): Promise<UpdateResult> {
-  const r = await buildIndex(prev.root, undefined, opts); // re-profile from disk
+  const r = await buildIndex(prev.root, undefined, { ...(prev.coChange ? { coChange: prev.coChange } : {}), ...opts }); // re-profile from disk
   const t1 = performance.now();
   const delta = diffGraphs(prev, r.state);
   return {
@@ -187,7 +187,9 @@ export async function updateIndex(prev: IndexState, changes: readonly ChangedPat
     extracts.set(path, extractFile(f, ctx));
   }
   const t2 = performance.now();
-  const { graph, chunks } = assembleGraph(extracts, files, await repoCommit(prev.root));
+  const assembled = assembleGraph(extracts, files, await repoCommit(prev.root));
+  const graph = withExtraEdges(assembled.graph, prev.extraEdges ?? []); // git co-change edges stay (pairs whose file vanished are dropped)
+  const { chunks } = assembled;
   const t3 = performance.now();
   const delta = diffGraphs(prev, { graph, chunks });
   const t4 = performance.now();

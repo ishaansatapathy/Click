@@ -37,6 +37,8 @@ export interface BootDeps {
   persist: Persister;
   log: Logger;
   build?: (root: string, opts?: BuildOptions) => Promise<BuildResult>;
+  /** Options for the full index (for example the git co-change edges). */
+  buildOptions?: BuildOptions | undefined;
   /** Give up on HydraDB's loadAll after this long. */
   hydraLoadTimeoutMs?: number;
   now?: () => number;
@@ -136,7 +138,7 @@ export async function boot(d: BootDeps): Promise<Booted> {
 
   // 3. index
   t = now();
-  const build = await (d.build ?? buildIndex)(d.root);
+  const build = await (d.build ? d.build(d.root, d.buildOptions) : buildIndex(d.root, undefined, d.buildOptions));
   lap('index', t);
   t = now();
   await d.persist.saveFull(build.graph, build.chunks, build.conventions);

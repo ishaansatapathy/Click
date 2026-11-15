@@ -9,7 +9,8 @@ import { execFile } from 'node:child_process';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 import type { BuildGraph, FileClass, FileExtract, GlobalComponents, SourceFile } from '../contracts.js';
-import type { ChunkRecord, Convention, Graph } from '../types.js';
+import { mineCoChange, type CoChangeOptions } from '../learn/git-cochange.js';
+import type { ChunkRecord, Convention, Graph, GraphEdge } from '../types.js';
 import { DiskCache } from '../util/diskCache.js';
 import { hashOf, sha1, stableStringify } from '../util/hash.js';
 import { clickDir } from '../util/paths.js';
@@ -30,6 +31,8 @@ export interface BuildOptions {
   cache?: boolean;
   now?: () => Date;
   maxBytes?: number;
+  /** Add `co_changed` edges mined from git history (`learn.gitCoChange`, prompt 157). Off when absent. */
+  coChange?: CoChangeOptions | undefined;
 }
 
 /** Everything needed to update the graph after a change without re-reading the whole repo (see incremental.ts). */
@@ -45,6 +48,10 @@ export interface IndexState {
   graph: Graph;
   chunks: ChunkRecord[];
   conventions: Convention[];
+  /** The git co-change edges mixed into `graph` (kept across incremental updates: history before H does not change). */
+  extraEdges?: GraphEdge[];
+  /** The options that produced them, so a full rebuild repeats it. */
+  coChange?: CoChangeOptions;
 }
 
 export interface BuildStats {
@@ -96,6 +103,21 @@ export function graphVersion(nodeIds: readonly string[], edgeKeys: readonly stri
 }
 
 const byId = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * The graph with extra edges mixed in (git co-change edges). Edges whose endpoints are not in the graph, or whose key is already there,
+ * are dropped; the version is recomputed, so it covers the extra edges too.
+ */
+export function withExtraEdges(graph: Graph, extra: readonly GraphEdge[]): Graph {
+  if (extra.length === 0) return graph;
+  const ids = new Set(graph.nodes.map((n) => n.id));
+  const have = new Set(graph.edges.map((e) => e.key));
+  const add = extra.filter((e) => ids.has(e.from) && ids.has(e.to) && !have.has(e.key));
+  if (add.length === 0) return graph;
+  const edges = [...graph.edges, ...add].sort((a, b) => byId(a.key, b.key));
+  const fileNodes = graph.nodes.filter((n) => n.kind === 'file').map((n) => ({ path: n.path!, hash: n.fileHash }));
+  return { ...graph, edges, version: graphVersion(graph.nodes.map((n) => n.id).sort(byId), edges.map((e) => e.key).sort(byId), fileNodes) };
+}
 
 /** Link extracts and wrap the result as a Graph. Shared by the full build and incremental updates. */
 export function assembleGraph(extracts: ReadonlyMap<string, FileExtract>, files: ReadonlyMap<string, { hash: string }>, commit: string | null): { graph: Graph; chunks: ChunkRecord[]; linkStats: LinkStats } {
@@ -169,7 +191,15 @@ export async function buildIndex(root: string, profile?: RepoProfile, opts: Buil
   const t2 = performance.now();
 
   const files = new Map(d.files.map((f) => [f.path, { hash: f.hash, class: f.class }]));
-  const { graph, chunks, linkStats } = assembleGraph(extracts, files, await repoCommit(root));
+  const assembled = assembleGraph(extracts, files, await repoCommit(root));
+  const { chunks, linkStats } = assembled;
+  let graph = assembled.graph;
+  let extraEdges: GraphEdge[] | undefined;
+  if (opts.coChange) {
+    const mined = await mineCoChange(root, { files: new Set(graph.nodes.flatMap((n) => (n.kind === 'file' && n.path ? [n.path] : []))), ...opts.coChange });
+    graph = withExtraEdges(graph, mined.edges);
+    extraEdges = mined.edges;
+  }
   const t3 = performance.now();
   const conventions = await extractConventions({ root, files: d.files, profile: prof, now: opts.now?.() ?? new Date() });
 
@@ -182,7 +212,7 @@ export async function buildIndex(root: string, profile?: RepoProfile, opts: Buil
     link: linkStats,
     ms: { discover: Math.round(t1 - t0), extract: Math.round(t2 - t1), link: Math.round(t3 - t2), total: Math.round(performance.now() - t0) },
   };
-  const state: IndexState = { root, profile: prof, allPaths, files, registrations, globals, extracts, graph, chunks, conventions };
+  const state: IndexState = { root, profile: prof, allPaths, files, registrations, globals, extracts, graph, chunks, conventions, ...(extraEdges ? { extraEdges, coChange: opts.coChange! } : {}) };
   return { graph, chunks, conventions, stats, state };
 }
 

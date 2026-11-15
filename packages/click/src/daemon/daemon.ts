@@ -10,6 +10,7 @@ import { BodyReader } from '../../../core/src/graph/bodies.js';
 import type { DeepPartial, PresetName, VariantConfig } from '../../../core/src/config.js';
 import type { LogEvent } from '../../../core/src/contracts.js';
 import { CheckQueue, type CommandRunner } from '../../../core/src/learn/check.js';
+import type { CoChangeOptions } from '../../../core/src/learn/git-cochange.js';
 import { EventLog } from '../../../core/src/learn/log.js';
 import { WeightsFile, WeightSync } from '../../../core/src/learn/weights.js';
 import { SkeletonProvider } from '../../../core/src/pack/prefix.js';
@@ -49,6 +50,8 @@ export interface DaemonConfig {
   git?: (root: string) => Promise<string | null>;
   gitOps?: GitOps;
   changed?: ReindexerDeps['changed'];
+  /** Mine git co-change edges into the graph (the repo's learn.gitCoChange flag). */
+  coChange?: CoChangeOptions | undefined;
   /** How checks (vue-tsc, vitest) are run; tests inject fakes. */
   runCheck?: CommandRunner;
   /** Learner debounce (SPEC: 5 s). */
@@ -93,6 +96,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
   const version = c.version ?? '0.0.0';
   const gitOps = c.gitOps ?? realGit;
   const state = new DaemonState(c.graph);
+  const buildOptions = c.coChange ? { coChange: c.coChange } : undefined; // learn.gitCoChange: git co-change edges in the graph
   const sync = c.graph ? new GraphSync(c.graph, { log }) : null;
   const persist = new Persister({ root: c.root, store: c.store, sync, embedder: c.embedder, log });
   const sessions = new SessionMemory();
@@ -111,7 +115,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
   // The re-index queue is created first so a stale body (a file edited since it was indexed) can ask for a re-index.
   const queue = new ReindexQueue({ run: async (job) => void (await reindex(job)), log, ...(c.debounceMs !== undefined ? { debounceMs: c.debounceMs } : {}) });
   const bodies = new BodyReader(c.root, { onStale: (path) => void queue.enqueue({ paths: [path] }) });
-  const reindex = createReindexer({ root: c.root, state, persist, bodies, log, ...(c.changed ? { changed: c.changed } : {}) });
+  const reindex = createReindexer({ root: c.root, buildOptions, state, persist, bodies, log, ...(c.changed ? { changed: c.changed } : {}) });
   const prefix = new SkeletonProvider({ graphStore: c.graph });
 
   const routes: Route[] = [
@@ -128,7 +132,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
   const bootOnce = (): Promise<void> =>
     (booting ??= (async () => {
       try {
-        const b = await boot({ root: c.root, store: c.store, graph: c.graph, persist, log, ...(c.build ? { build: c.build } : {}) });
+        const b = await boot({ root: c.root, buildOptions, store: c.store, graph: c.graph, persist, log, ...(c.build ? { build: c.build } : {}) });
         state.holder = b.holder;
         state.indexState = b.indexState;
         state.source = b.source;

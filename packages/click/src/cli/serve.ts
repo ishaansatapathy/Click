@@ -85,6 +85,7 @@ export async function runServe(argv: readonly string[], io: ServeIo, cwd: string
 
   const daemon = createDaemon({
     root, store, graph, embedder, version: VERSION, idleMinutes: cfg.config.daemon.idleMinutes,
+    ...(cfg.config.variant.learn?.gitCoChange ? { coChange: {} } : {}),
     repoConfig: localOnly ? { ...cfg.config.variant, semantic: { ...(cfg.config.variant.semantic ?? {}), mode: 'off' } } : cfg.config.variant,
     ...(deps.handleSignals !== undefined ? { handleSignals: deps.handleSignals } : {}),
     ...(deps.debounceMs !== undefined ? { debounceMs: deps.debounceMs } : {}),
