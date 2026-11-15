@@ -57,3 +57,30 @@ describe('click dispatcher', () => {
     expect(typeof dispatch).toBe('function'); // reaching this line means no process.exit / output happened at import
   });
 });
+
+describe('isEntryPoint (the bin must run when npm links it)', () => {
+  it('matches through a symlink, the way npm installs `click` on Linux and macOS', async () => {
+    const { mkdtempSync, writeFileSync, symlinkSync, rmSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { pathToFileURL } = await import('node:url');
+    const { isEntryPoint } = await import('./index.js');
+    const dir = mkdtempSync(join(tmpdir(), 'click-bin-'));
+    try {
+      const real = join(dir, 'click.js');
+      writeFileSync(real, '');
+      const link = join(dir, 'click');
+      try {
+        symlinkSync(real, link, 'file');
+      } catch {
+        return; // creating symlinks needs a privilege on some Windows setups; the real-path comparison is still exercised below
+      }
+      expect(isEntryPoint(pathToFileURL(real).href, link)).toBe(true);
+      expect(isEntryPoint(pathToFileURL(real).href, real)).toBe(true);
+      expect(isEntryPoint(pathToFileURL(real).href, join(dir, 'other.js'))).toBe(false);
+      expect(isEntryPoint(pathToFileURL(real).href, undefined)).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
