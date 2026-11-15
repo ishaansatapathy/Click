@@ -51,12 +51,16 @@ export async function packFiles(
 ): Promise<PackedContext> {
   const items: PackedItem[] = [];
   let text = '';
+  let tokenUpperBound = 0;
   for (const path of paths) {
     const body = await repo.readFile(path);
     const section = renderFile(path, body);
-    const nextText = text + section;
-    if (countTokens(nextText) > budget) continue;
-    text = nextText;
+    const sectionTokens = countTokens(section);
+    // Separate token counts form a conservative upper bound: joining sections can merge boundary
+    // tokens, but cannot require more tokens than encoding each section independently.
+    if (tokenUpperBound + sectionTokens > budget) continue;
+    text += section;
+    tokenUpperBound += sectionTokens;
     items.push({ nodeId: `file:${path}`, path, name: path.split('/').at(-1) ?? path, mode: 'file', tokens: countTokens(body) });
   }
   return makeContext(taskId, variant, budget, items, text);
