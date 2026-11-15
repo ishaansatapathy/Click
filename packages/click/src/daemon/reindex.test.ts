@@ -236,6 +236,7 @@ describe('POST /reindex end to end (PROMPTS 113)', () => {
     const v0 = await graphVersion(w);
     await w.json('/reindex', { paths: [FILE] });
     await waitFor(async () => (await graphVersion(w)) !== v0); // local graph is already current
+    await w.daemon.queue.idle(); // the swap happens first; wait until the run has also saved and queued its HydraDB push
     expect(w.daemon.state.holder!.current().graph.nodes.some((n) => n.name === 'formatWidgetSerial')).toBe(true);
     expect([...w.graph.nodes.values()].some((n) => n.name === 'formatWidgetSerial')).toBe(false);
     expect((await w.json<PackedContext>('/context', { task: 'formatWidgetSerial' })).body.text).toContain('formatWidgetSerial');
