@@ -16,7 +16,7 @@
     "bench:review": "tsx bench/src/review.ts",
     "bench:validate": "tsx bench/src/task.ts",
     "click": "tsx packages/click/src/cli/index.ts",
-    "drill": "tsx bench/scripts/drill.ts",
+    "drill": "tsx packages/click/src/drill/run.ts",
     "hydra:up": "tsx infra/hydradb/cli.ts up",
     "hydra:down": "tsx infra/hydradb/cli.ts down",
     "hydra:reset": "tsx infra/hydradb/cli.ts reset",
