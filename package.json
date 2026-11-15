@@ -25,7 +25,8 @@
     "pair:setup": "tsx scripts/pair/setup.ts",
     "pair:sync": "tsx scripts/pair/sync.ts",
     "pair:status": "tsx scripts/pair/status.ts",
-    "pair:mark": "tsx scripts/pair/mark.ts"
+    "pair:mark": "tsx scripts/pair/mark.ts",
+    "build": "node packages/click/build.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
