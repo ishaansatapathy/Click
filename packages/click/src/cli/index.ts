@@ -16,6 +16,7 @@ import { runPush } from './push.js';
 import { runReindex } from './reindexCmd.js';
 import { runServe } from './serve.js';
 import { runStatus } from './status.js';
+import { runStatusline } from './statusline.js';
 import { runWeights } from './weightsCmd.js';
 
 export interface CliIo {
@@ -38,6 +39,7 @@ export const COMMANDS: Readonly<Record<string, { run: CommandRunner; help: strin
   init: { run: runInit, help: 'install Click for the agents in this repository [--dry-run]' },
   uninstall: { run: runUninstall, help: 'remove Click agent integrations; keep graph/cache data' },
   weights: { run: runWeights, help: 'what Click has learned: --show | --rollback' },
+  statusline: { run: (argv, io, cwd) => runStatusline(argv, io, cwd), help: 'one line for the Claude Code statusLine: last context tokens, files, time' },
   status: { run: runStatus, help: 'is the daemon up, what graph, what it last served [--json]' },
 };
 

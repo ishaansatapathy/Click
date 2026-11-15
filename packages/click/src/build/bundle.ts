@@ -37,6 +37,9 @@ export async function bundle(o: BundleOptions = {}): Promise<{ outdir: string; f
   const stop = join(outdir, 'hooks', 'stop.js');
   await build({ ...common, entryPoints: [join(SRC, 'hooks', 'stop-bin.ts')], outfile: stop, minify: true });
   files.push(stop);
+  const statusline = join(outdir, 'hooks', 'statusline.js');
+  await build({ ...common, entryPoints: [join(SRC, 'hooks', 'statusline-bin.ts')], outfile: statusline, minify: true });
+  files.push(statusline);
   if (!o.hooksOnly) {
     const cli = join(outdir, 'click.js');
     // everything inlined except the compilers; CommonJS dependencies inside an ES module bundle need `require`, so it is provided
