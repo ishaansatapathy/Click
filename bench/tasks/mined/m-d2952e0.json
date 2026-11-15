@@ -1,0 +1,26 @@
+{
+  "id": "m-d2952e0",
+  "source": "mined",
+  "commit": "d2952e0d167835d3fad9ffa58c98952dcbdbea90",
+  "parentCommit": "cc87ab3ccc5d5bf4e06cb6e5e410b612af99ac9b",
+  "date": "2023-08-31T17:28:05+08:00",
+  "text": "Add a system-wide watermark that can be enabled by default, with stronger protection against removal or tampering and automatic updates when its container changes. Improve the watermark demo to showcase the updated behavior and customization options.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts",
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts",
+      "src/layouts/index.vue",
+      "src/pages/demo/composable-demo/use-watermark.vue"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark",
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/layouts/index.vue#Layouts",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

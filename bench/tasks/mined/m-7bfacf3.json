@@ -1,0 +1,26 @@
+{
+  "id": "m-7bfacf3",
+  "source": "mined",
+  "commit": "7bfacf333ab4ae7a0aac04ea12a9e18f1a8683d2",
+  "parentCommit": "6d6ee82379956aad23c54f27fb1ba020facd47fe",
+  "date": "2023-09-05T18:03:30+08:00",
+  "text": "Add a site-wide footer with the application title and copyright, and let users toggle its visibility in the layout options. Ensure the main content expands to fill available space when the footer is shown.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue",
+      "src/layouts/components/Footer/index.vue",
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts",
+      "src/pages/demo/unocss/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain",
+      "sym:src/layouts/components/Footer/index.vue#Footer",
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/pages/demo/unocss/index.vue#Unocss"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

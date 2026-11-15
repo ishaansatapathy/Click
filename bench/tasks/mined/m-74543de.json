@@ -1,0 +1,21 @@
+{
+  "id": "m-74543de",
+  "source": "mined",
+  "commit": "74543de9423f87784ae59ac0e3fe1330621ef989",
+  "parentCommit": "51e7cd95a6b45351565dfc1dba5f76b729ee066a",
+  "date": "2024-11-25T17:48:47+08:00",
+  "text": "Standardize prop access by using the `props.name` form throughout the affected UI, keeping behavior unchanged.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/common/components/SearchMenu/Result.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/common/components/SearchMenu/Result.vue#Result"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

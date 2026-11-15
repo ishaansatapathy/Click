@@ -1,0 +1,17 @@
+{
+  "id": "m-0177b58",
+  "source": "mined",
+  "commit": "0177b58f1630ff3f3c59eeb7422025f2fa3f714c",
+  "parentCommit": "487ceb002ac2304c1aa071431a98417f1694a1f8",
+  "date": "2022-08-23T11:13:55+08:00",
+  "text": "Refactor the navigation trail component to use clearer, simpler reactive state and standalone helpers for building entries and handling navigation. Preserve route filtering, redirect behavior, and the existing display rules.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Breadcrumb/index.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

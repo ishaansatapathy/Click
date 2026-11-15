@@ -1,0 +1,19 @@
+{
+  "id": "m-47e8391",
+  "source": "mined",
+  "commit": "47e83913e13ee969840080c75ac25d93bb547257",
+  "parentCommit": "7f067b111b7a90623cdc79889973b4986073c2ca",
+  "date": "2024-02-03T16:07:17+08:00",
+  "text": "Refactor the Element Plus table example to make its create and update form handling more reusable and type-safe, using the form data itself to distinguish between the two operations. Simplify form reset and table response handling while preserving the existing behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/element-plus/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-ab306c4",
+  "source": "mined",
+  "commit": "ab306c4e2ce331757765309f8ce8807c2dbc8e6d",
+  "parentCommit": "2685efa7595fcae89f35cf0d9a3073a2dc132144",
+  "date": "2024-12-03T19:43:14+08:00",
+  "text": "Modernize navigation handling by removing the callback-based continuation parameter and returning navigation outcomes directly, while preserving existing access checks, redirects, and permission loading behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/guard.ts"
+    ],
+    "symbols": [
+      "sym:src/router/guard.ts#registerNavigationGuard"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

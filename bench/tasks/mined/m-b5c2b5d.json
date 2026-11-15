@@ -1,0 +1,19 @@
+{
+  "id": "m-b5c2b5d",
+  "source": "mined",
+  "commit": "b5c2b5d86148367c8eee0ea500c0568c22f88bac",
+  "parentCommit": "358f086f073540013cbb73dd5c6a188e5657a478",
+  "date": "2022-10-13T13:10:36+08:00",
+  "text": "Improve the verification-code experience by showing clear loading and unavailable states, preventing stale images while refreshing, and making the code image easier to interact with.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

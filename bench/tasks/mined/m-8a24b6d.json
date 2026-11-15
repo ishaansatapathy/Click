@@ -1,0 +1,19 @@
+{
+  "id": "m-8a24b6d",
+  "source": "mined",
+  "commit": "8a24b6d21972a0c12d898152efa1a6732dd1d936",
+  "parentCommit": "d22a44396d300dae1f4ba2ef57372c2a7bd8e30b",
+  "date": "2023-05-22T14:04:31+08:00",
+  "text": "Simplify the theme selector by passing the theme-setting function directly to the dropdown, removing the redundant wrapper and unused type import.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/ThemeSwitch/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

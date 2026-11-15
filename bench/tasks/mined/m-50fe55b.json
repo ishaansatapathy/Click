@@ -1,0 +1,19 @@
+{
+  "id": "m-50fe55b",
+  "source": "mined",
+  "commit": "50fe55b2f2673327eb0f4287da28020cccf7e29d",
+  "parentCommit": "83f6c116d0ee3c163b97b483ccc63afe24ca4adb",
+  "date": "2026-06-08T01:06:38+08:00",
+  "text": "Fix the right-menu-item alignment issue so its contents are vertically centered in the navigation bar.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

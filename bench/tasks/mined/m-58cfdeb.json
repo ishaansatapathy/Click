@@ -1,0 +1,29 @@
+{
+  "id": "m-58cfdeb",
+  "source": "mined",
+  "commit": "58cfdebcca56fe9789642acb794e917b7ac01b48",
+  "parentCommit": "310ab846facb80e288f8f3383af5fc91bfd6613c",
+  "date": "2023-07-19T09:05:55+08:00",
+  "text": "Polish the in-progress top navigation layout so its header, menu, and content align cleanly across layout styles, with consistent theme colors and no stray scrollbars or edge artifacts.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Logo/index.vue",
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Sidebar/index.vue",
+      "src/layouts/modes/LeftMode.vue",
+      "src/layouts/modes/LeftTopMode.vue",
+      "src/layouts/modes/TopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Logo/index.vue#Logo",
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar",
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode",
+      "sym:src/layouts/modes/TopMode.vue#TopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,25 @@
+{
+  "id": "m-b8033dc",
+  "source": "mined",
+  "commit": "b8033dc892070686ceb375c99cadc52f0035cd32",
+  "parentCommit": "526c2cf2c68faabca3a1c09700cc2e41afc03c72",
+  "date": "2024-11-21T11:03:40+08:00",
+  "text": "Remove unnecessary `!important` declarations from layout, navigation, Element Plus, and VXE Table styles while preserving the intended styling behavior.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Sidebar/index.vue",
+      "src/layouts/modes/LeftMode.vue",
+      "src/layouts/modes/LeftTopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar",
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

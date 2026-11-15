@@ -1,0 +1,19 @@
+{
+  "id": "m-51916b6",
+  "source": "mined",
+  "commit": "51916b6bc045f48a36b1a94a8a44bf12cd2cbcdb",
+  "parentCommit": "4dd30c823325cc74e15bbb08fabb9dcb541e0769",
+  "date": "2023-05-31T18:23:47+08:00",
+  "text": "Simplify the store’s login and profile-loading flows by using async/await while preserving token, account, and role updates. Keep a safe default role when the profile has no roles to prevent route-guard loops.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

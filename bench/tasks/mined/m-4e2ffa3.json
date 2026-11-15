@@ -1,0 +1,24 @@
+{
+  "id": "m-4e2ffa3",
+  "source": "mined",
+  "commit": "4e2ffa38f5fd586557ecdf69b917127bf0c94a8b",
+  "parentCommit": "d8f47cf91efde4ebbd7f9aabf0f2320888bde120",
+  "date": "2022-10-31T15:35:51+08:00",
+  "text": "Add a user-configurable option to show or hide the message notification icon in the navigation bar, enabled by default.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts",
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

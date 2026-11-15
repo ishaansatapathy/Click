@@ -1,0 +1,21 @@
+{
+  "id": "m-8df2d45",
+  "source": "mined",
+  "commit": "8df2d459323ce2a2b956f19de91fdd697694d081",
+  "parentCommit": "08d820110ce31c0325ee685f696b13c4bb4ebae4",
+  "date": "2022-10-09T23:04:46+08:00",
+  "text": "Upgrade the tags view with left and right controls for scrolling through overflowing tags, and refine tag spacing and styling with rounded corners.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/ScrollPane.vue",
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

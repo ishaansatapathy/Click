@@ -1,0 +1,19 @@
+{
+  "id": "m-24e9431",
+  "source": "mined",
+  "commit": "24e9431d6c6ff2316fb99dc70293d35e74eca979",
+  "parentCommit": "d51f67ff93a0090afe05dc5eaa4a360162746f1e",
+  "date": "2026-06-13T18:49:05+08:00",
+  "text": "Fix loading-state sequencing in the CRUD example: keep loading active until create or update requests finish, then refresh the table, and apply the same loading lifecycle to delete operations. Sync the CRUD skill guidance with these behaviors.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/element-plus/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,25 @@
+{
+  "id": "m-75194e0",
+  "source": "mined",
+  "commit": "75194e01c05f424ac9e3ad25f91811ee627393ac",
+  "parentCommit": "cd519b2dee762fc98f58bb14fd963324899ef5d4",
+  "date": "2026-06-13T22:05:35+08:00",
+  "text": "Standardize vertical centering across the navigation UI with flex alignment, replacing line-height and vertical-align-based positioning while preserving the existing layout and appearance.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Breadcrumb/index.vue",
+      "src/layouts/components/Hamburger/index.vue",
+      "src/layouts/components/Logo/index.vue",
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb",
+      "sym:src/layouts/components/Hamburger/index.vue#Hamburger",
+      "sym:src/layouts/components/Logo/index.vue#Logo",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

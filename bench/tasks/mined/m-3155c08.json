@@ -1,0 +1,17 @@
+{
+  "id": "m-3155c08",
+  "source": "mined",
+  "commit": "3155c086ca343bed4a3c2e19c3fc5414c0f17050",
+  "parentCommit": "b8033dc892070686ceb375c99cadc52f0035cd32",
+  "date": "2024-11-21T11:28:37+08:00",
+  "text": "Prevent long titles in the left navigation menu from overflowing by truncating them with an ellipsis.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/Item.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

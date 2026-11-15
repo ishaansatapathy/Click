@@ -1,0 +1,27 @@
+{
+  "id": "m-b18bf9d",
+  "source": "mined",
+  "commit": "b18bf9d4b5baf647f47a4c410c172e205315a2ca",
+  "parentCommit": "aada21b6c13ec505b2cd8a2a476bbde6ed88313b",
+  "date": "2024-11-22T21:13:49+08:00",
+  "text": "Refactor the notification component’s structure and shared item typing, keeping its tabs, badges, and empty-state behavior intact. Update the component tests to match the revised interface.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/List.vue",
+      "src/common/components/Notify/data.ts",
+      "src/common/components/Notify/index.vue",
+      "src/common/components/Notify/type.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/List.vue#List",
+      "sym:src/common/components/Notify/data.ts#messageData",
+      "sym:src/common/components/Notify/data.ts#notifyData",
+      "sym:src/common/components/Notify/data.ts#todoData",
+      "sym:src/common/components/Notify/index.vue#Notify",
+      "sym:src/common/components/Notify/type.ts#NotifyItem"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

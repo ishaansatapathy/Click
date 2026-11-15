@@ -1,0 +1,17 @@
+{
+  "id": "m-4dce965",
+  "source": "mined",
+  "commit": "4dce9658ff7cb5c8d7bc79f8394e04de82130d7b",
+  "parentCommit": "74f2f7b72585eaf374fc5a4dc4d3696651286011",
+  "date": "2023-06-13T13:00:56+08:00",
+  "text": "Improve the layout resize hook’s readability and clarify its responsive behavior. Keep device detection, sidebar handling, route-based layout updates, and resize listener lifecycle behavior intact.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/composables/useResize.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

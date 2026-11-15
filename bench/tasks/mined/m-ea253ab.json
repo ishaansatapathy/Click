@@ -1,0 +1,19 @@
+{
+  "id": "m-ea253ab",
+  "source": "mined",
+  "commit": "ea253ab1a98e5c94ce6ef993c692cf13588a58ca",
+  "parentCommit": "b892bc0936833121bbdb2381b48777d0692511c3",
+  "date": "2024-11-21T19:50:20+08:00",
+  "text": "Clarify the environment variable comments and naming across development, staging, and production, and update the request configuration to use the renamed backend URL variable. Remove unnecessary quotes from environment values and make the guidance for API URLs and public asset paths consistent.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": [
+      "sym:src/http/axios.ts#createRequest"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

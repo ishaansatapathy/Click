@@ -1,0 +1,22 @@
+{
+  "id": "m-f197777",
+  "source": "mined",
+  "commit": "f19777706023b1ade47112dde3156a03801be3fd",
+  "parentCommit": "93633084947776bd3124797061052f351c7007e7",
+  "date": "2024-11-26T19:07:35+08:00",
+  "text": "Simplify the names of the navigation menu’s child components to make them easier to read and use. Update their references consistently without changing behavior.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/Item.vue",
+      "src/layouts/components/Sidebar/Link.vue",
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/Item.vue#Item",
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

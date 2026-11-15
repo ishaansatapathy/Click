@@ -1,0 +1,19 @@
+{
+  "id": "m-03928df",
+  "source": "mined",
+  "commit": "03928dfce54a84ef3ae3d249824a558d4f6b4ff6",
+  "parentCommit": "aa987129841f375059e947494d8a80480fe576e6",
+  "date": "2023-12-12T20:45:02+08:00",
+  "text": "Suppress the unnecessary TypeScript error when assigning each reactive layout value to the settings store.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

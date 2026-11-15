@@ -1,0 +1,18 @@
+{
+  "id": "m-5f0e91c",
+  "source": "mined",
+  "commit": "5f0e91c5ec1edcd6909b0a1991ededee3f3dbee6",
+  "parentCommit": "f12f33014e75a5d730a7115f888104041c0d4523",
+  "date": "2023-08-14T17:08:44+08:00",
+  "text": "Optimize the search menu by removing the unnecessary default for the result count and showing a clear error when a search result has no route name, rather than silently ignoring Enter.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Footer.vue",
+      "src/common/components/SearchMenu/Modal.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

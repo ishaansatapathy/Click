@@ -1,0 +1,19 @@
+{
+  "id": "m-59a412a",
+  "source": "mined",
+  "commit": "59a412ace3d982b5186fa0a6c3aff1ec4adc7b3f",
+  "parentCommit": "28edb3775a8c381420073d1c0f2a57127d8fcd34",
+  "date": "2023-08-24T16:24:59+08:00",
+  "text": "Optimize route-view key binding by using the route provided by the router view slot, preserving path-based view reuse without maintaining a separate computed key.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

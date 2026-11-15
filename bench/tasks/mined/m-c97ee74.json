@@ -1,0 +1,19 @@
+{
+  "id": "m-c97ee74",
+  "source": "mined",
+  "commit": "c97ee74c44e23fbc80fdd051eef51d96116eb286",
+  "parentCommit": "0fc46d5cb430a119b97bad38bceb95223321d066",
+  "date": "2022-04-28T15:48:19+08:00",
+  "text": "Add a route demo that shows how to expose an external link in the navigation, using the link icon and an appropriate title.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

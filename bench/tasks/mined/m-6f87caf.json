@@ -1,0 +1,25 @@
+{
+  "id": "m-6f87caf",
+  "source": "mined",
+  "commit": "6f87caf262075eb94ceddb161c819ea0bf956336",
+  "parentCommit": "1a2924861d57d5446661c54694446b25ac231173",
+  "date": "2024-11-25T19:02:36+08:00",
+  "text": "Remove unnecessary leading underscores from internal helper names across layout and store logic, keeping their behavior unchanged and improving naming consistency.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/composables/useResize.ts",
+      "src/pinia/stores/permission.ts",
+      "src/pinia/stores/settings.ts",
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/composables/useResize.ts#useResize",
+      "sym:src/pinia/stores/permission.ts#usePermissionStore",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore",
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

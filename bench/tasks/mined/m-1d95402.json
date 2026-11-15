@@ -1,0 +1,19 @@
+{
+  "id": "m-1d95402",
+  "source": "mined",
+  "commit": "1d954025fb4816b95014ef2542d12ec182c34391",
+  "parentCommit": "d926c6c2b5c5d9550d489959ffa0b612279116c1",
+  "date": "2022-08-25T17:11:34+08:00",
+  "text": "Remove the breadcrumb transition so breadcrumb items update without animation, and delete the now-unused transition styles.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Breadcrumb/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

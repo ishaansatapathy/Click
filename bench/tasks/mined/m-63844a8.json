@@ -1,0 +1,20 @@
+{
+  "id": "m-63844a8",
+  "source": "mined",
+  "commit": "63844a8f2e793b87be3692f257b412befc26ef31",
+  "parentCommit": "ee2ee7e1daf8c888a385c2cdddc4ce83ed20e587",
+  "date": "2023-05-19T21:02:20+08:00",
+  "text": "Improve theme handling by clarifying the helpers’ roles and ensuring theme changes consistently update the document root class and persisted active theme.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useTheme.ts#initTheme",
+      "sym:src/common/composables/useTheme.ts#setTheme"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

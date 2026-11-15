@@ -1,0 +1,21 @@
+{
+  "id": "m-017ebf2",
+  "source": "mined",
+  "commit": "017ebf2f920d55ef6134be86b12a964be479284e",
+  "parentCommit": "4e2ffa38f5fd586557ecdf69b917127bf0c94a8b",
+  "date": "2022-11-02T16:57:43+08:00",
+  "text": "Display the signed-in person’s name beside their avatar in the navigation bar, and hide the breadcrumb on narrow screens. Populate the displayed name from the account information returned during sign-in.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

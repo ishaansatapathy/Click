@@ -1,0 +1,19 @@
+{
+  "id": "m-9083700",
+  "source": "mined",
+  "commit": "9083700b3def9c31e6a7207f40b42e94b119696e",
+  "parentCommit": "710ff1cda78f27741529f3ae98b4cf20378be52b",
+  "date": "2023-06-14T18:14:11+08:00",
+  "text": "Optimize reactive state access in the top navigation by using Pinia’s ref utilities, and clarify the sidebar toggle and logout actions.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

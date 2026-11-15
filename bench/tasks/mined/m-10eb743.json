@@ -1,0 +1,19 @@
+{
+  "id": "m-10eb743",
+  "source": "mined",
+  "commit": "10eb74365cca912eec261159133988af78791971",
+  "parentCommit": "50fe55b2f2673327eb0f4287da28020cccf7e29d",
+  "date": "2026-06-13T15:44:29+08:00",
+  "text": "Ensure the mobile sidebar remains above the vLoading overlay by correcting its stacking order. Keep the sidebar and its container layered consistently so the menu stays visible while loading.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

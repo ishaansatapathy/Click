@@ -1,0 +1,24 @@
+{
+  "id": "m-324e454",
+  "source": "mined",
+  "commit": "324e454641ce8f2d8bfd4eb3fdc87240e5214e67",
+  "parentCommit": "b6f4513d6b8857fa67780eb63ed7bb6bc34640f6",
+  "date": "2022-05-10T19:59:50+08:00",
+  "text": "Update the theme system to work with Element Plus dark mode, applying the active theme at the document root and relying on the library’s dark-mode styling for its components.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Settings/index.vue",
+      "src/main.ts",
+      "src/pinia/stores/app.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/pinia/stores/app.ts#useAppStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

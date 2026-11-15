@@ -1,0 +1,19 @@
+{
+  "id": "m-0e9eaaf",
+  "source": "mined",
+  "commit": "0e9eaafeeaa3aa5684b1af11da40b344ba483f20",
+  "parentCommit": "9d473cc2ba4eb6d68474b20263e8a82efc48bd74",
+  "date": "2023-03-17T16:16:52+08:00",
+  "text": "Enable wheel scrolling in the tags view so vertical mouse-wheel movement navigates the tab strip horizontally, while preventing the wheel event from scrolling the page.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

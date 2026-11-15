@@ -1,0 +1,19 @@
+{
+  "id": "m-b2da13b",
+  "source": "mined",
+  "commit": "b2da13b34a4582c7b8b40bf3c9996794241bc07a",
+  "parentCommit": "bf29e0e52a5e0924f864dc241ca4ce5867d046bc",
+  "date": "2023-06-01T09:26:53+08:00",
+  "text": "Simplify the error handling in `resetRouter` by omitting the unused caught error while preserving the browser reload fallback.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#resetRouter"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

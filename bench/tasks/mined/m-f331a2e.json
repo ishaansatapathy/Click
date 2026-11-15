@@ -1,0 +1,19 @@
+{
+  "id": "m-f331a2e",
+  "source": "mined",
+  "commit": "f331a2e65514662231d38c4d3c794d2cbdd6e582",
+  "parentCommit": "c9859aa597a006446dcc8a55e116c5a9a57f9246",
+  "date": "2024-12-05T19:34:25+08:00",
+  "text": "Update project dependencies to their latest compatible versions and refresh the lockfile, while correcting the link to the paid service details.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/usePany.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/usePany.ts#initStoreNotification"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

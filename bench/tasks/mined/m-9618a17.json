@@ -1,0 +1,17 @@
+{
+  "id": "m-9618a17",
+  "source": "mined",
+  "commit": "9618a17ab50262183f1c9949e45c7b01a31e9175",
+  "parentCommit": "94d96c95e7544c84c2b4979fa9f34d06b7435f87",
+  "date": "2023-05-19T20:02:02+08:00",
+  "text": "Optimize the permission directive’s role validation and lookup, and remove unauthorized elements from the DOM instead of merely hiding them.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/plugins/permission-directive.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

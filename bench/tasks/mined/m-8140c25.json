@@ -1,0 +1,19 @@
+{
+  "id": "m-8140c25",
+  "source": "mined",
+  "commit": "8140c25601c71bd83116c9300233349ac871937f",
+  "parentCommit": "b0b50820dbe1c02d72f9d8c19d02fd3e1a882adb",
+  "date": "2022-10-27T18:20:57+08:00",
+  "text": "Polish the environment configuration comments for clarity and consistency, and update the table action label from “编辑” to “修改”.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/vxe-table/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/vxe-table/index.vue#VxeTable"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

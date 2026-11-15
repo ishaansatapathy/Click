@@ -1,0 +1,23 @@
+{
+  "id": "m-ecfd39b",
+  "source": "mined",
+  "commit": "ecfd39bcc2eecece83e7e818445d0e894ad195a0",
+  "parentCommit": "2498f239c0c6468fa19342a29d9e9cef23162951",
+  "date": "2024-02-26T22:22:15+08:00",
+  "text": "Add an animated character above the sign-in form that covers its eyes when the password field is focused, then returns to its normal pose when focus leaves.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/components/Owl.vue",
+      "src/pages/login/composables/useFocus.ts",
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/components/Owl.vue#Owl",
+      "sym:src/pages/login/composables/useFocus.ts#useFocus",
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "m-13a53cc",
+  "source": "mined",
+  "commit": "13a53cc9944a0a1c5a983bdf303e0eb198c91a1e",
+  "parentCommit": "ffb6cb3a11728825349727c77e8d9e8e2f17616c",
+  "date": "2024-11-08T19:40:42+08:00",
+  "text": "Fix the first cached page so its activation hook fires when the page loads. Ensure route changes are observed early enough and the initial cached view is registered in the correct order.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue",
+      "src/pinia/stores/tags-view.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

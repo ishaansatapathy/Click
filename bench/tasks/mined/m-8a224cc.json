@@ -1,0 +1,18 @@
+{
+  "id": "m-8a224cc",
+  "source": "mined",
+  "commit": "8a224cc9466d636e47ee555311363c067b7bda44",
+  "parentCommit": "599d03a4cf82d31e63477ef24578c3b252f7b6fe",
+  "date": "2024-11-26T18:05:20+08:00",
+  "text": "Organize route-related access configuration alongside the rest of the routing concerns, keeping existing navigation behavior unchanged.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/router/guard.ts",
+      "src/router/whitelist.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

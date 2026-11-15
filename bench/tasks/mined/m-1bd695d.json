@@ -1,0 +1,21 @@
+{
+  "id": "m-1bd695d",
+  "source": "mined",
+  "commit": "1bd695db177af8969dadf45dce0f2181920ad362",
+  "parentCommit": "0fe9d6072bf09cc6eb517a7799e709cce77e35e2",
+  "date": "2024-11-28T11:39:08+08:00",
+  "text": "Use a single shared placeholder illustration for both role-specific home screens, removing the redundant role-specific artwork while keeping each screen’s existing welcome text.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/dashboard/components/Admin.vue",
+      "src/pages/dashboard/components/Editor.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/dashboard/components/Admin.vue#Admin",
+      "sym:src/pages/dashboard/components/Editor.vue#Editor"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

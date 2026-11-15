@@ -1,0 +1,21 @@
+{
+  "id": "m-0fe9d60",
+  "source": "mined",
+  "commit": "0fe9d6072bf09cc6eb517a7799e709cce77e35e2",
+  "parentCommit": "86ec9766dde36aecda9730f0093d136fb2b31ee2",
+  "date": "2024-11-28T11:32:28+08:00",
+  "text": "Make the role-specific welcome illustrations adapt to the available width on smaller screens, and visually distinguish role names in the welcome text.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/dashboard/components/Admin.vue",
+      "src/pages/dashboard/components/Editor.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/dashboard/components/Admin.vue#Admin",
+      "sym:src/pages/dashboard/components/Editor.vue#Editor"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-4583495",
+  "source": "mined",
+  "commit": "4583495aa3907bf0caa66400b6272d73ffe47088",
+  "parentCommit": "ae4a77bec2af492adef2e57354abfd775b604f66",
+  "date": "2022-08-22T15:29:29+08:00",
+  "text": "Update the fullscreen control to use dedicated icons and reflect the current fullscreen state in both its icon and tooltip. Ensure its change listener is cleaned up when the component is unmounted, and adjust theme styling for the new icon.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

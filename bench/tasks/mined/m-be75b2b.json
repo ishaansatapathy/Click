@@ -1,0 +1,19 @@
+{
+  "id": "m-be75b2b",
+  "source": "mined",
+  "commit": "be75b2b118f1cc14d2d791316dce77bc9cbdb535",
+  "parentCommit": "c265e646762f27b7010211b9f17b0893360a28de",
+  "date": "2023-06-16T18:13:13+08:00",
+  "text": "Improve the sign-in form’s readability and maintainability by clarifying its form data and validation handling, while preserving the existing authentication flow and user experience.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

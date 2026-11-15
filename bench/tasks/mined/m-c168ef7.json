@@ -1,0 +1,21 @@
+{
+  "id": "m-c168ef7",
+  "source": "mined",
+  "commit": "c168ef7ab810229137be0025dd4813e669e0d5e5",
+  "parentCommit": "4f01de4e928f670acae7bdbd097f5408b1655131",
+  "date": "2024-11-20T19:49:01+08:00",
+  "text": "Fix the navigation menu so all items remain accessible when the available height is limited. Ensure the menu background stays consistent in left-side layout mode.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue",
+      "src/layouts/modes/LeftTopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

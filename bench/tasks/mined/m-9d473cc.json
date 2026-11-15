@@ -1,0 +1,19 @@
+{
+  "id": "m-9d473cc",
+  "source": "mined",
+  "commit": "9d473cc2ba4eb6d68474b20263e8a82efc48bd74",
+  "parentCommit": "c083e738295688fb60961cd9843c5440b77fbfd3",
+  "date": "2023-03-16T17:42:32+08:00",
+  "text": "Adjust the menu styling so it fills the available height while still expanding when its content requires more space.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

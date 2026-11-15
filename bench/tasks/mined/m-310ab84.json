@@ -1,0 +1,19 @@
+{
+  "id": "m-310ab84",
+  "source": "mined",
+  "commit": "310ab846facb80e288f8f3383af5fc91bfd6613c",
+  "parentCommit": "8a0b8c5b3a3405b84f327a04138f8c6eb70d11f3",
+  "date": "2023-07-18T13:36:22+08:00",
+  "text": "Ensure the branding area uses the correct dynamic height in top navigation mode, while retaining the standard header height in other modes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Logo/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Logo/index.vue#Logo"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,17 @@
+{
+  "id": "m-ae96836",
+  "source": "mined",
+  "commit": "ae96836baa0389020f7e4e1ef57d02de3c418d54",
+  "parentCommit": "55569f791cf064d0b712d1823a5c2183596add78",
+  "date": "2023-04-14T14:39:19+08:00",
+  "text": "Wait until the router is ready before mounting the app, so the initial view renders only after routing has finished initializing.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/main.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

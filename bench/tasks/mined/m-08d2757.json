@@ -1,0 +1,23 @@
+{
+  "id": "m-08d2757",
+  "source": "mined",
+  "commit": "08d275793b28e29e54262813d740249a47b64819",
+  "parentCommit": "9557c5679ee634a22f64e37d6b854d10d0ddad6b",
+  "date": "2022-11-12T13:53:32+08:00",
+  "text": "Refactor the fullscreen control to support targeting configurable content areas, with customizable open and exit tooltips. Update the layout styling so content-area fullscreen retains the correct background and the control fits cleanly into the tags bar.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/layouts/components/AppMain/index.vue",
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/layouts/components/AppMain/index.vue#AppMain",
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

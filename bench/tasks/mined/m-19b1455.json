@@ -1,0 +1,19 @@
+{
+  "id": "m-19b1455",
+  "source": "mined",
+  "commit": "19b145597e775e9432472026374184b8d7d23fa5",
+  "parentCommit": "5727b2245bfeb2f15003b647460f051b39a618b0",
+  "date": "2024-11-26T10:49:16+08:00",
+  "text": "Reformat the table page’s configuration objects for consistent readability, and standardize its comments without changing behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/vxe-table/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/vxe-table/index.vue#VxeTable"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

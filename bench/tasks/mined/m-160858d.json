@@ -1,0 +1,23 @@
+{
+  "id": "m-160858d",
+  "source": "mined",
+  "commit": "160858d6deb2522820ff405c70eb39cbc8c3a397",
+  "parentCommit": "1c568c4817507d955baff6a93e5214598feb6c37",
+  "date": "2022-08-26T19:16:49+08:00",
+  "text": "Preserve query parameters when refreshing a page from its tab, and keep tab state in sync when the route’s query changes.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue",
+      "src/pages/redirect/index.vue",
+      "src/pinia/stores/tags-view.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pages/redirect/index.vue#Redirect",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

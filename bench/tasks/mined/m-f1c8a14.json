@@ -1,0 +1,20 @@
+{
+  "id": "m-f1c8a14",
+  "source": "mined",
+  "commit": "f1c8a14b98d523e595d2a5a2c0e4cf19727775a6",
+  "parentCommit": "a9f8e6ccc25839b48d619a07c79ce6b880885bc1",
+  "date": "2022-08-23T18:09:13+08:00",
+  "text": "Complete the route metadata type definitions so all supported navigation and display options are recognized by TypeScript, and consolidate the related Vue and asset declarations. Also modernize route type imports and annotations.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes",
+      "sym:src/router/index.ts#resetRouter"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

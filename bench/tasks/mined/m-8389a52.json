@@ -1,0 +1,23 @@
+{
+  "id": "m-8389a52",
+  "source": "mined",
+  "commit": "8389a52af96157c25c7e92bcb8bf054735bd7e06",
+  "parentCommit": "dc108fdbff8f08f13b3b6208e7468ca6a924d208",
+  "date": "2022-11-07T17:46:28+08:00",
+  "text": "Simplify the navigation’s external resource links and present the role-specific access notices as centered empty states.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/pages/dashboard/components/Admin.vue",
+      "src/pages/dashboard/components/Editor.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/pages/dashboard/components/Admin.vue#Admin",
+      "sym:src/pages/dashboard/components/Editor.vue#Editor"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

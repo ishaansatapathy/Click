@@ -1,0 +1,23 @@
+{
+  "id": "m-7feb1d5",
+  "source": "mined",
+  "commit": "7feb1d515f997d1f8b11e574b8894abff2cdc7c5",
+  "parentCommit": "9731b877b5cae899a4b01efaa01ffb38114dfdc9",
+  "date": "2022-12-08T18:06:01+08:00",
+  "text": "Add optional grayscale and color-weakness display modes to the layout controls, allowing users to toggle each visual filter independently.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts",
+      "src/layouts/index.vue",
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

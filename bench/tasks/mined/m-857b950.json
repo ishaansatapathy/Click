@@ -1,0 +1,19 @@
+{
+  "id": "m-857b950",
+  "source": "mined",
+  "commit": "857b95043b0fdefb4c7bfbe42ffb8644208d48d6",
+  "parentCommit": "7cae618b50f50cb7ff2c7dbe4ab727ba27763d15",
+  "date": "2023-05-17T20:27:39+08:00",
+  "text": "Improve route transitions by using the standard Element Plus fade-in animation for page changes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

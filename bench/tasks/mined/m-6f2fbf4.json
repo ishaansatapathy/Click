@@ -1,0 +1,21 @@
+{
+  "id": "m-6f2fbf4",
+  "source": "mined",
+  "commit": "6f2fbf4a9002771cb46cf956d2cef9cefc4abc47",
+  "parentCommit": "13a53cc9944a0a1c5a983bdf303e0eb198c91a1e",
+  "date": "2024-11-08T20:23:56+08:00",
+  "text": "Fix the tag display order by initializing affix tags before route-change handling and ensuring new visited tags are appended consistently.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue",
+      "src/pinia/stores/tags-view.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

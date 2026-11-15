@@ -1,0 +1,17 @@
+{
+  "id": "m-b40df6c",
+  "source": "mined",
+  "commit": "b40df6c6ad3670227e5f0ca5f30c2c7c3e5fb0da",
+  "parentCommit": "246f29e8c3586d75f81159d62aeff2cc7b626a58",
+  "date": "2023-06-08T09:45:23+08:00",
+  "text": "Update the service response handling to return binary payloads directly for blob and arraybuffer requests, bypassing the usual business-code processing.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

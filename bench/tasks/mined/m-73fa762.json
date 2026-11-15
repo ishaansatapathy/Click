@@ -1,0 +1,30 @@
+{
+  "id": "m-73fa762",
+  "source": "mined",
+  "commit": "73fa7620522a45d067a66166eb23529b89e08e6a",
+  "parentCommit": "8d4588b029459268c0c9e586fe3c9aeade64f9b6",
+  "date": "2025-02-19T11:31:57+08:00",
+  "text": "Update route-related type annotations to match the newer Vue Router type definitions, keeping navigation, search results, and tag views correctly typed.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue",
+      "src/common/composables/useRouteListener.ts",
+      "src/layouts/components/TagsView/index.vue",
+      "src/pinia/stores/tags-view.ts",
+      "src/router/whitelist.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/Modal.vue#Modal",
+      "sym:src/common/components/SearchMenu/Result.vue#Result",
+      "sym:src/common/composables/useRouteListener.ts#Callback",
+      "sym:src/common/composables/useRouteListener.ts#setRouteChange",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pinia/stores/tags-view.ts#TagView",
+      "sym:src/router/whitelist.ts#isWhiteList"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

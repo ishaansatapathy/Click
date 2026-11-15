@@ -1,0 +1,19 @@
+{
+  "id": "m-8488bfd",
+  "source": "mined",
+  "commit": "8488bfdff2079300eb6e76e13effc001d79ef530",
+  "parentCommit": "4a27131c6d9ad0206584f6543d2f1bbaffa6f006",
+  "date": "2023-08-16T14:48:50+08:00",
+  "text": "Fix menu highlighting so an active nested menu only applies the active text color to its own title, not to titles in descendant menus.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

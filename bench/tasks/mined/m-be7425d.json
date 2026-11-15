@@ -1,0 +1,19 @@
+{
+  "id": "m-be7425d",
+  "source": "mined",
+  "commit": "be7425d54dc8f8dc25a1953ff05501519042ed5c",
+  "parentCommit": "65530215e04b703bd0ea71cd8b9dc01defde12a0",
+  "date": "2023-09-01T17:27:19+08:00",
+  "text": "Improve the watermark hook’s performance and reliability by reusing existing watermark elements, managing mutation and resize observers independently, and safely handling removal when the element is already missing. Ensure observer behavior stays consistent when defense mode is toggled.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-5d1eeec",
+  "source": "mined",
+  "commit": "5d1eeec01fe98682c1b78f140b884bb7d48fd23e",
+  "parentCommit": "fc9e1885723e7d6d947dca13d4d1fc165d670404",
+  "date": "2023-10-07T16:29:43+08:00",
+  "text": "Correct the sidebar’s scrolling behavior so top layout mode prevents vertical scrolling and hides its vertical scrollbar, while other layout modes retain normal vertical scrolling.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "m-9710c35",
+  "source": "mined",
+  "commit": "9710c359af55299d8f286eea4aa106b2106342ba",
+  "parentCommit": "135cf8fc1efff4e8b320771239789daa23359bec",
+  "date": "2023-07-07T15:25:36+08:00",
+  "text": "Add a visual layout-mode selector to the configuration panel, letting users choose between left, top, and mixed navigation modes with clear previews of the active choice.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Settings/SelectLayoutMode.vue",
+      "src/layouts/components/Settings/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/SelectLayoutMode.vue#SelectLayoutMode",
+      "sym:src/layouts/components/Settings/index.vue#Settings"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

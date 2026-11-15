@@ -1,0 +1,19 @@
+{
+  "id": "m-5a94ec4",
+  "source": "mined",
+  "commit": "5a94ec4c3b7344e579a436e632dc35739bd96e28",
+  "parentCommit": "0dc9d032376f0bf5607ee508963dc2482780d188",
+  "date": "2024-11-27T16:58:34+08:00",
+  "text": "Add a subtle eye-covering animation to the verification-code input, triggered when the field gains or loses focus.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

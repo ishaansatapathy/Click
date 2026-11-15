@@ -1,0 +1,21 @@
+{
+  "id": "m-de34990",
+  "source": "mined",
+  "commit": "de349901df463248b73219e0c881e0b0bce97aa1",
+  "parentCommit": "0c23ef9f8c5946336688e33751f6aa9bb44eb86e",
+  "date": "2024-12-02T18:29:41+08:00",
+  "text": "Clarify the icon registration comments so they accurately describe registering all Element Plus icons and the SvgIcon component.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/plugins/element-plus-icons.ts",
+      "src/plugins/svg-icon.ts"
+    ],
+    "symbols": [
+      "sym:src/plugins/element-plus-icons.ts#installElementPlusIcons",
+      "sym:src/plugins/svg-icon.ts#installSvgIcon"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-ee2ee7e",
+  "source": "mined",
+  "commit": "ee2ee7e1daf8c888a385c2cdddc4ce83ed20e587",
+  "parentCommit": "9618a17ab50262183f1c9949e45c7b01a31e9175",
+  "date": "2023-05-19T20:47:52+08:00",
+  "text": "Simplify pagination state initialization by merging defaults with the supplied initial values directly, while preserving the existing reactive behavior and change handlers.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/usePagination.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/usePagination.ts#usePagination"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

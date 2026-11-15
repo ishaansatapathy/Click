@@ -1,0 +1,19 @@
+{
+  "id": "m-0ad723e",
+  "source": "mined",
+  "commit": "0ad723eda8cbd93dc128a2d88d584b2417e67124",
+  "parentCommit": "0177b58f1630ff3f3c59eeb7422025f2fa3f714c",
+  "date": "2022-08-23T11:39:01+08:00",
+  "text": "Improve the toggle component’s type safety by explicitly typing its emitted event, and use the correctly cased icon components for both states.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Hamburger/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Hamburger/index.vue#Hamburger"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

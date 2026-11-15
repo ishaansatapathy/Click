@@ -1,0 +1,19 @@
+{
+  "id": "m-2ea0a80",
+  "source": "mined",
+  "commit": "2ea0a80160109ce04f4c78be7c43c81a96b63a76",
+  "parentCommit": "2c7d5b2b763c3a09b4531b00104919e3e4499eec",
+  "date": "2023-08-31T08:46:58+08:00",
+  "text": "Improve watermark resilience by monitoring both DOM mutations and element resizing, restoring the watermark if it is removed or hidden, and keeping its dimensions in sync with its container. Lower its stacking order to avoid obscuring other content.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "m-a08e434",
+  "source": "mined",
+  "commit": "a08e43462082620cdfa24f19e7910d64cbc66ed3",
+  "parentCommit": "4af9112121a25198936fa5ea67213ed84d7bea34",
+  "date": "2022-10-24T13:17:43+08:00",
+  "text": "Create a reusable global pagination hook with configurable defaults and handlers for page and page-size changes, then update the table view to use it and reload data when pagination changes.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/usePagination.ts",
+      "src/pages/demo/element-plus/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/composables/usePagination.ts#usePagination",
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

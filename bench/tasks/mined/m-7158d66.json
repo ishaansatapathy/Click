@@ -1,0 +1,17 @@
+{
+  "id": "m-7158d66",
+  "source": "mined",
+  "commit": "7158d6675a7cc04238ae489c0b5d1973d5e65781",
+  "parentCommit": "6595119599d28e541cb8dd5cb30744a085a99796",
+  "date": "2022-08-15T16:05:26+08:00",
+  "text": "Clarify the handling of unauthorized and forbidden responses: log users out and reload on 401, and show an access-denied message on 403. Also improve the spacing in the unsupported protocol version message.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

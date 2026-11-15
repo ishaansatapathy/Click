@@ -1,0 +1,21 @@
+{
+  "id": "m-246f29e",
+  "source": "mined",
+  "commit": "246f29e8c3586d75f81159d62aeff2cc7b626a58",
+  "parentCommit": "dfff053ae8388797ce10d268ee75a8e223d8dfbb",
+  "date": "2023-06-07T12:38:58+08:00",
+  "text": "Expand the validation utilities with reusable type checks and format validators for URLs, domains, versions, times, phone numbers, Chinese ID cards, email addresses, MAC addresses, IPv4 addresses, and license plates. Preserve existing behavior while making the validation helpers more consistent and robust.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/validate.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/validate.ts#isArray",
+      "sym:src/common/utils/validate.ts#isExternal",
+      "sym:src/common/utils/validate.ts#isString"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

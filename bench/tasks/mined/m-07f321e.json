@@ -1,0 +1,19 @@
+{
+  "id": "m-07f321e",
+  "source": "mined",
+  "commit": "07f321ecbb2d362eb66cb825df7e6be237044983",
+  "parentCommit": "6b62edc3232b1b0a8f70572f10363374c46fd5e0",
+  "date": "2023-08-28T19:34:05+08:00",
+  "text": "Ensure the current route is added to the navigation history when route-change listening starts, avoiding a separate mount-time update and preventing duplicate entries.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

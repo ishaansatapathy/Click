@@ -1,0 +1,17 @@
+{
+  "id": "m-63e3960",
+  "source": "mined",
+  "commit": "63e39604658fe167f7be210b61e65982181659d1",
+  "parentCommit": "2b21a29f09a83a542e7b452d12b0b1c5aca31666",
+  "date": "2024-12-09T19:22:38+08:00",
+  "text": "Update the UnoCSS setup to use the current configuration naming and virtual stylesheet entry, ensuring generated utility styles continue to load correctly.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/main.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

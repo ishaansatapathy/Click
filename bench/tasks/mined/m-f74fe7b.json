@@ -1,0 +1,27 @@
+{
+  "id": "m-f74fe7b",
+  "source": "mined",
+  "commit": "f74fe7b246dee9b01029f1b797ee10b802a22358",
+  "parentCommit": "a05c64d40bd70edd9a57dbdcd8e86c60452bbfec",
+  "date": "2025-09-15T11:03:05+08:00",
+  "text": "Preserve the originally requested destination when redirecting unauthenticated users, then send them there after successful authentication instead of always taking them to the home page.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue",
+      "src/router/guard.ts"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login",
+      "sym:src/router/guard.ts#registerNavigationGuard"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-f74fe7b.test.ts"
+    ]
+  }
+}

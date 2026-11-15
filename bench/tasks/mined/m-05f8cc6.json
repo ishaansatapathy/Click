@@ -1,0 +1,19 @@
+{
+  "id": "m-05f8cc6",
+  "source": "mined",
+  "commit": "05f8cc6404794b95c7703a135d5463148728af87",
+  "parentCommit": "1bd695db177af8969dadf45dce0f2181920ad362",
+  "date": "2024-11-28T11:43:05+08:00",
+  "text": "Correct the footer visibility option label by removing the redundant English term while preserving its existing behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Settings/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/index.vue#Settings"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

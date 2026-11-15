@@ -1,0 +1,19 @@
+{
+  "id": "m-40e5604",
+  "source": "mined",
+  "commit": "40e56047f784b2d9dcc42f03d0a08f623520d0af",
+  "parentCommit": "a4af6b2d03ce26c9ec2ddebe26c64d8a5e5ef8ef",
+  "date": "2022-08-19T15:25:07+08:00",
+  "text": "Refactor the authentication view to use typed form references and validation rules, with clearer reactive state and handlers. Trim whitespace from user inputs and ensure the loading indicator resets after either a successful or failed authentication attempt.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

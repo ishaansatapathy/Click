@@ -1,0 +1,19 @@
+{
+  "id": "m-f121c01",
+  "source": "mined",
+  "commit": "f121c01227053b88658d1ebace2c6c36b03e3e7c",
+  "parentCommit": "61997fd1020e823f5c9e0f80a03cbbf6f8d7e59a",
+  "date": "2024-11-25T10:26:04+08:00",
+  "text": "Simplify the fetch-backed select’s setup by using concise lifecycle and return expressions while preserving its existing behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useFetchSelect.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useFetchSelect.ts#useFetchSelect"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

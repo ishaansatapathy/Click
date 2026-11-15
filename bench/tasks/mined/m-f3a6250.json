@@ -1,0 +1,19 @@
+{
+  "id": "m-f3a6250",
+  "source": "mined",
+  "commit": "f3a62504d6d27efc1c213d345da8a394b52dddb3",
+  "parentCommit": "e270308f10c91f3e667c46330850a4c836f61023",
+  "date": "2023-02-02T11:29:34+08:00",
+  "text": "Ensure fullscreen loading is hidden after either successful or failed Promise completion, while preserving the original result or rethrowing the error. Keep synchronous error handling and clarify that the wrapped function is the one to execute.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useFullscreenLoading.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useFullscreenLoading.ts#useFullscreenLoading"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

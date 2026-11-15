@@ -1,0 +1,28 @@
+{
+  "id": "m-ade5d80",
+  "source": "mined",
+  "commit": "ade5d806c74d04758fcd646e9eb7457b4a09cd02",
+  "parentCommit": "047909f661b6bfd1ca965872cee5632667a9914a",
+  "date": "2024-11-14T16:29:59+08:00",
+  "text": "Refactor grayscale and color-weakness modes to initialize centrally and apply their styles through classes on the root element. Ensure theme changes preserve these accessibility mode classes.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/App.vue",
+      "src/common/composables/useGreyAndColorWeakness.ts",
+      "src/common/composables/useTheme.ts",
+      "src/layouts/index.vue"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App",
+      "sym:src/common/composables/useGreyAndColorWeakness.ts#initGreyAndColorWeakness",
+      "sym:src/common/composables/useGreyAndColorWeakness.ts#useGreyAndColorWeakness",
+      "sym:src/common/composables/useTheme.ts#addHtmlClass",
+      "sym:src/common/composables/useTheme.ts#initTheme",
+      "sym:src/common/composables/useTheme.ts#removeHtmlClass",
+      "sym:src/layouts/index.vue#Layouts"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

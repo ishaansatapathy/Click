@@ -1,0 +1,19 @@
+{
+  "id": "m-62e1a7a",
+  "source": "mined",
+  "commit": "62e1a7a63ddb273a21aba579e09570591b17c02d",
+  "parentCommit": "4dce9658ff7cb5c8d7bc79f8394e04de82130d7b",
+  "date": "2023-06-13T13:01:13+08:00",
+  "text": "Use the route path as the view key so pages are reused across query-string changes, improving navigation performance in the common case.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

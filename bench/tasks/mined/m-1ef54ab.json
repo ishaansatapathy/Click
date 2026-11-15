@@ -1,0 +1,21 @@
+{
+  "id": "m-1ef54ab",
+  "source": "mined",
+  "commit": "1ef54abc1ed536b87208f3704509265abc1518b1",
+  "parentCommit": "07f321ecbb2d362eb66cb825df7e6be237044983",
+  "date": "2023-08-29T09:05:23+08:00",
+  "text": "Ensure navigation tags remain in the correct order by registering route-change tracking after tag initialization, while initializing breadcrumb state through the route listener.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Breadcrumb/index.vue",
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

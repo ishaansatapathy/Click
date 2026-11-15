@@ -1,0 +1,22 @@
+{
+  "id": "m-3210168",
+  "source": "mined",
+  "commit": "32101689bff17e2690cbc481c62afc4058b592fc",
+  "parentCommit": "4a58eb8e035e77b02d526c85e67dcad33a31c640",
+  "date": "2023-03-01T10:23:51+08:00",
+  "text": "Prevent route-guard loops when account data contains no roles by assigning a harmless default role. Ensure route access behavior follows the dynamic-routing setting rather than relying on a special administrator role.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/permission.ts",
+      "src/pinia/stores/user.ts",
+      "src/router/config.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/permission.ts#usePermissionStore",
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

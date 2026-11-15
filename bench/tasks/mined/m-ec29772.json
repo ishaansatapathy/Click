@@ -1,0 +1,17 @@
+{
+  "id": "m-ec29772",
+  "source": "mined",
+  "commit": "ec29772bdcbb9b593047cf89c95ee1c9e89ffafc",
+  "parentCommit": "bbbcc44a0e80fcd3cd8892828407283fc5f30d10",
+  "date": "2022-10-21T18:06:56+08:00",
+  "text": "Add the missing deep blue theme option to the theme selector so users can choose it alongside the existing themes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

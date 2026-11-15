@@ -1,0 +1,19 @@
+{
+  "id": "m-6f8755c",
+  "source": "mined",
+  "commit": "6f8755c47cdf546a166c2fd481e0db13718a8f69",
+  "parentCommit": "82b5bd81ef9ce1b98dfc5fb285e857427534a7ed",
+  "date": "2024-04-22T20:51:32+08:00",
+  "text": "Prevent a blank screen when accessing the development environment from an iPhone browser by registering fullscreen change listeners only when fullscreen support is enabled.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

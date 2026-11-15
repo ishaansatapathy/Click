@@ -1,0 +1,19 @@
+{
+  "id": "m-fa0eadd",
+  "source": "mined",
+  "commit": "fa0eadd98644dc95fe0ed9510ad0eff98eefe4ca",
+  "parentCommit": "0cbb1ea9989272d3a24289cb47220b7c432a440d",
+  "date": "2024-11-27T18:57:16+08:00",
+  "text": "Add hover tooltips to the tag bar’s left and right scroll buttons so users know they can click to scroll when tags exceed the available width.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

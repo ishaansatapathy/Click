@@ -1,0 +1,19 @@
+{
+  "id": "m-272642e",
+  "source": "mined",
+  "commit": "272642ec97c54c4021691b677002fc88c8ab2bfb",
+  "parentCommit": "63e39604658fe167f7be210b61e65982181659d1",
+  "date": "2024-12-10T10:24:27+08:00",
+  "text": "Ensure the theme toggle on the sign-in screen respects the configured visibility setting, so it appears only when enabled.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

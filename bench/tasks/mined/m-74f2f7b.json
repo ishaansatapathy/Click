@@ -1,0 +1,17 @@
+{
+  "id": "m-74f2f7b",
+  "source": "mined",
+  "commit": "74f2f7b72585eaf374fc5a4dc4d3696651286011",
+  "parentCommit": "3953269006499681775c57ca30ebd6eea79a8649",
+  "date": "2023-06-13T13:00:35+08:00",
+  "text": "Refine the layout component for readability and consistency by simplifying its reactive class bindings, clarifying the layout sections, and standardizing transition timing.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/index.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

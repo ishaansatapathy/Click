@@ -1,0 +1,20 @@
+{
+  "id": "m-e8faa26",
+  "source": "mined",
+  "commit": "e8faa26bd76c50cbe8e6ede28cfe97e2fed91266",
+  "parentCommit": "8706398eb78484775180ed2571202ec643d2432e",
+  "date": "2023-06-15T13:42:58+08:00",
+  "text": "Simplify menu rendering and active-state logic by using optional chaining and concise computed expressions. Ensure hidden child entries are filtered consistently and single-child menus resolve to the correct item.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/Item.vue",
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

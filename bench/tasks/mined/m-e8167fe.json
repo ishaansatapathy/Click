@@ -1,0 +1,19 @@
+{
+  "id": "m-e8167fe",
+  "source": "mined",
+  "commit": "e8167fec1c64d5317bdcaa4fae53a2e2283c0e07",
+  "parentCommit": "7bd6a4e896bc0d98df0c4a99810a6c8f44a9897b",
+  "date": "2022-04-22T16:38:55+08:00",
+  "text": "Remove the unnecessary divider from the Chinese documentation menu item so the dropdown styling is consistent.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

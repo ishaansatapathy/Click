@@ -1,0 +1,27 @@
+{
+  "id": "m-9099b59",
+  "source": "mined",
+  "commit": "9099b590dc0af974f336b7a27e02a8c7371377ca",
+  "parentCommit": "578174e0ac54b8636d623f3bb99b46252cfee7a6",
+  "date": "2025-06-22T18:09:10+08:00",
+  "text": "Update example pages to present explanatory text in a consistent, icon-enabled alert instead of a card, with spacing that separates the notice from the content. Standardize the wording and punctuation of data-source and compatibility notices.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/composable-demo/use-fetch-select.vue",
+      "src/pages/demo/composable-demo/use-fullscreen-loading.vue",
+      "src/pages/demo/composable-demo/use-watermark.vue",
+      "src/pages/demo/element-plus/index.vue",
+      "src/pages/demo/vxe-table/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/composable-demo/use-fetch-select.vue#UseFetchSelect",
+      "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark",
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus",
+      "sym:src/pages/demo/vxe-table/index.vue#VxeTable"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

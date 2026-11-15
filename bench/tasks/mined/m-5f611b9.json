@@ -1,0 +1,19 @@
+{
+  "id": "m-5f611b9",
+  "source": "mined",
+  "commit": "5f611b9a13b0c35091a285891243a79071341450",
+  "parentCommit": "3155c086ca343bed4a3c2e19c3fc5414c0f17050",
+  "date": "2024-11-21T11:52:45+08:00",
+  "text": "Ensure the sidebar background remains consistent on mobile when using top or mixed layouts, rather than showing the incorrect left-navigation color.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

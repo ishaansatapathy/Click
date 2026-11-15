@@ -1,0 +1,21 @@
+{
+  "id": "m-97d1e28",
+  "source": "mined",
+  "commit": "97d1e288a9d534926e166a3a822d4319f8d6d7b4",
+  "parentCommit": "8d0c30b001485974629d831aa8201b1be164db34",
+  "date": "2025-02-22T18:10:18+08:00",
+  "text": "Centralize theme-switching behavior so the transition effect and theme update are handled consistently wherever a theme is changed. Keep the switcher focused on passing the user’s selection and click position.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/ThemeSwitch/index.vue",
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch",
+      "sym:src/common/composables/useTheme.ts#setTheme"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

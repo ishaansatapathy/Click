@@ -1,0 +1,20 @@
+{
+  "id": "m-592fa82",
+  "source": "mined",
+  "commit": "592fa8265045b1bdd963f895a92b4e3d506b9747",
+  "parentCommit": "f121c01227053b88658d1ebace2c6c36b03e3e7c",
+  "date": "2024-11-25T10:40:24+08:00",
+  "text": "Refine the fullscreen loading helper’s naming and documentation, and simplify cleanup while preserving its behavior and support for custom loading options.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useFullscreenLoading.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useFullscreenLoading.ts#UseFullscreenLoading",
+      "sym:src/common/composables/useFullscreenLoading.ts#useFullscreenLoading"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

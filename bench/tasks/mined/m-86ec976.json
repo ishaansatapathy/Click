@@ -1,0 +1,21 @@
+{
+  "id": "m-86ec976",
+  "source": "mined",
+  "commit": "86ec9766dde36aecda9730f0093d136fb2b31ee2",
+  "parentCommit": "0ac0719e216530feb7ce246ee66cc97b686da6f0",
+  "date": "2024-11-28T11:18:02+08:00",
+  "text": "Replace the role-specific welcome placeholders with polished illustrated landing screens for both user types. Keep the layouts centered and pair each illustration with its welcome message.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/dashboard/components/Admin.vue",
+      "src/pages/dashboard/components/Editor.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/dashboard/components/Admin.vue#Admin",
+      "sym:src/pages/dashboard/components/Editor.vue#Editor"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

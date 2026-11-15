@@ -1,0 +1,19 @@
+{
+  "id": "m-41c7ac1",
+  "source": "mined",
+  "commit": "41c7ac1c9a43544099ea9d569561640df264940f",
+  "parentCommit": "f1918b4bb88f3bd8313612f270fb96c0dbc1980e",
+  "date": "2023-09-04T17:26:42+08:00",
+  "text": "Fix the app scrollbar so it fills the available height within the main layout, keeping its content scrollable.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

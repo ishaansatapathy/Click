@@ -1,0 +1,19 @@
+{
+  "id": "m-d22a443",
+  "source": "mined",
+  "commit": "d22a44396d300dae1f4ba2ef57372c2a7bd8e30b",
+  "parentCommit": "d50cba28af785d98394eb114e229bb0eed2f6b45",
+  "date": "2023-05-22T13:46:45+08:00",
+  "text": "Simplify the fullscreen change-listener cleanup while preserving the existing behavior of removing the listener only when fullscreen support is enabled.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

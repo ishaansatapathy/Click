@@ -1,0 +1,22 @@
+{
+  "id": "m-2e28d0d",
+  "source": "mined",
+  "commit": "2e28d0db265664788df94dc5fd64f26b4318a41b",
+  "parentCommit": "9ebed9753da04daa92e108f4ae86c3346212c7fc",
+  "date": "2023-09-01T11:52:57+08:00",
+  "text": "Add an optional defense setting to watermark creation, enabled by default, so callers can disable tamper protection when they prefer lower overhead. Improve observer efficiency by watching only the watermark’s attributes and its parent’s direct child changes, while preserving resize handling and cleanup.Add a defense option to watermark creation, enabled by default, so callers can disable tamper protection to reduce overhead. Optimize change monitoring by observing only the watermark’s attributes and its parent’s direct child changes, while retaining resize handling and proper cleanup.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts",
+      "src/pages/demo/composable-demo/use-watermark.vue"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#Observer",
+      "sym:src/common/composables/useWatermark.ts#useWatermark",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

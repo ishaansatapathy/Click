@@ -1,0 +1,19 @@
+{
+  "id": "m-17dc453",
+  "source": "mined",
+  "commit": "17dc453350776794dd3393dd6739a4adec4ba553",
+  "parentCommit": "002bbdec8ff37d32e760fd244f999b1cc452c388",
+  "date": "2023-05-21T11:49:03+08:00",
+  "text": "Prevent the cache identifiers from being reassigned after initialization while preserving their existing values and behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/constants/cache-key.ts"
+    ],
+    "symbols": [
+      "sym:src/common/constants/cache-key.ts#CacheKey"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "m-1f53193",
+  "source": "mined",
+  "commit": "1f531938a331e877aff7972889d14b63991a9172",
+  "parentCommit": "92d0778992130f777f0da039f456b6fa79fc559f",
+  "date": "2024-11-20T19:58:03+08:00",
+  "text": "Ensure navigation menus remain fully accessible when the available height is limited, with scrolling handled correctly across layout modes.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue",
+      "src/layouts/modes/LeftTopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

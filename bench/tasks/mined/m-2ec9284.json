@@ -1,0 +1,19 @@
+{
+  "id": "m-2ec9284",
+  "source": "mined",
+  "commit": "2ec928434bb69dfaf93e7afbc6d6562ad61d9cda",
+  "parentCommit": "a801a06eddc809d355285f51aaad2fae82d94de3",
+  "date": "2023-04-26T16:51:11+08:00",
+  "text": "Update the missing-role error message to show the correct `checkPermission` usage example.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/permission.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/permission.ts#checkPermission"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-8c6f1bd",
+  "source": "mined",
+  "commit": "8c6f1bd450d4165b6a3d2a177534d2954864d5fe",
+  "parentCommit": "ed1748a11102e85a0f0846e83bec26b9fc398ba6",
+  "date": "2023-06-21T12:24:54+08:00",
+  "text": "Resolve the console warning about a non-passive wheel event listener in the tags view. Keep wheel-based scrolling functional while registering the listener as passive.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-c35f0e7",
+  "source": "mined",
+  "commit": "c35f0e77357b634f3afe67456456643634e1fc4c",
+  "parentCommit": "ab306c4e2ce331757765309f8ce8807c2dbc8e6d",
+  "date": "2024-12-03T19:46:49+08:00",
+  "text": "Simplify the navigation call after successful authentication by passing the destination directly to the router.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

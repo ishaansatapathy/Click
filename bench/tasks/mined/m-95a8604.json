@@ -1,0 +1,25 @@
+{
+  "id": "m-95a8604",
+  "source": "mined",
+  "commit": "95a8604a2f3c38ffabf38cf6061bda28e7d1a4e2",
+  "parentCommit": "d82f3ec874dfd7e8b215fcd12e4fb8730c9e7017",
+  "date": "2025-02-07T19:14:16+08:00",
+  "text": "Improve error feedback for unauthorized and forbidden responses by using a server-provided message when available, with clear default messages otherwise.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": [
+      "sym:src/http/axios.ts#createInstance"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-95a8604.test.ts"
+    ]
+  }
+}

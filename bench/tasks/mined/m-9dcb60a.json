@@ -1,0 +1,21 @@
+{
+  "id": "m-9dcb60a",
+  "source": "mined",
+  "commit": "9dcb60afad445a23b719422ca8e52156b12e80d1",
+  "parentCommit": "7158d6675a7cc04238ae489c0b5d1973d5e65781",
+  "date": "2022-08-15T16:34:05+08:00",
+  "text": "Update the project’s technology-stack descriptions to accurately reflect its styling, routing, and request tools, and standardize the naming and presentation of UnoCSS across the app.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/unocss/index.vue",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/unocss/index.vue#Unocss",
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

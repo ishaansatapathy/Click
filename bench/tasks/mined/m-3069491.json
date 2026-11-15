@@ -1,0 +1,19 @@
+{
+  "id": "m-3069491",
+  "source": "mined",
+  "commit": "30694919b86e6562864c41341b112a2ba16a3538",
+  "parentCommit": "40e56047f784b2d9dcc42f03d0a08f623520d0af",
+  "date": "2022-08-19T15:54:38+08:00",
+  "text": "Refactor role selection to use the user store directly and make the supported role values explicit, while preserving the existing admin and editor views.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/dashboard/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/dashboard/index.vue#Dashboard"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

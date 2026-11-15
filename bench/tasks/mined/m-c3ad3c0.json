@@ -1,0 +1,19 @@
+{
+  "id": "m-c3ad3c0",
+  "source": "mined",
+  "commit": "c3ad3c0ce1f2496e2d51f500264ffdc9634e2803",
+  "parentCommit": "e2ebc1da8513eeba4eaecf93973bdd8c408a66f4",
+  "date": "2023-06-30T18:05:30+08:00",
+  "text": "Prevent circular-reference errors when caching tab data by removing unnecessary route metadata before serializing visited views.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/local-storage.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/local-storage.ts#setVisitedViews"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

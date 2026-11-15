@@ -1,0 +1,19 @@
+{
+  "id": "m-1ae44be",
+  "source": "mined",
+  "commit": "1ae44be0bc77b503a9719424b9b84aeb32a04934",
+  "parentCommit": "6f381ffd545278e524d3a013208f2b618bdbdca3",
+  "date": "2023-07-19T18:15:37+08:00",
+  "text": "Update the startup notices to clarify that the layout-cache reset is for a first-time blank screen, and warn users that the API service may be unstable. Include guidance on following service updates and a link to simulate data for urgent login needs.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/App.vue"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

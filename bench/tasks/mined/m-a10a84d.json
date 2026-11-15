@@ -1,0 +1,21 @@
+{
+  "id": "m-a10a84d",
+  "source": "mined",
+  "commit": "a10a84de2526bf0131b0a9fac32eb9355db469c1",
+  "parentCommit": "481929a502221c37bf849926786985f6f00c48c9",
+  "date": "2022-08-26T15:42:02+08:00",
+  "text": "Refactor the navigation tab component to use simpler reactive state and standalone handlers while preserving its existing interactions. Simplify the store’s view type and remove redundant title handling.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue",
+      "src/pinia/stores/tags-view.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-07bde25",
+  "source": "mined",
+  "commit": "07bde250ff1b7ce2ad03f9666d05872181ad11ff",
+  "parentCommit": "75eadd2094e777d518f42c2a5c55cbb4006f49d9",
+  "date": "2023-06-21T10:28:04+08:00",
+  "text": "Add TypeScript declarations for globally registered Vue components so Volar can provide template type hints, and use the declared `SvgIcon` name consistently in the affected views.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/layouts/components/Sidebar/Item.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

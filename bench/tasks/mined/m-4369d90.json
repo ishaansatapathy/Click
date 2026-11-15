@@ -1,0 +1,19 @@
+{
+  "id": "m-4369d90",
+  "source": "mined",
+  "commit": "4369d90d98bcf8e27fe3cd352905105d7bb6f992",
+  "parentCommit": "903db88cdfe552ae7f626a61247a8d4ec28dba6f",
+  "date": "2022-08-19T22:05:26+08:00",
+  "text": "Allow deployments to choose between hash-based and HTML5 navigation through environment settings, and make the public URL prefix configurable for both navigation and built assets.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#router"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

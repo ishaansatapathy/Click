@@ -1,0 +1,17 @@
+{
+  "id": "m-23f0c1b",
+  "source": "mined",
+  "commit": "23f0c1b1335f95fb0951d46cce82c2e7394e90b8",
+  "parentCommit": "20cc0885d78260963a937515fa4f8b1ac710afa9",
+  "date": "2024-11-29T15:45:14+08:00",
+  "text": "Remove the redundant full Element Plus stylesheet import while retaining the dark theme variables and ensuring card backgrounds still use the intended theme color.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/main.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

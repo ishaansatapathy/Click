@@ -1,0 +1,19 @@
+{
+  "id": "m-0ac0719",
+  "source": "mined",
+  "commit": "0ac0719e216530feb7ce246ee66cc97b686da6f0",
+  "parentCommit": "f46f9f50919bf21bb862f5a73096f01cbda0c70b",
+  "date": "2024-11-27T19:35:49+08:00",
+  "text": "When the navigation is collapsed, keep the selected item’s parent visually highlighted so its active state remains clear.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

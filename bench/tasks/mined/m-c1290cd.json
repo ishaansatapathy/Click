@@ -1,0 +1,28 @@
+{
+  "id": "m-c1290cd",
+  "source": "mined",
+  "commit": "c1290cdf289a87b387867dc9fe97b384c4a76f2a",
+  "parentCommit": "df2821ebe963f88718ebdd1e6f3a6aaa458211de",
+  "date": "2024-11-26T11:42:24+08:00",
+  "text": "Reorganize the application’s layout components to make the structure clearer, grouping the main content component and layout variants into dedicated subfolders while keeping imports and exports working.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue",
+      "src/layouts/components/index.ts",
+      "src/layouts/index.vue",
+      "src/layouts/modes/LeftMode.vue",
+      "src/layouts/modes/LeftTopMode.vue",
+      "src/layouts/modes/TopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain",
+      "sym:src/layouts/index.vue#Layouts",
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode",
+      "sym:src/layouts/modes/TopMode.vue#TopMode"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,17 @@
+{
+  "id": "m-a00e57a",
+  "source": "mined",
+  "commit": "a00e57a1e842179f005de95e7fa57862b47ffc20",
+  "parentCommit": "b92a1a24fccc7c403df87780e29a09869bb60348",
+  "date": "2024-02-07T10:32:53+08:00",
+  "text": "Remove the obsolete role-change redirect from the permissions page. Keep the role switcher and its existing access warning.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/permission/page-level.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

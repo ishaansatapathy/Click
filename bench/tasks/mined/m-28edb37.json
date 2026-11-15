@@ -1,0 +1,19 @@
+{
+  "id": "m-28edb37",
+  "source": "mined",
+  "commit": "28edb3775a8c381420073d1c0f2a57127d8fcd34",
+  "parentCommit": "db3de00fcfbba52d6c3a6bb478654be0afae297a",
+  "date": "2023-08-24T16:15:20+08:00",
+  "text": "Update the notification timestamps to reflect the announcements’ current age, moving the Vite launch to one year ago and the original launch to two years ago.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/data.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/data.ts#notifyData"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

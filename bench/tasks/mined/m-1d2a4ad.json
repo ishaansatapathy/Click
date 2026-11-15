@@ -1,0 +1,20 @@
+{
+  "id": "m-1d2a4ad",
+  "source": "mined",
+  "commit": "1d2a4ad9b694aad7d68abae773d89afae179cdec",
+  "parentCommit": "b40df6c6ad3670227e5f0ca5f30c2c7c3e5fb0da",
+  "date": "2023-06-08T13:39:06+08:00",
+  "text": "Simplify the string validation and make API response handling safer when request metadata is missing, while preserving direct returns for binary responses.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/validate.ts",
+      "src/http/axios.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/validate.ts#isString"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

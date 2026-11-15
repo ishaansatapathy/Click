@@ -1,0 +1,19 @@
+{
+  "id": "m-01249a4",
+  "source": "mined",
+  "commit": "01249a4f5a9139da6d400d7565cc3df27755b6f3",
+  "parentCommit": "2ad674b0b066fe8cf8558f7c3f5c4ae35f728aed",
+  "date": "2024-02-25T12:52:55+08:00",
+  "text": "Use the shared API response type for the select-fetching hook’s response data, removing its redundant local response shape.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useFetchSelect.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useFetchSelect.ts#ApiData"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

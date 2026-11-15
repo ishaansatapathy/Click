@@ -1,0 +1,19 @@
+{
+  "id": "m-b02c8c6",
+  "source": "mined",
+  "commit": "b02c8c6f60d46a3ea279a0557372db742818d0f9",
+  "parentCommit": "f7d4ea147eac5435562451b4f6946925f61e6fdf",
+  "date": "2024-12-06T13:44:16+08:00",
+  "text": "Correct the tab item alignment so its content is centered vertically and horizontally, and adjust the close icon spacing for a balanced appearance.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

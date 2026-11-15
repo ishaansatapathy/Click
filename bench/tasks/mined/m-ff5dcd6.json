@@ -1,0 +1,18 @@
+{
+  "id": "m-ff5dcd6",
+  "source": "mined",
+  "commit": "ff5dcd66f1ac323ee2671c821a79b34baf7c70ef",
+  "parentCommit": "0142c8a94dd371c9bff4eb785c9b9e0a9a059454",
+  "date": "2024-11-29T17:03:28+08:00",
+  "text": "Consolidate external CSS imports in the application entry point so styles are loaded together, rather than importing them from individual modules.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/main.ts",
+      "src/router/guard.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-a415ade",
+  "source": "mined",
+  "commit": "a415ade4c2d7b28eca76cb010c7bc0b58b898e8d",
+  "parentCommit": "d29e5ba0627438e8b45b766ff31755aacb7ae18b",
+  "date": "2024-11-21T19:53:33+08:00",
+  "text": "Standardize array checks in the permission directive and permission-checking utility by using the shared validation helper.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/permission.ts",
+      "src/plugins/permission-directive.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/permission.ts#checkPermission"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

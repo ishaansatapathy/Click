@@ -1,0 +1,19 @@
+{
+  "id": "m-3531250",
+  "source": "mined",
+  "commit": "3531250c5135197fae2ffa2e45f4be6dc2ca1034",
+  "parentCommit": "444e04d19b61cfca68ec3afeb9095efa4cf3c0b2",
+  "date": "2023-07-12T13:34:28+08:00",
+  "text": "Correct the tab bar’s right-click context menu positioning in the top-layout mode so it appears in the expected location.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftTopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

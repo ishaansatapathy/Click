@@ -1,0 +1,31 @@
+{
+  "id": "m-cbd9e02",
+  "source": "mined",
+  "commit": "cbd9e02f79cbe65e731ceefeeddf910873a44fde",
+  "parentCommit": "89d5033849581b7ed64e9e8ac78e232e12381a51",
+  "date": "2026-06-20T00:27:29+08:00",
+  "text": "Rename the role-switching control and store action to reflect that they switch the active account, not just its roles. Keep the permission examples working with the updated account-switching behavior.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/permission/button-level.vue",
+      "src/pages/demo/permission/components/SwitchUser.vue",
+      "src/pages/demo/permission/page-level.vue",
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/permission/button-level.vue#ButtonLevel",
+      "sym:src/pages/demo/permission/components/SwitchUser.vue#SwitchUser",
+      "sym:src/pages/demo/permission/page-level.vue#PageLevel",
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-cbd9e02.test.ts"
+    ]
+  }
+}

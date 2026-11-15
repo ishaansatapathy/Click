@@ -1,0 +1,26 @@
+{
+  "id": "m-2c7d5b2",
+  "source": "mined",
+  "commit": "2c7d5b2b763c3a09b4531b00104919e3e4499eec",
+  "parentCommit": "e43edd4739947500752ecb9ed6afc416469594b2",
+  "date": "2023-08-30T18:26:49+08:00",
+  "text": "Improve the watermark composable with clearer configuration options, reliable cleanup, and support for both local and page-wide watermarks. Add an interactive example so developers can create and clear each type.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts",
+      "src/layouts/components/RightPanel/index.vue",
+      "src/pages/demo/composable-demo/use-watermark.vue",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#DefaultConfig",
+      "sym:src/common/composables/useWatermark.ts#useWatermark",
+      "sym:src/layouts/components/RightPanel/index.vue#RightPanel",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark",
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

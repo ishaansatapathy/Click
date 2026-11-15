@@ -1,0 +1,33 @@
+{
+  "id": "m-e4d9673",
+  "source": "mined",
+  "commit": "e4d9673a2bd86e013fbf86b2f6f2ee1715014227",
+  "parentCommit": "05712f4adc58f3a36ffdc71d2c8812bc5a0b8e69",
+  "date": "2023-05-21T10:42:50+08:00",
+  "text": "Standardize TypeScript type names by removing the redundant `Type` suffix and the `I` prefix from tag-view types, updating all references while preserving behavior.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/index.vue",
+      "src/common/composables/useFetchSelect.ts",
+      "src/common/composables/useTheme.ts",
+      "src/layouts/components/TagsView/index.vue",
+      "src/pages/dashboard/index.vue",
+      "src/pinia/stores/tags-view.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/index.vue#Notify",
+      "sym:src/common/composables/useFetchSelect.ts#OptionValue",
+      "sym:src/common/composables/useFetchSelect.ts#SelectOption",
+      "sym:src/common/composables/useFetchSelect.ts#useFetchSelect",
+      "sym:src/common/composables/useTheme.ts#DefaultThemeName",
+      "sym:src/common/composables/useTheme.ts#ThemeName",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pages/dashboard/index.vue#Dashboard",
+      "sym:src/pinia/stores/tags-view.ts#TagView",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

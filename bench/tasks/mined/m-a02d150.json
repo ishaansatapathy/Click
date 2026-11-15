@@ -1,0 +1,19 @@
+{
+  "id": "m-a02d150",
+  "source": "mined",
+  "commit": "a02d1505332e1248187d518eee3ccd3e5fffc3db",
+  "parentCommit": "be7425d54dc8f8dc25a1953ff05501519042ed5c",
+  "date": "2023-09-01T17:50:37+08:00",
+  "text": "Clarify the watermark hook’s comments to explain when mutation observers are enabled or removed, and why removing a watermark that is already missing can happen.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

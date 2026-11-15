@@ -1,0 +1,19 @@
+{
+  "id": "m-921d441",
+  "source": "mined",
+  "commit": "921d4411d0d9f4db03fd28d23ad02cd147f4ea32",
+  "parentCommit": "592fa8265045b1bdd963f895a92b4e3d506b9747",
+  "date": "2024-11-25T10:53:34+08:00",
+  "text": "Clean up the pagination composable by simplifying its default configuration and clarifying the name of its initial options parameter, without changing behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/usePagination.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/usePagination.ts#usePagination"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

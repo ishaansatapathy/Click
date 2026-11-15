@@ -1,0 +1,19 @@
+{
+  "id": "m-6d6ee82",
+  "source": "mined",
+  "commit": "6d6ee82379956aad23c54f27fb1ba020facd47fe",
+  "parentCommit": "41c7ac1c9a43544099ea9d569561640df264940f",
+  "date": "2023-09-05T09:45:10+08:00",
+  "text": "Ensure the header’s bottom shadow remains visible in left-layout mode when the header is no longer fixed. Keep the header positioned above surrounding content in both fixed and non-fixed states.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

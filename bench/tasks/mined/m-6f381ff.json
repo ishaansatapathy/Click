@@ -1,0 +1,21 @@
+{
+  "id": "m-6f381ff",
+  "source": "mined",
+  "commit": "6f381ffd545278e524d3a013208f2b618bdbdca3",
+  "parentCommit": "4571a12742a3674a3d5f7f3444bf78c92b9ff1ae",
+  "date": "2023-07-19T18:14:42+08:00",
+  "text": "Enable the top layout mode as a selectable option by removing its “in development” label. Ensure the navigation bar’s sidebar can shrink so its menu adapts to the available width.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Settings/SelectLayoutMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Settings/SelectLayoutMode.vue#SelectLayoutMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

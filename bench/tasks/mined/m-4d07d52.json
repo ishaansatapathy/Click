@@ -1,0 +1,18 @@
+{
+  "id": "m-4d07d52",
+  "source": "mined",
+  "commit": "4d07d52b910b21647e15dc47c1a4c6de594d90f7",
+  "parentCommit": "be75b2b118f1cc14d2d791316dce77bc9cbdb535",
+  "date": "2023-06-17T14:34:39+08:00",
+  "text": "Improve the role-based access examples by clarifying which roles can see each element and when to use conditional checks for dynamically rendered content. Make the page-level access notice clearer and align the examples’ spacing and styling.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/permission/button-level.vue",
+      "src/pages/demo/permission/page-level.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

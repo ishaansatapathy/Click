@@ -1,0 +1,20 @@
+{
+  "id": "m-d090c29",
+  "source": "mined",
+  "commit": "d090c294ae3fe1e000fadbe2b55898741e548338",
+  "parentCommit": "5c09716fa51356b36dd35baed3cea23084e4e2c4",
+  "date": "2023-05-24T18:25:49+08:00",
+  "text": "Simplify role-based route filtering and dynamic route selection while preserving existing access behavior. Keep the route filtering logic clear and avoid unnecessary branching.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/permission.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/permission.ts#hasPermission",
+      "sym:src/pinia/stores/permission.ts#usePermissionStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

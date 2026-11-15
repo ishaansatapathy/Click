@@ -1,0 +1,24 @@
+{
+  "id": "m-ff4ae8b",
+  "source": "mined",
+  "commit": "ff4ae8ba5be847aa030363abddcfa9e2aede37ca",
+  "parentCommit": "b18bf9d4b5baf647f47a4c410c172e205315a2ca",
+  "date": "2024-11-23T00:04:43+08:00",
+  "text": "Refactor the menu search UI into a clearer component structure, simplifying component and state names while preserving existing search behavior.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Footer.vue",
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue",
+      "src/common/components/SearchMenu/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/Modal.vue#Modal",
+      "sym:src/common/components/SearchMenu/Result.vue#Result",
+      "sym:src/common/components/SearchMenu/index.vue#SearchMenu"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

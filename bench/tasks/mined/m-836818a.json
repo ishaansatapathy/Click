@@ -1,0 +1,19 @@
+{
+  "id": "m-836818a",
+  "source": "mined",
+  "commit": "836818aedd2b1844e06db774eb738b84842d4788",
+  "parentCommit": "32fae72f4f31cd9b846c76c5034ac8892968165e",
+  "date": "2023-05-26T18:16:44+08:00",
+  "text": "Streamline the view-history store by simplifying duplicate detection, removal, and cache handling while preserving query parameters and pinned views. Keep the existing behavior for cached views and affixed entries.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/tags-view.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

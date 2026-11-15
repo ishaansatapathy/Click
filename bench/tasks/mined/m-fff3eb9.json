@@ -1,0 +1,18 @@
+{
+  "id": "m-fff3eb9",
+  "source": "mined",
+  "commit": "fff3eb9498ff8e453a6cc4a5d0ead894d1265f20",
+  "parentCommit": "8fd01971fd6bbd86e6e765c3732ed5610b4f9b88",
+  "date": "2024-02-04T17:14:24+08:00",
+  "text": "Refactor the search dialog and menu selection to use Vue 3.4’s `defineModel` macro, simplifying two-way binding while preserving existing behavior.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

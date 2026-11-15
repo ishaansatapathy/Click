@@ -1,0 +1,17 @@
+{
+  "id": "m-81d5ea1",
+  "source": "mined",
+  "commit": "81d5ea1e61865e916469c3622604f6031330edc1",
+  "parentCommit": "0e0453eab03945b55b65f36a857210effcee5480",
+  "date": "2022-10-31T11:42:36+08:00",
+  "text": "Show an empty-state indicator when there are no notifications, while continuing to display notification cards when items are available.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/List.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-b01c8b2",
+  "source": "mined",
+  "commit": "b01c8b29ef6b87d312556df4b8117962b22a431c",
+  "parentCommit": "4bf0e7a998f971421098527eec06d6bd15f55294",
+  "date": "2024-11-26T16:14:05+08:00",
+  "text": "Remove the redundant `alwaysShow` route metadata property to simplify the route configuration.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-631efee",
+  "source": "mined",
+  "commit": "631efeed5d0e9a21d024ce201ecee384bd1bd68b",
+  "parentCommit": "08ce7fd2f46da17365b5565dff097770ae0a6697",
+  "date": "2024-12-02T19:01:56+08:00",
+  "text": "Clarify the validation messages for the role-checking utility and directive so they explain the required non-empty array and show usage examples. Remove the outdated comment about hiding elements.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/permission.ts",
+      "src/plugins/permission-directive.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/permission.ts#checkPermission"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

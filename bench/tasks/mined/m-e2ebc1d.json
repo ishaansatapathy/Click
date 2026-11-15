@@ -1,0 +1,20 @@
+{
+  "id": "m-e2ebc1d",
+  "source": "mined",
+  "commit": "e2ebc1da8513eeba4eaecf93973bdd8c408a66f4",
+  "parentCommit": "f800a8d202087bb8c672a0eb860ab7ce2fa98f13",
+  "date": "2023-06-30T18:03:19+08:00",
+  "text": "Add a reset control to the layout preferences so users can restore the default configuration. Clear the saved layout preferences and reload the page when it is activated.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/local-storage.ts",
+      "src/layouts/components/Settings/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/index.vue#Settings"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

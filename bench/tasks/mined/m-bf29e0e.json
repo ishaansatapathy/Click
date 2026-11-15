@@ -1,0 +1,21 @@
+{
+  "id": "m-bf29e0e",
+  "source": "mined",
+  "commit": "bf29e0e52a5e0924f864dc241ca4ce5867d046bc",
+  "parentCommit": "51916b6bc045f48a36b1a94a8a44bf12cd2cbcdb",
+  "date": "2023-06-01T09:24:37+08:00",
+  "text": "Standardize the cache utility’s naming and update its consumers, while accurately reflecting that the stored theme name may be absent.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts",
+      "src/common/utils/local-storage.ts",
+      "src/pinia/stores/app.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/local-storage.ts#getActiveThemeName"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

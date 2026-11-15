@@ -1,0 +1,19 @@
+{
+  "id": "m-5113d60",
+  "source": "mined",
+  "commit": "5113d60565f6c887f2846d4cab866188ddf38ed4",
+  "parentCommit": "086e9a8c60f4c9ea6df00058d9acb607e61eb546",
+  "date": "2023-08-25T15:58:38+08:00",
+  "text": "Remove the route-change event listener before the component is destroyed to prevent it from firing during teardown.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

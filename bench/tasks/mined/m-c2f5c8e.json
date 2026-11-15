@@ -1,0 +1,19 @@
+{
+  "id": "m-c2f5c8e",
+  "source": "mined",
+  "commit": "c2f5c8ee91caab0163d5180efb75fb7199c059fe",
+  "parentCommit": "73fa7620522a45d067a66166eb23529b89e08e6a",
+  "date": "2025-02-19T13:35:10+08:00",
+  "text": "Reduce repeated hard-coded login route values by centralizing the path, making redirects and login checks easier to keep consistent.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/guard.ts"
+    ],
+    "symbols": [
+      "sym:src/router/guard.ts#registerNavigationGuard"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

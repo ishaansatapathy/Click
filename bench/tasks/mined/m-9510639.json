@@ -1,0 +1,20 @@
+{
+  "id": "m-9510639",
+  "source": "mined",
+  "commit": "9510639b494a416a2a1bc75988e7531c50153fb2",
+  "parentCommit": "56f294d51cf030c4917c822345a8c68086a7f90d",
+  "date": "2024-01-04T22:59:02+08:00",
+  "text": "Fix top-mode menu width adaptation so the menu collapses correctly when space is limited, while keeping hidden routes out of the rendered menu.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/Item.vue",
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

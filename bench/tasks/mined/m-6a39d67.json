@@ -1,0 +1,21 @@
+{
+  "id": "m-6a39d67",
+  "source": "mined",
+  "commit": "6a39d67941d5f5db90864b1c3dbf8ae92d4a3f75",
+  "parentCommit": "97030fa04b4502976b7a0f9700eca023a7dd3ad4",
+  "date": "2024-11-28T14:50:50+08:00",
+  "text": "Clarify the access-control examples by giving their routes and navigation entries distinct names for page-based and button-based access, and update the default destination accordingly.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/permission/button-level.vue",
+      "src/pages/demo/permission/page-level.vue",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#dynamicRoutes"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

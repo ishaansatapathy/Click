@@ -1,0 +1,20 @@
+{
+  "id": "m-32fae72",
+  "source": "mined",
+  "commit": "32fae72f4f31cd9b846c76c5034ac8892968165e",
+  "parentCommit": "7020a864f6f345ca766c369e67fb0b5bde6d1e4a",
+  "date": "2023-05-26T13:04:12+08:00",
+  "text": "Simplify the settings store by deriving its reactive state from the layout configuration, keeping each setting’s type aligned with its configured value.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/settings.ts#SettingsStore",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

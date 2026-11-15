@@ -1,0 +1,25 @@
+{
+  "id": "m-f800a8d",
+  "source": "mined",
+  "commit": "f800a8d202087bb8c672a0eb860ab7ce2fa98f13",
+  "parentCommit": "3fd5dbc412e21a0095dadef047b01785033d9546",
+  "date": "2023-06-30T13:43:20+08:00",
+  "text": "Persist layout preferences across sessions by loading saved configuration on startup and saving changes as users adjust the layout.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/constants/cache-key.ts",
+      "src/common/utils/local-storage.ts",
+      "src/layouts/config.ts",
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/common/constants/cache-key.ts#CacheKey",
+      "sym:src/pinia/stores/settings.ts#SettingsStore",
+      "sym:src/pinia/stores/settings.ts#SettingsStoreKey",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

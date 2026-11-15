@@ -1,0 +1,19 @@
+{
+  "id": "m-9473a13",
+  "source": "mined",
+  "commit": "9473a13c53a65bbac940874de1bde064d442c1a2",
+  "parentCommit": "5f611b9a13b0c35091a285891243a79071341450",
+  "date": "2024-11-21T12:41:24+08:00",
+  "text": "Correct the typo in the comment describing when the sidebar is hidden, preserving its intended meaning.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

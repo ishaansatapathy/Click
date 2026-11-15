@@ -1,0 +1,19 @@
+{
+  "id": "m-d8ab55f",
+  "source": "mined",
+  "commit": "d8ab55fe2ab40781802f93ff7111c06fd0753dea",
+  "parentCommit": "58fc64611679d2f83616ec9c8424b5509789671e",
+  "date": "2024-02-27T17:23:24+08:00",
+  "text": "Eliminate the slight icon jitter that occurs when resizing the navigation panel.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

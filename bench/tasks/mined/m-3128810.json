@@ -1,0 +1,19 @@
+{
+  "id": "m-3128810",
+  "source": "mined",
+  "commit": "31288109c4cc6f5072467508ce889e301265f64f",
+  "parentCommit": "f966b45acee1648cad15da48e92e0028ef0f7863",
+  "date": "2023-08-18T09:11:48+08:00",
+  "text": "Add a return-to-top control for the page and support scrolling back to the top when the header is fixed.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

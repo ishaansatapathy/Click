@@ -1,0 +1,19 @@
+{
+  "id": "m-710ff1c",
+  "source": "mined",
+  "commit": "710ff1cda78f27741529f3ae98b4cf20378be52b",
+  "parentCommit": "62e1a7a63ddb273a21aba579e09570591b17c02d",
+  "date": "2023-06-13T13:01:48+08:00",
+  "text": "Simplify the breadcrumb navigation logic while preserving its behavior, including route filtering, parameterized links, and updates when the route changes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Breadcrumb/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

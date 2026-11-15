@@ -1,0 +1,21 @@
+{
+  "id": "m-57d1df3",
+  "source": "mined",
+  "commit": "57d1df3f6e7cf37917b76c9f4127757822967af5",
+  "parentCommit": "83678f737007ff6e595b71727052fb2ae4cab363",
+  "date": "2023-06-29T12:43:01+08:00",
+  "text": "Extend the screen control to support both content-area enlargement and content-only fullscreen, while preserving the existing page-wide fullscreen mode. Provide clear mode-specific labels and icons, and hide surrounding navigation elements when the content area is enlarged.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

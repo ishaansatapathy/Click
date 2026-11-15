@@ -1,0 +1,19 @@
+{
+  "id": "m-d4d3d06",
+  "source": "mined",
+  "commit": "d4d3d06a5a460f4209544c48951ee1e298738f5c",
+  "parentCommit": "3f4283a9620683ef008281a91b587aa05c5a1a5f",
+  "date": "2022-08-23T15:07:29+08:00",
+  "text": "Simplify the navigation controls by replacing the reactive wrapper around sidebar toggling and logout actions with standalone functions, and remove unnecessary error handling from the login redirect.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

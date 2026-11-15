@@ -1,0 +1,25 @@
+{
+  "id": "m-bd782cf",
+  "source": "mined",
+  "commit": "bd782cf88dff19d5b8ef2c3c55e31762e1817a76",
+  "parentCommit": "f668e36b8c375eb88baaca1ae980707262bd7343",
+  "date": "2022-05-12T19:07:54+08:00",
+  "text": "Add an on-demand utility CSS engine to the project, configure it for the build pipeline, and provide a sample page to demonstrate its use. Update the project documentation and editor recommendations to reflect the new styling workflow.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/config.ts",
+      "src/main.ts",
+      "src/pages/demo/unocss/index.vue",
+      "src/pinia/stores/app.ts",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/unocss/index.vue#Unocss",
+      "sym:src/pinia/stores/app.ts#useAppStore",
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

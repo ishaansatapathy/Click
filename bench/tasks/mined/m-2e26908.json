@@ -1,0 +1,28 @@
+{
+  "id": "m-2e26908",
+  "source": "mined",
+  "commit": "2e269084cb0f9c8b02e7055824f0135a3a3b9602",
+  "parentCommit": "10eb74365cca912eec261159133988af78791971",
+  "date": "2026-06-13T18:06:04+08:00",
+  "text": "Improve pagination handling by supporting a request callback, a helper to reset to the first page without duplicate requests, and a watcher for page changes. Update the relevant usage guidance and example to demonstrate the streamlined API and two-way pagination binding.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/usePagination.ts",
+      "src/pages/demo/element-plus/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/composables/usePagination.ts#UsePaginationOptions",
+      "sym:src/common/composables/usePagination.ts#usePagination",
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-2e26908.test.ts"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-a05c64d",
+  "source": "mined",
+  "commit": "a05c64d40bd70edd9a57dbdcd8e86c60452bbfec",
+  "parentCommit": "08c21e3c55dac6bfa8ea1c1e003f9f6eae4165fe",
+  "date": "2025-08-01T10:25:34+08:00",
+  "text": "Refactor response type detection to use the request configuration, ensuring blob and arraybuffer responses are returned directly.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": [
+      "sym:src/http/axios.ts#createInstance"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,25 @@
+{
+  "id": "m-031c5c1",
+  "source": "mined",
+  "commit": "031c5c114e03363251d56d57f51692785fa79b31",
+  "parentCommit": "24e501dffc30c1206a368730fe9658a1a38616d1",
+  "date": "2026-06-07T15:38:23+08:00",
+  "text": "When an API response indicates a business error, preserve the original response data when rejecting the request so callers can inspect its details. Keep displaying the server-provided error message, falling back to a generic message when absent.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": [
+      "sym:src/http/axios.ts#createInstance"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-031c5c1.test.ts"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-c4526f7",
+  "source": "mined",
+  "commit": "c4526f72b1c59e4eabff797a99b0479c2dcd8b6e",
+  "parentCommit": "bf17c67fda9e14056bf94e0e3c34a475b09add8b",
+  "date": "2024-03-21T10:00:14+08:00",
+  "text": "Add a circular reveal animation when users switch themes, originating at the click position and expanding to cover the page. Use the browser’s View Transition API when available, while preserving immediate theme switching in unsupported browsers.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/ThemeSwitch/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

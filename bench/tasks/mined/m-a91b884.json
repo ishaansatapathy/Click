@@ -1,0 +1,17 @@
+{
+  "id": "m-a91b884",
+  "source": "mined",
+  "commit": "a91b8848a97753a75018312211aafc345ca3edf4",
+  "parentCommit": "9ddcf09dfddd47c943475ef778c6d7f464dbacf7",
+  "date": "2023-10-18T14:42:26+08:00",
+  "text": "Add a notice explaining that route caching for third-level and deeper routes is disabled by default, and direct developers to the configuration where they can enable it.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/level2/index.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-4133053",
+  "source": "mined",
+  "commit": "413305322d282f5d6f77af98051775c79f12fd37",
+  "parentCommit": "f3e71e0795bd54bef22e43c50d868384d12ad1bf",
+  "date": "2023-08-31T22:13:36+08:00",
+  "text": "Ensure each watermark instance maintains its own DOM and resize observers, so rendering multiple watermarks into the same parent does not prevent later instances from detecting and repairing tampering.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#Observer",
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

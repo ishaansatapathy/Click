@@ -1,0 +1,20 @@
+{
+  "id": "m-c5471b5",
+  "source": "mined",
+  "commit": "c5471b5fca18228b711d9b69f2b9bf1d52f2a424",
+  "parentCommit": "d71624873663bfeab3bdf12359807674753a2985",
+  "date": "2024-03-03T23:00:17+08:00",
+  "text": "Keep the 404 alias while removing the catch-all ErrorPage route, and simplify the redirect route to use a relative path within its parent.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes",
+      "sym:src/router/index.ts#dynamicRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,25 @@
+{
+  "id": "m-4f4b23d",
+  "source": "mined",
+  "commit": "4f4b23d6fed42b285d65d813fe512dcfcefb5045",
+  "parentCommit": "547afcb649941eebaf18f946b794f05d14e5ff4c",
+  "date": "2026-06-07T17:53:27+08:00",
+  "text": "Ensure the settings panel remains enabled by default and cannot be overridden by cached layout preferences.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/config.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/config.ts#layoutsConfig"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-4f4b23d.test.ts"
+    ]
+  }
+}

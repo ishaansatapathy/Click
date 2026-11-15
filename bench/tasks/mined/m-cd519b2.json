@@ -1,0 +1,19 @@
+{
+  "id": "m-cd519b2",
+  "source": "mined",
+  "commit": "cd519b2dee762fc98f58bb14fd963324899ef5d4",
+  "parentCommit": "24e9431d6c6ff2316fb99dc70293d35e74eca979",
+  "date": "2026-06-13T19:28:43+08:00",
+  "text": "Simplify pagination example parameter passing by spreading the search criteria into API requests, and keep the CRUD skill guidance in sync.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/element-plus/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

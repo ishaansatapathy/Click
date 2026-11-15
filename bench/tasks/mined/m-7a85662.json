@@ -1,0 +1,17 @@
+{
+  "id": "m-7a85662",
+  "source": "mined",
+  "commit": "7a8566244d62918ff9066d64ae9d747c7fe7e3ea",
+  "parentCommit": "3b47cecfc96eae0a43da6a87a1e992cfb6e22570",
+  "date": "2023-03-30T09:13:00+08:00",
+  "text": "Ensure routes configured with `keepAlive: true` remain cached when the TagsView is hidden, while keeping the TagsView out of view.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/index.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

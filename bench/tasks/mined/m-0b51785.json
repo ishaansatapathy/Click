@@ -1,0 +1,22 @@
+{
+  "id": "m-0b51785",
+  "source": "mined",
+  "commit": "0b517855b6598a3fd27d79752fb7cd9c4e12e1a1",
+  "parentCommit": "b5210eb4521804a8abc53d1481dd219a49b562e1",
+  "date": "2024-11-25T11:09:23+08:00",
+  "text": "Polish theme, title, and watermark utilities with small readability and performance improvements, including clearer default configuration handling and concise cleanup behavior.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts",
+      "src/common/composables/useTitle.ts",
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#DefaultConfig",
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

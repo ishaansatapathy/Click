@@ -1,0 +1,21 @@
+{
+  "id": "m-da63f9e",
+  "source": "mined",
+  "commit": "da63f9e204e3c853cd2e987e4ab6cc525b613f8d",
+  "parentCommit": "8140c25601c71bd83116c9300233349ac871937f",
+  "date": "2022-10-27T18:21:25+08:00",
+  "text": "Add a notification control to the navigation bar with a badge showing the combined count of notifications, messages, and to-dos. Provide a popover with separate tabs and a link to view the history for the selected category.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/index.vue",
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/index.vue#Notify",
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

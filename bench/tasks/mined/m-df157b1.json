@@ -1,0 +1,19 @@
+{
+  "id": "m-df157b1",
+  "source": "mined",
+  "commit": "df157b1f1ea3f9747d9cf6bb7b55a362f680fccc",
+  "parentCommit": "c8b195d12829eb1c6417ee2223f2443a51e38f63",
+  "date": "2022-04-23T10:33:30+08:00",
+  "text": "Update the navigation dropdown with working links to the Chinese documentation and Gitee repository, and remove the placeholder English documentation link. Refresh the package description to highlight the project as free and open source.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

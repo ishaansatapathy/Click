@@ -1,0 +1,19 @@
+{
+  "id": "m-9c7fd02",
+  "source": "mined",
+  "commit": "9c7fd02fb724d119e67caecf20a8db990f79f6b9",
+  "parentCommit": "2a79acc59aca9c551935d06c52c98d04b46104cd",
+  "date": "2023-05-22T09:14:03+08:00",
+  "text": "Simplify the badge count calculation while preserving the total number of entries across all lists.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/index.vue#Notify"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

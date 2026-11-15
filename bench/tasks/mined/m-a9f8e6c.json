@@ -1,0 +1,21 @@
+{
+  "id": "m-a9f8e6c",
+  "source": "mined",
+  "commit": "a9f8e6ccc25839b48d619a07c79ce6b880885bc1",
+  "parentCommit": "d77d96800b47205827177d679fccad1c6ddbaa6c",
+  "date": "2022-08-23T15:56:20+08:00",
+  "text": "Bind the layout toggles directly to the store’s reactive values and remove the redundant local state and change action. Keep the existing options and behavior intact.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Settings/index.vue",
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

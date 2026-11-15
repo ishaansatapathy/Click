@@ -1,0 +1,17 @@
+{
+  "id": "m-82c3409",
+  "source": "mined",
+  "commit": "82c3409b7df260f3723bd2c690ccc90165c74986",
+  "parentCommit": "30ec43d4904d967ed7b7a694bce708a0f4ebb59c",
+  "date": "2023-08-21T17:15:12+08:00",
+  "text": "Prevent blank pages when saved layout preferences contain fewer settings than the application requires. Ensure missing preferences fall back to their defaults while preserving any saved values.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/config.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,17 @@
+{
+  "id": "m-80afc6e",
+  "source": "mined",
+  "commit": "80afc6e13f051c01786516f617d48a74d4b03bd6",
+  "parentCommit": "d47428ccc718ec9676dafb3a730bb74e9ff8da0c",
+  "date": "2024-11-19T14:04:26+08:00",
+  "text": "Remove unused example validation helpers from the utility module to reduce dead code while preserving the validators that are still in use.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/validate.ts"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

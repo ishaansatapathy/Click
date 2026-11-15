@@ -1,0 +1,19 @@
+{
+  "id": "m-8e83db5",
+  "source": "mined",
+  "commit": "8e83db52284a1af41a4c852c3cd9c1b0c729d8fc",
+  "parentCommit": "574f47cb00efc521e770bed506e160e5ce7e8d34",
+  "date": "2023-09-07T17:12:31+08:00",
+  "text": "Ensure the active menu indicator styling remains intact after applying the shared tip-line style, including for collapsed submenus.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

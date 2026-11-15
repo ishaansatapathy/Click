@@ -1,0 +1,19 @@
+{
+  "id": "m-e8d0f9b",
+  "source": "mined",
+  "commit": "e8d0f9ba9d9277d2d4749dda19d40b97db0d5069",
+  "parentCommit": "53694a35bef95cd0f173c79bd5681f7e9097e928",
+  "date": "2023-06-16T18:11:41+08:00",
+  "text": "Set the UI component library’s locale to Chinese directly in the provider, and refine the startup notification’s accompanying comment.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/App.vue"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-dfff053",
+  "source": "mined",
+  "commit": "dfff053ae8388797ce10d268ee75a8e223d8dfbb",
+  "parentCommit": "4b779ed01030704242e856f112f9cb3641698f99",
+  "date": "2023-06-06T18:15:29+08:00",
+  "text": "Optimize the shared request utility by simplifying response handling and improving how default and caller-provided request settings are combined. Avoid sending an empty bearer token when no token is available.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts"
+    ],
+    "symbols": [
+      "sym:src/http/axios.ts#createRequest",
+      "sym:src/http/axios.ts#request"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

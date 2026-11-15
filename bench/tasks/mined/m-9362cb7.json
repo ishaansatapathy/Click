@@ -1,0 +1,21 @@
+{
+  "id": "m-9362cb7",
+  "source": "mined",
+  "commit": "9362cb704f119d700010cea1a7ce7357e2ba95f2",
+  "parentCommit": "87d19b0446a3f9e2cf90ef740678900f02ceb326",
+  "date": "2023-03-23T11:27:07+08:00",
+  "text": "Automatically scroll the tags view to bring the current route’s tag into the visible area whenever navigation changes, including when the tag is outside the viewport.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/ScrollPane.vue",
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

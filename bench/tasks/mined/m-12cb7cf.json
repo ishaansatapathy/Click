@@ -1,0 +1,21 @@
+{
+  "id": "m-12cb7cf",
+  "source": "mined",
+  "commit": "12cb7cfcc32c35c65e87b5c313016972ffb8e9d3",
+  "parentCommit": "f3fd669cadf7be08432bdd03c5f98acbeae31629",
+  "date": "2022-10-21T11:25:06+08:00",
+  "text": "Ensure all consumers share a single reactive theme state, so changing the active theme stays consistent across the application.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useTheme.ts#initTheme",
+      "sym:src/common/composables/useTheme.ts#setTheme",
+      "sym:src/common/composables/useTheme.ts#useTheme"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

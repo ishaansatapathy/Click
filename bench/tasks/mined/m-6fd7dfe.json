@@ -1,0 +1,27 @@
+{
+  "id": "m-6fd7dfe",
+  "source": "mined",
+  "commit": "6fd7dfe7aa653dabf4a8653e57bb68ebded2029e",
+  "parentCommit": "8e423954cea49a0a03f006cceb1ffa8f32cfcda5",
+  "date": "2024-11-28T16:59:26+08:00",
+  "text": "Polish the interactive examples with consistent card-based layouts, clearer action labels, and improved spacing. Refine the fetch example’s loading and error feedback, and tidy the utility-style showcase for better readability.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/composable-demo/apis/use-fetch-select.ts",
+      "src/pages/demo/composable-demo/use-fetch-select.vue",
+      "src/pages/demo/composable-demo/use-fullscreen-loading.vue",
+      "src/pages/demo/composable-demo/use-watermark.vue",
+      "src/pages/demo/unocss/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/composable-demo/apis/use-fetch-select.ts#getSelectDataApi",
+      "sym:src/pages/demo/composable-demo/use-fetch-select.vue#UseFetchSelect",
+      "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark",
+      "sym:src/pages/demo/unocss/index.vue#Unocss"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

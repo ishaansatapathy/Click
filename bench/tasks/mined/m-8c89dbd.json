@@ -1,0 +1,21 @@
+{
+  "id": "m-8c89dbd",
+  "source": "mined",
+  "commit": "8c89dbd743b96dcf62cef15335aff42465e7364c",
+  "parentCommit": "a486b8c18ce49f20aea97df8828d9c2cf7d9bec1",
+  "date": "2023-08-25T12:34:13+08:00",
+  "text": "Improve the loading-hook example to show how to pass arguments to an asynchronous request and display the returned data alongside its success message.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/composable-demo/apis/use-fullscreen-loading.ts",
+      "src/pages/demo/composable-demo/use-fullscreen-loading.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/composable-demo/apis/use-fullscreen-loading.ts#getSuccessApi",
+      "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

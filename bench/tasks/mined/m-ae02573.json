@@ -1,0 +1,25 @@
+{
+  "id": "m-ae02573",
+  "source": "mined",
+  "commit": "ae025731a8d17aa0f35d476f65573d106f30b011",
+  "parentCommit": "a488b4dbf4889574b079d0ee1a44bea183c01a0a",
+  "date": "2025-06-23T17:04:31+08:00",
+  "text": "Adopt Vue 3.5’s Reactive Props Destructure in the relevant UI elements, preserving existing prop defaults and behavior while accessing props directly. Enable editor hints for destructured props.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/layouts/components/Hamburger/index.vue",
+      "src/layouts/components/Logo/index.vue",
+      "src/layouts/components/Sidebar/Item.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/layouts/components/Hamburger/index.vue#Hamburger",
+      "sym:src/layouts/components/Logo/index.vue#Logo",
+      "sym:src/layouts/components/Sidebar/Item.vue#Item"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

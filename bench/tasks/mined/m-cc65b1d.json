@@ -1,0 +1,29 @@
+{
+  "id": "m-cc65b1d",
+  "source": "mined",
+  "commit": "cc65b1d6c70fdc2f72682a1bf5e67aeef642c646",
+  "parentCommit": "8a224cc9466d636e47ee555311363c067b7bda44",
+  "date": "2024-11-26T18:13:39+08:00",
+  "text": "Move the layout configuration module into the layout domain and align its public names and consumers with that organization. Preserve existing behavior while updating the related imports and cache helpers.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/local-storage.ts",
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts",
+      "src/pinia/stores/settings.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/local-storage.ts#getLayoutsConfig",
+      "sym:src/common/utils/local-storage.ts#removeLayoutsConfig",
+      "sym:src/common/utils/local-storage.ts#setLayoutsConfig",
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/layouts/config.ts#LayoutsConfig",
+      "sym:src/layouts/config.ts#layoutsConfig",
+      "sym:src/pinia/stores/settings.ts#SettingsStore",
+      "sym:src/pinia/stores/settings.ts#useSettingsStore"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

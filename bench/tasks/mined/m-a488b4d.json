@@ -1,0 +1,19 @@
+{
+  "id": "m-a488b4d",
+  "source": "mined",
+  "commit": "a488b4dbf4889574b079d0ee1a44bea183c01a0a",
+  "parentCommit": "5b1d5fb818d79d22dee2e578f62687d5b2264d97",
+  "date": "2025-06-23T16:00:48+08:00",
+  "text": "Update the fullscreen component to use Vue 3.5’s `onWatcherCleanup` for removing its fullscreen change listener when the watcher is cleaned up.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

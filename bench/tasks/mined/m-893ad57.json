@@ -1,0 +1,19 @@
+{
+  "id": "m-893ad57",
+  "source": "mined",
+  "commit": "893ad57f7c4103378c118e4157bd2626dbb9e01c",
+  "parentCommit": "5a2836c8258e74461b33cf4c082791c5e0964994",
+  "date": "2024-03-11T09:20:19+08:00",
+  "text": "Replace JSON serialization-based deep copies in the table form with lodash-es’s `cloneDeep` to preserve values that JSON cloning cannot handle. Use it consistently when initializing, resetting, and populating the form.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/element-plus/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

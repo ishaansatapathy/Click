@@ -1,0 +1,19 @@
+{
+  "id": "m-e43edd4",
+  "source": "mined",
+  "commit": "e43edd4739947500752ecb9ed6afc416469594b2",
+  "parentCommit": "33f0131c48c90d2d4559d56143f5c9d01e470580",
+  "date": "2023-08-30T15:32:34+08:00",
+  "text": "Add a reusable watermark capability for a chosen container, with configurable appearance and sizing, automatic adaptation to container changes, and cleanup when cleared or its owning component is removed. Ensure the overlay resists accidental removal or hiding.Add a reusable watermark feature for a chosen container, with configurable appearance and automatic resizing as the container changes. Clean it up when cleared or when its owning component is removed, and protect the overlay from being hidden or removed.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

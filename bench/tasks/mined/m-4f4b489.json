@@ -1,0 +1,21 @@
+{
+  "id": "m-4f4b489",
+  "source": "mined",
+  "commit": "4f4b4892b9d3e7dfd269ca377980493908ada600",
+  "parentCommit": "7748dc0fa489a3c620b6c0ce37438ff863fa974b",
+  "date": "2024-11-15T16:53:18+08:00",
+  "text": "Refactor the tags bar context menu positioning to use viewport coordinates, keeping it correctly placed near the pointer and within the screen bounds regardless of the layout container.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue",
+      "src/layouts/modes/LeftTopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

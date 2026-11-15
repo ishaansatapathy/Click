@@ -1,0 +1,19 @@
+{
+  "id": "m-f3e71e0",
+  "source": "mined",
+  "commit": "f3e71e0795bd54bef22e43c50d868384d12ad1bf",
+  "parentCommit": "d2952e0d167835d3fad9ffa58c98952dcbdbea90",
+  "date": "2023-08-31T18:28:24+08:00",
+  "text": "Improve watermark defense performance by debouncing refreshes and mutation handling, and only refresh when the watermark element itself has an attribute change.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-e4b5c27",
+  "source": "mined",
+  "commit": "e4b5c2781e64fd96057062d83bbc22af1b46cb43",
+  "parentCommit": "63ca3831ea8316e1992ea0456d11ebaa92256d79",
+  "date": "2022-09-29T20:34:25+08:00",
+  "text": "Update routing so unknown URLs display the 404 page without losing the requested URL, and make the 403 and 404 pages directly accessible as hidden routes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

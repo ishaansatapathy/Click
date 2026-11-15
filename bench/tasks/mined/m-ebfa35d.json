@@ -1,0 +1,21 @@
+{
+  "id": "m-ebfa35d",
+  "source": "mined",
+  "commit": "ebfa35d92f30f04a1b09fe2d9844c1b1ab5acae0",
+  "parentCommit": "3dadc9c50f965b61ac2a2432f547d006e9dcee5a",
+  "date": "2023-02-28T14:11:39+08:00",
+  "text": "Show the persistent project-support notification when the application starts, rather than tying it to the dashboard view, so it appears consistently across the experience.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/App.vue",
+      "src/pages/dashboard/index.vue"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App",
+      "sym:src/pages/dashboard/index.vue#Dashboard"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

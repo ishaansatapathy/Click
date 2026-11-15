@@ -1,0 +1,27 @@
+{
+  "id": "m-ac1b621",
+  "source": "mined",
+  "commit": "ac1b621667ef7c7fc9049a62e8f7d14e625366ec",
+  "parentCommit": "ad9ff59a4033f114ff847cdb70dc3153f338f7eb",
+  "date": "2023-08-10T14:48:22+08:00",
+  "text": "Add a menu search experience that lets users find available pages by title, navigate results with the keyboard, and open a selected page. Make the search accessible from the navigation bar and adapt its presentation for mobile devices.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Footer.vue",
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue",
+      "src/common/components/SearchMenu/index.vue",
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/index.vue#SearchMenu",
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Settings/index.vue#Settings"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

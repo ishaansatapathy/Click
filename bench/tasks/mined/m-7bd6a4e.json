@@ -1,0 +1,19 @@
+{
+  "id": "m-7bd6a4e",
+  "source": "mined",
+  "commit": "7bd6a4e896bc0d98df0c4a99810a6c8f44a9897b",
+  "parentCommit": "1d1b397187cdea2a981276e1bf5c334f42110f9b",
+  "date": "2022-04-22T15:24:30+08:00",
+  "text": "Fix active-state detection for navigation tabs so the current tab is correctly identified by comparing its path with the current route.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

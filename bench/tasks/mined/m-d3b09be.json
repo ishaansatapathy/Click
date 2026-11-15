@@ -1,0 +1,22 @@
+{
+  "id": "m-d3b09be",
+  "source": "mined",
+  "commit": "d3b09be7749c2891017d59e11c2cdd82c0da5be4",
+  "parentCommit": "05f8cc6404794b95c7703a135d5463148728af87",
+  "date": "2024-11-28T13:39:44+08:00",
+  "text": "Remove unnecessary `window` prefixes from browser-global references. Clarify the permission route metadata comments and explicitly mark the button-level route as inheriting its parent’s roles.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/user.ts",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/user.ts#useUserStore",
+      "sym:src/router/index.ts#dynamicRoutes",
+      "sym:src/router/index.ts#resetRouter"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

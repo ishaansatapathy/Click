@@ -1,0 +1,19 @@
+{
+  "id": "m-663a2c7",
+  "source": "mined",
+  "commit": "663a2c71732b068707d12e426deda1f0efe77bf5",
+  "parentCommit": "b01c8b29ef6b87d312556df4b8117962b22a431c",
+  "date": "2024-11-26T16:15:49+08:00",
+  "text": "Allow multiple navigation groups to remain expanded at the same time, rather than forcing only one open group.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

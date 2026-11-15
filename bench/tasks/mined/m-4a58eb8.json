@@ -1,0 +1,22 @@
+{
+  "id": "m-4a58eb8",
+  "source": "mined",
+  "commit": "4a58eb8e035e77b02d526c85e67dcad33a31c640",
+  "parentCommit": "5d641ace1fefeba551ee2c88304f811467bae210",
+  "date": "2023-02-28T14:13:45+08:00",
+  "text": "Improve table data typing by defining a reusable row interface and applying it to table state and handlers. Use the response type for grid loading, and hide the password field when editing an existing user.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/apis/tables/type.ts",
+      "src/pages/demo/element-plus/index.vue",
+      "src/pages/demo/vxe-table/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus",
+      "sym:src/pages/demo/vxe-table/index.vue#VxeTable"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

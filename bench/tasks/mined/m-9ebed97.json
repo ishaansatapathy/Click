@@ -1,0 +1,21 @@
+{
+  "id": "m-9ebed97",
+  "source": "mined",
+  "commit": "9ebed9753da04daa92e108f4ae86c3346212c7fc",
+  "parentCommit": "413305322d282f5d6f77af98051775c79f12fd37",
+  "date": "2023-09-01T00:43:44+08:00",
+  "text": "Improve watermark protection performance by reducing the delay before the watermark is restored and handling mutation records more efficiently, while preserving defenses against removal and hiding.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts",
+      "src/pages/demo/composable-demo/use-watermark.vue"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-3236230",
+  "source": "mined",
+  "commit": "323623057387f05e1ceb2f2af153869c1258a82c",
+  "parentCommit": "81d5ea1e61865e916469c3622604f6031330edc1",
+  "date": "2022-10-31T11:46:14+08:00",
+  "text": "Keep the right-panel toggle button fixed to the viewport so it remains accessible while scrolling, and remove the unnecessary font-size and border-radius override.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/RightPanel/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/RightPanel/index.vue#RightPanel"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

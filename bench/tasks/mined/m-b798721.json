@@ -1,0 +1,19 @@
+{
+  "id": "m-b798721",
+  "source": "mined",
+  "commit": "b7987218c0407dde840427605aed548fc62150a3",
+  "parentCommit": "f528bde68700248f5310566cb2950b0c6cbbfbd5",
+  "date": "2024-03-22T11:04:37+08:00",
+  "text": "Ensure the header uses a fixed layout whenever the app is not in left-side mode.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Settings/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/index.vue#Settings"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-97030fa",
+  "source": "mined",
+  "commit": "97030fa04b4502976b7a0f9700eca023a7dd3ad4",
+  "parentCommit": "d3b09be7749c2891017d59e11c2cdd82c0da5be4",
+  "date": "2024-11-28T14:44:27+08:00",
+  "text": "Refresh the role-based access examples with a cleaner, more consistent interface. Make the active roles easier to scan, clarify how directive and function-based checks behave, and present the restricted-view notice in a matching card layout.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/demo/permission/button-level.vue",
+      "src/pages/demo/permission/components/SwitchUser.vue",
+      "src/pages/demo/permission/page-level.vue"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

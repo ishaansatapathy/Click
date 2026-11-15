@@ -1,0 +1,19 @@
+{
+  "id": "m-8d4588b",
+  "source": "mined",
+  "commit": "8d4588b029459268c0c9e586fe3c9aeade64f9b6",
+  "parentCommit": "a935696af0d109e82e973ce54b644146c3f2b630",
+  "date": "2025-02-18T16:25:24+08:00",
+  "text": "Remove unnecessary async declarations from the token-setting and role-changing actions, since neither performs asynchronous work.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

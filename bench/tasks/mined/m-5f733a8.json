@@ -1,0 +1,29 @@
+{
+  "id": "m-5f733a8",
+  "source": "mined",
+  "commit": "5f733a8428aede63ed6ec3af0bb64af97fe8707f",
+  "parentCommit": "031c5c114e03363251d56d57f51692785fa79b31",
+  "date": "2026-06-07T16:43:24+08:00",
+  "text": "Centralize sign-out behavior in the account store so manual sign-out and expired credentials follow the same cleanup and redirect flow. Remove the separate sign-out handling from the navigation menu and request layer.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts",
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/http/axios.ts#createInstance",
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "test",
+  "e2e": true,
+  "check": {
+    "kind": "vue-tsc+vitest",
+    "tests": [
+      "bench/e2e/checks/m-5f733a8.test.ts"
+    ]
+  }
+}

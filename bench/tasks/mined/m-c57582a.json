@@ -1,0 +1,31 @@
+{
+  "id": "m-c57582a",
+  "source": "mined",
+  "commit": "c57582a4f9c891ad1a37cfe81a715ba8eb1d906c",
+  "parentCommit": "1acee7a01633de03fd3490b91f7fb28de73b107b",
+  "date": "2025-06-23T14:30:05+08:00",
+  "text": "Migrate component and DOM references to Vue 3.5’s `useTemplateRef` across the application, removing redundant instance types where possible. Ensure existing ref-dependent behavior remains intact, including handling nullable template-ref arrays.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/layouts/components/TagsView/ScrollPane.vue",
+      "src/layouts/components/TagsView/index.vue",
+      "src/pages/demo/composable-demo/use-watermark.vue",
+      "src/pages/demo/element-plus/index.vue",
+      "src/pages/demo/vxe-table/index.vue",
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/Modal.vue#Modal",
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark",
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus",
+      "sym:src/pages/demo/vxe-table/index.vue#VxeTable",
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

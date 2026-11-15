@@ -1,0 +1,17 @@
+{
+  "id": "m-87d19b0",
+  "source": "mined",
+  "commit": "87d19b0446a3f9e2cf90ef740678900f02ceb326",
+  "parentCommit": "0e9eaafeeaa3aa5684b1af11da40b344ba483f20",
+  "date": "2023-03-23T11:20:12+08:00",
+  "text": "Standardize type-only imports for Vue types, including `PropType`, to keep type imports consistent across the codebase.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/List.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

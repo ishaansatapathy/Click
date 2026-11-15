@@ -1,0 +1,19 @@
+{
+  "id": "m-dc108fd",
+  "source": "mined",
+  "commit": "dc108fdbff8f08f13b3b6208e7468ca6a924d208",
+  "parentCommit": "675bd11fa9543b24eec510576c75cc9852c1789f",
+  "date": "2022-11-07T17:44:48+08:00",
+  "text": "Add a friendly, persistent welcome notification inviting users to star the project, and include matching support messages in both English and Chinese documentation.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/dashboard/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/dashboard/index.vue#Dashboard"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

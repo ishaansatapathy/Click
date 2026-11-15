@@ -1,0 +1,20 @@
+{
+  "id": "m-4c08e5f",
+  "source": "mined",
+  "commit": "4c08e5f1908c90dc55fd5b2e2d0683c003fa1aa2",
+  "parentCommit": "8520fd3df207038ccb209b31b7394ed22e8ebc4b",
+  "date": "2023-06-01T18:00:08+08:00",
+  "text": "Streamline role checks in the global helper and template directive, keeping their behavior aligned and clarifying how each handles missing or unmatched roles.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/permission.ts",
+      "src/plugins/permission-directive.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/permission.ts#checkPermission"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

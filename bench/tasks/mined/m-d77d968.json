@@ -1,0 +1,19 @@
+{
+  "id": "m-d77d968",
+  "source": "mined",
+  "commit": "d77d96800b47205827177d679fccad1c6ddbaa6c",
+  "parentCommit": "d4d3d06a5a460f4209544c48951ee1e298738f5c",
+  "date": "2022-08-23T15:37:46+08:00",
+  "text": "Refactor the settings panel toggle to bind its vertical position through a computed CSS value, and remove the redundant text alignment styling.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/RightPanel/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/RightPanel/index.vue#RightPanel"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

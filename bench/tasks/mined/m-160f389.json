@@ -1,0 +1,19 @@
+{
+  "id": "m-160f389",
+  "source": "mined",
+  "commit": "160f389c607c04389b75d10aedd8532897efc9bb",
+  "parentCommit": "8c7f4184a1395a6e53a6e8e1dc36d14819e47ab4",
+  "date": "2024-02-06T17:21:16+08:00",
+  "text": "Remove the redundant role-setting method from the store’s public API, keeping role updates handled through the existing role-change flow.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

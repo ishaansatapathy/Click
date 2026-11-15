@@ -1,0 +1,21 @@
+{
+  "id": "m-5c0a837",
+  "source": "mined",
+  "commit": "5c0a8379c26652972753629ae6110374129ebd43",
+  "parentCommit": "80fc1c21e8c07483750a45fd54f29028d68b2ab9",
+  "date": "2022-09-30T17:41:47+08:00",
+  "text": "Allow route metadata to select either a custom SVG icon or an Element Plus icon for menu entries, with both options supported in the route type definitions and Element Plus icons available throughout the app.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/Item.vue",
+      "src/main.ts",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

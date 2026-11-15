@@ -1,0 +1,17 @@
+{
+  "id": "m-e05e94f",
+  "source": "mined",
+  "commit": "e05e94f2b0c1b0cd95e1df03430bfe86ebfbf644",
+  "parentCommit": "170269e171bd1097bb4bcf6648a35eeb67bc98d0",
+  "date": "2024-12-09T18:33:59+08:00",
+  "text": "Improve UnoCSS style precedence so utility classes reliably override conflicting styles from other stylesheets. Enable important utility output and load UnoCSS after the existing styles.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/main.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

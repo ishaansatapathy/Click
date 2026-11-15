@@ -1,0 +1,19 @@
+{
+  "id": "m-155c3e2",
+  "source": "mined",
+  "commit": "155c3e247b210379faff57cb7385c5eee044f6f9",
+  "parentCommit": "4c08e5f1908c90dc55fd5b2e2d0683c003fa1aa2",
+  "date": "2023-06-05T11:19:27+08:00",
+  "text": "Improve the application’s scrollbar appearance with consistent styling across the page and main content area, including clear hover and active states.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

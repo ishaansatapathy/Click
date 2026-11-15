@@ -1,0 +1,31 @@
+{
+  "id": "m-3fd5dbc",
+  "source": "mined",
+  "commit": "3fd5dbc412e21a0095dadef047b01785033d9546",
+  "parentCommit": "665bdbec7a055817aaf0ebe67abd49ad95a7ab43",
+  "date": "2023-06-30T12:50:24+08:00",
+  "text": "Add an optional setting to persist the tag bar’s visited and cached views across sessions. When enabled, restore the saved views on startup and preserve them across logout; when disabled, keep the existing behavior.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/constants/cache-key.ts",
+      "src/common/utils/local-storage.ts",
+      "src/layouts/components/Settings/index.vue",
+      "src/layouts/config.ts",
+      "src/pinia/stores/tags-view.ts",
+      "src/pinia/stores/user.ts"
+    ],
+    "symbols": [
+      "sym:src/common/constants/cache-key.ts#CacheKey",
+      "sym:src/common/utils/local-storage.ts#getCachedViews",
+      "sym:src/common/utils/local-storage.ts#getVisitedViews",
+      "sym:src/common/utils/local-storage.ts#setCachedViews",
+      "sym:src/common/utils/local-storage.ts#setVisitedViews",
+      "sym:src/layouts/components/Settings/index.vue#Settings",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore",
+      "sym:src/pinia/stores/user.ts#useUserStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

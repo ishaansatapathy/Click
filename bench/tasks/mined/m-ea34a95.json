@@ -1,0 +1,21 @@
+{
+  "id": "m-ea34a95",
+  "source": "mined",
+  "commit": "ea34a957f0954d5f43aae9e9ae619741b208b2f9",
+  "parentCommit": "a3ec9e2ad2f3f80c6ce42994396a2c9d69b0b24d",
+  "date": "2024-12-10T19:20:32+08:00",
+  "text": "Refine the top bar’s CSS spacing and alignment so its action items and user menu are laid out consistently, while removing redundant notification spacing.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/index.vue",
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/index.vue#Notify",
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

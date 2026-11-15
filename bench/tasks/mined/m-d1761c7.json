@@ -1,0 +1,19 @@
+{
+  "id": "m-d1761c7",
+  "source": "mined",
+  "commit": "d1761c76a47c8856997013b71a7c9a46cbadf60f",
+  "parentCommit": "64a050d3e0305584cebda48f4eeb112e0b624475",
+  "date": "2026-06-07T20:12:59+08:00",
+  "text": "Refactor the search menu to avoid relying on the component instance when accessing rendered items, while preserving its scroll-position behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Result.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/Result.vue#Result"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

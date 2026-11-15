@@ -1,0 +1,19 @@
+{
+  "id": "m-d3fc20a",
+  "source": "mined",
+  "commit": "d3fc20a53adaa02df98082a93d51e1eeb9769c2a",
+  "parentCommit": "2d840ea67598abc67a2b92eb18d2f3698f5ac55f",
+  "date": "2024-11-21T12:57:23+08:00",
+  "text": "Correct the sidebar background color on mobile when using top or mixed layouts, ensuring it matches the page background.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

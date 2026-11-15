@@ -1,0 +1,24 @@
+{
+  "id": "m-0e0453e",
+  "source": "mined",
+  "commit": "0e0453eab03945b55b65f36a857210effcee5480",
+  "parentCommit": "7f8fca14d836357d8b8ed9fcd2a8a7878e8d9919",
+  "date": "2022-10-31T11:19:22+08:00",
+  "text": "Build out the notification panel so its notification, message, and task tabs display their respective entries with titles, timestamps, descriptions, avatars, and status tags where available. Use a shared typed item shape and provide representative content for each tab.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/List.vue",
+      "src/common/components/Notify/data.ts",
+      "src/common/components/Notify/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/data.ts#messageData",
+      "sym:src/common/components/Notify/data.ts#notifyData",
+      "sym:src/common/components/Notify/data.ts#todoData",
+      "sym:src/common/components/Notify/index.vue#Notify"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

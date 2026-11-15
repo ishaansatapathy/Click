@@ -1,0 +1,19 @@
+{
+  "id": "m-19f7b60",
+  "source": "mined",
+  "commit": "19f7b6049ee0cb1f3dc66db575181336bffe5f79",
+  "parentCommit": "e38525638d2c6e59b41dec6701f05c55fee10df6",
+  "date": "2024-11-13T16:08:35+08:00",
+  "text": "Fix the mixed layout mode so the header content stays within the screen bounds and the logo retains its intended width.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/modes/LeftTopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

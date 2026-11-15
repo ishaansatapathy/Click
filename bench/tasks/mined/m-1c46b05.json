@@ -1,0 +1,19 @@
+{
+  "id": "m-1c46b05",
+  "source": "mined",
+  "commit": "1c46b05d07048052812ddcf937504d8640d6ae07",
+  "parentCommit": "0f2fcc9cda6507dad93dc0f5fcf93b0e6466f4b0",
+  "date": "2022-04-21T18:54:44+08:00",
+  "text": "Update the project guidance to point users to the existing documentation, clarify the navigation menu’s resource links, and enable type recognition for the UI library’s globally registered elements.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

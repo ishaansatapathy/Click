@@ -1,0 +1,19 @@
+{
+  "id": "m-5c22bdd",
+  "source": "mined",
+  "commit": "5c22bddbff320a05395ced9a82d5bef265084074",
+  "parentCommit": "c97ee74c44e23fbc80fdd051eef51d96116eb286",
+  "date": "2022-04-28T16:10:49+08:00",
+  "text": "Refactor the authentication screen’s form state and validation handling, improve password entry with a visibility toggle, and refresh the verification code and clear the password after failed attempts.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/pages/login/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/login/index.vue#Login"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

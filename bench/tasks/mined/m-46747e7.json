@@ -1,0 +1,19 @@
+{
+  "id": "m-46747e7",
+  "source": "mined",
+  "commit": "46747e7ce20273b3fb2fb3fd8a51e8fbed49b236",
+  "parentCommit": "9083700b3def9c31e6a7207f40b42e94b119696e",
+  "date": "2023-06-14T18:14:47+08:00",
+  "text": "Streamline the layout configuration panel by rendering its toggle options from a reactive collection, while preserving their connection to the store. Improve the panel’s spacing and alignment, and add a reusable text-overflow treatment for long option labels.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Settings/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Settings/index.vue#Settings"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

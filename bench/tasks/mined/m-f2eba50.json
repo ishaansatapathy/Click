@@ -1,0 +1,20 @@
+{
+  "id": "m-f2eba50",
+  "source": "mined",
+  "commit": "f2eba5093855cbe28f4994b779baad8c9d43acbf",
+  "parentCommit": "4a0452d38e7c638aef6c2e818f1d2dbcc59aa478",
+  "date": "2024-11-20T15:40:24+08:00",
+  "text": "Update outdated external documentation links across the project to their current URLs, keeping the existing references accurate and consistent.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/App.vue",
+      "src/plugins/vxe-table.ts"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

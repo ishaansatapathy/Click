@@ -1,0 +1,25 @@
+{
+  "id": "m-64a050d",
+  "source": "mined",
+  "commit": "64a050d3e0305584cebda48f4eeb112e0b624475",
+  "parentCommit": "4f4b23d6fed42b285d65d813fe512dcfcefb5045",
+  "date": "2026-06-07T19:31:51+08:00",
+  "text": "Standardize component and layout CSS class names to kebab-case, updating their usage consistently across templates, computed classes, and styles.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/layouts/modes/LeftMode.vue",
+      "src/layouts/modes/LeftTopMode.vue",
+      "src/layouts/modes/TopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/Modal.vue#Modal",
+      "sym:src/layouts/modes/LeftMode.vue#LeftMode",
+      "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode",
+      "sym:src/layouts/modes/TopMode.vue#TopMode"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

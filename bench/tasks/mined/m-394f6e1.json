@@ -1,0 +1,21 @@
+{
+  "id": "m-394f6e1",
+  "source": "mined",
+  "commit": "394f6e16dc4e99d173fdb077bffab7a476738cbd",
+  "parentCommit": "869986bc502282ac42be39e2c461da738f0839a9",
+  "date": "2024-11-14T20:07:24+08:00",
+  "text": "Optimize DOM class management by using `classList` APIs instead of overwriting `className`, preserving unrelated classes. Simplify fullscreen state handling and use `classList.toggle` for grey mode and color-weakness settings.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/common/composables/useGreyAndColorWeakness.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/common/composables/useGreyAndColorWeakness.ts#initGreyAndColorWeakness"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

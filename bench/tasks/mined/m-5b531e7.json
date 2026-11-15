@@ -1,0 +1,19 @@
+{
+  "id": "m-5b531e7",
+  "source": "mined",
+  "commit": "5b531e75db05d1b82c1a6c063de51c98ab56dc21",
+  "parentCommit": "20f9ba8595d07f747e649dcfa9fc93d0ce08f329",
+  "date": "2024-03-29T17:00:29+08:00",
+  "text": "Refactor the multi-theme styling so Element Plus and Vxe Table theme variables are managed centrally, and improve dark-blue theme coverage while keeping component styling consistent across themes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-b5210eb",
+  "source": "mined",
+  "commit": "b5210eb4521804a8abc53d1481dd219a49b562e1",
+  "parentCommit": "921d4411d0d9f4db03fd28d23ad02cd147f4ea32",
+  "date": "2024-11-25T10:56:06+08:00",
+  "text": "Standardize the inline comment style in the route-listener documentation while preserving its meaning.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useRouteListener.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useRouteListener.ts#useRouteListener"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,22 @@
+{
+  "id": "m-3b47cec",
+  "source": "mined",
+  "commit": "3b47cecfc96eae0a43da6a87a1e992cfb6e22570",
+  "parentCommit": "6d0ef20b0b825073846d87e4eeeecdaed0770e7a",
+  "date": "2023-03-28T17:48:39+08:00",
+  "text": "Make theme initialization explicit by exposing an initialization method from the theme hook and invoking it during application startup, rather than starting the reactive effect when the hook is called.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/App.vue",
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App",
+      "sym:src/common/composables/useTheme.ts#initTheme",
+      "sym:src/common/composables/useTheme.ts#useTheme"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

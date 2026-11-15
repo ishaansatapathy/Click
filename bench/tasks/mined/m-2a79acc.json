@@ -1,0 +1,20 @@
+{
+  "id": "m-2a79acc",
+  "source": "mined",
+  "commit": "2a79acc59aca9c551935d06c52c98d04b46104cd",
+  "parentCommit": "17dc453350776794dd3393dd6739a4adec4ba553",
+  "date": "2023-05-21T16:02:02+08:00",
+  "text": "Simplify the fullscreen loading wrapper by using async/await so it consistently returns a promise and closes the loading indicator after the wrapped function completes, whether it succeeds or throws.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useFullscreenLoading.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useFullscreenLoading.ts#UseFullscreenLoading",
+      "sym:src/common/composables/useFullscreenLoading.ts#useFullscreenLoading"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "m-30b4754",
+  "source": "mined",
+  "commit": "30b47544932b8c207ff557bb05af7c713a46b19a",
+  "parentCommit": "ff4ae8ba5be847aa030363abddcfa9e2aede37ca",
+  "date": "2024-11-25T10:10:24+08:00",
+  "text": "Refine the search dialog’s internal state naming and streamline its search, keyboard navigation, and route-opening logic. Simplify the component’s lifecycle event handlers while preserving existing behavior.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/SearchMenu/Modal.vue#Modal",
+      "sym:src/common/components/SearchMenu/Result.vue#Result"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

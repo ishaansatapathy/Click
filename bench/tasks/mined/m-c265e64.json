@@ -1,0 +1,21 @@
+{
+  "id": "m-c265e64",
+  "source": "mined",
+  "commit": "c265e646762f27b7010211b9f17b0893360a28de",
+  "parentCommit": "e8d0f9ba9d9277d2d4749dda19d40b97db0d5069",
+  "date": "2023-06-16T18:12:53+08:00",
+  "text": "Simplify role-based view selection by deriving the admin status directly from the user’s roles, and organize the role-specific views under a shared location.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/pages/dashboard/components/Admin.vue",
+      "src/pages/dashboard/components/Editor.vue",
+      "src/pages/dashboard/index.vue"
+    ],
+    "symbols": [
+      "sym:src/pages/dashboard/index.vue#Dashboard"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

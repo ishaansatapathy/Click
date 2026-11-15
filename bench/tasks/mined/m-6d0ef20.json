@@ -1,0 +1,23 @@
+{
+  "id": "m-6d0ef20",
+  "source": "mined",
+  "commit": "6d0ef20b0b825073846d87e4eeeecdaed0770e7a",
+  "parentCommit": "9e0bf64254c09470adbedfa73934b710fa96f2cf",
+  "date": "2023-03-28T14:16:17+08:00",
+  "text": "Refactor theme side effects to be tracked reactively with `watchEffect`, keeping the document theme class and persisted theme name in sync whenever the active theme changes. Simplify the theme hook so callers no longer need to initialize the theme explicitly.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/App.vue",
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App",
+      "sym:src/common/composables/useTheme.ts#initTheme",
+      "sym:src/common/composables/useTheme.ts#setTheme",
+      "sym:src/common/composables/useTheme.ts#useTheme"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,30 @@
+{
+  "id": "m-5c09716",
+  "source": "mined",
+  "commit": "5c09716fa51356b36dd35baed3cea23084e4e2c4",
+  "parentCommit": "2d3665254026f3f670be9eb19160455852034b59",
+  "date": "2023-05-24T18:24:06+08:00",
+  "text": "Refactor application state handling to centralize device and sidebar status definitions, and keep the persisted sidebar state synchronized with changes. Improve type safety for sidebar status values across the store and local storage utilities.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/constants/app-key.ts",
+      "src/common/utils/local-storage.ts",
+      "src/layouts/composables/useResize.ts",
+      "src/layouts/index.vue",
+      "src/pinia/stores/app.ts"
+    ],
+    "symbols": [
+      "sym:src/common/constants/app-key.ts#DeviceEnum",
+      "sym:src/common/constants/app-key.ts#SIDEBAR_CLOSED",
+      "sym:src/common/constants/app-key.ts#SIDEBAR_OPENED",
+      "sym:src/common/constants/app-key.ts#SidebarClosed",
+      "sym:src/common/constants/app-key.ts#SidebarOpened",
+      "sym:src/common/utils/local-storage.ts#setSidebarStatus",
+      "sym:src/pinia/stores/app.ts#handleSidebarStatus",
+      "sym:src/pinia/stores/app.ts#useAppStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

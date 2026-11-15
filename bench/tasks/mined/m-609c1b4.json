@@ -1,0 +1,19 @@
+{
+  "id": "m-609c1b4",
+  "source": "mined",
+  "commit": "609c1b4b4b174121ec34b327ab5673d498a75e65",
+  "parentCommit": "663a2c71732b068707d12e426deda1f0efe77bf5",
+  "date": "2024-11-26T17:20:15+08:00",
+  "text": "Clarify the route metadata documentation, especially how `alwaysShow` affects sidebar display based on visible child routes, and correct the guidance about assigning roles to child routes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#dynamicRoutes"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

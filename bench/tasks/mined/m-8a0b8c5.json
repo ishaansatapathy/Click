@@ -1,0 +1,28 @@
+{
+  "id": "m-8a0b8c5",
+  "source": "mined",
+  "commit": "8a0b8c5b3a3405b84f327a04138f8c6eb70d11f3",
+  "parentCommit": "d5afb53c2512366ccafe3d55a9a3af642fff2f44",
+  "date": "2023-07-18T11:14:07+08:00",
+  "text": "Add a top navigation layout option that places the brand, navigation, and page tabs in a fixed header, while adapting menu behavior and sizing for desktop and mobile. Keep the existing layout options working and apply the styling needed for the new arrangement.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Logo/index.vue",
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Sidebar/Item.vue",
+      "src/layouts/components/Sidebar/index.vue",
+      "src/layouts/index.vue",
+      "src/layouts/modes/TopMode.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/Logo/index.vue#Logo",
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar",
+      "sym:src/layouts/index.vue#Layouts",
+      "sym:src/layouts/modes/TopMode.vue#TopMode"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

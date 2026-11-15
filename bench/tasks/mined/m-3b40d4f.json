@@ -1,0 +1,19 @@
+{
+  "id": "m-3b40d4f",
+  "source": "mined",
+  "commit": "3b40d4f1616c337b25603f6c0f05e7c499f74128",
+  "parentCommit": "e4b5c2781e64fd96057062d83bbc22af1b46cb43",
+  "date": "2022-09-29T21:13:00+08:00",
+  "text": "Remove unnecessary `name` attributes from the 403 and 404 routes while preserving their existing behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

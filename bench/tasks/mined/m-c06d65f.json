@@ -1,0 +1,19 @@
+{
+  "id": "m-c06d65f",
+  "source": "mined",
+  "commit": "c06d65ff001c4d075b703977f25a14e8c0467897",
+  "parentCommit": "5a76ec4df31c80807175e808e228c9698cb2b9dd",
+  "date": "2022-11-21T10:54:29+08:00",
+  "text": "Update the tag-view scrolling logic to use the current Element Plus scrollbar API so it can correctly determine the visible scroll area width and scroll reliably.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-170269e",
+  "source": "mined",
+  "commit": "170269e171bd1097bb4bcf6648a35eeb67bc98d0",
+  "parentCommit": "b02c8c6f60d46a3ea279a0557372db742818d0f9",
+  "date": "2024-12-06T17:01:56+08:00",
+  "text": "Update the Chinese documentation link to the latest article and ensure the in-app documentation link points to the same resource.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,21 @@
+{
+  "id": "m-cf5f2f1",
+  "source": "mined",
+  "commit": "cf5f2f1605a9661b130435e1052c451d57de3dc7",
+  "parentCommit": "a079b069f9fa6b92b0946d36cf28b50d8655c457",
+  "date": "2026-07-11T23:13:46+08:00",
+  "text": "Refresh the project’s positioning as an AI-friendly admin dashboard template across its English and Chinese descriptions, package metadata, and user-facing notices. Clarify that page-level permissions use backend APIs and update the listed AI coding tool support.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/data.ts",
+      "src/common/composables/usePany.ts"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/data.ts#notifyData",
+      "sym:src/common/composables/usePany.ts#initMobileNotification"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

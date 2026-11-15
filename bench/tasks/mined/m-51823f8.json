@@ -1,0 +1,18 @@
+{
+  "id": "m-51823f8",
+  "source": "mined",
+  "commit": "51823f8c6a05e7a05b40a0549215511da72efb64",
+  "parentCommit": "ff5dcd66f1ac323ee2671c821a79b34baf7c70ef",
+  "date": "2024-11-29T18:37:12+08:00",
+  "text": "Remove the table integration plugin that is not yet widely used to reduce unnecessary dependencies and bundle weight. Keep the core table library and its existing configuration intact.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/main.ts",
+      "src/plugins/vxe-table.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

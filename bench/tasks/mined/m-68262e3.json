@@ -1,0 +1,19 @@
+{
+  "id": "m-68262e3",
+  "source": "mined",
+  "commit": "68262e3e798fd35d1fb5eff2da1d081f66aca13c",
+  "parentCommit": "160858d6deb2522820ff405c70eb39cbc8c3a397",
+  "date": "2022-08-26T19:31:14+08:00",
+  "text": "Preserve query parameters when redirecting to the home page after all views are closed, so the destination retains the original route’s query state.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

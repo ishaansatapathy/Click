@@ -1,0 +1,19 @@
+{
+  "id": "m-1d1b397",
+  "source": "mined",
+  "commit": "1d1b397187cdea2a981276e1bf5c334f42110f9b",
+  "parentCommit": "46b03c70b26db3c0ce7f1d850e0875ab5aeecfdf",
+  "date": "2022-04-22T15:16:01+08:00",
+  "text": "Add placeholder entries for the V3-Admin-Vite Chinese and English documentation and Gitee links to the user menu, keeping the existing project links available.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

@@ -1,0 +1,23 @@
+{
+  "id": "m-ea098a6",
+  "source": "mined",
+  "commit": "ea098a6eaa7cd2162216e8324265a0087eb796ae",
+  "parentCommit": "19b145597e775e9432472026374184b8d7d23fa5",
+  "date": "2024-11-26T11:08:05+08:00",
+  "text": "Standardize imports by using the project’s alias for the cookie utility and a shared layout-component entry point for related UI imports.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/http/axios.ts",
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/layouts/components/Sidebar/index.vue",
+      "src/layouts/components/index.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/layouts/components/Sidebar/index.vue#Sidebar"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

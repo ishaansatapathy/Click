@@ -1,0 +1,17 @@
+{
+  "id": "m-b2597f1",
+  "source": "mined",
+  "commit": "b2597f1ffd9f7a6595988e3a587f30025a581641",
+  "parentCommit": "fff3eb9498ff8e453a6cc4a5d0ead894d1265f20",
+  "date": "2024-02-05T17:26:42+08:00",
+  "text": "Ensure child routes marked `hidden: true` are excluded from the navigation menu, including when nested under a visible route.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/Sidebar/Item.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

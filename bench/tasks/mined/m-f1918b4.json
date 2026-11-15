@@ -1,0 +1,19 @@
+{
+  "id": "m-f1918b4",
+  "source": "mined",
+  "commit": "f1918b4bb88f3bd8313612f270fb96c0dbc1980e",
+  "parentCommit": "2c760e077b742914181019291e70a5c25eeda2b9",
+  "date": "2023-09-01T23:01:52+08:00",
+  "text": "Update global watermarks to use fixed positioning so they remain correctly placed across more viewport and scrolling scenarios, while keeping container-specific watermarks positioned relative to their parent.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useWatermark.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useWatermark.ts#useWatermark"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

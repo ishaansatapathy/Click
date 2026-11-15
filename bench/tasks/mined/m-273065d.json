@@ -1,0 +1,17 @@
+{
+  "id": "m-273065d",
+  "source": "mined",
+  "commit": "273065d2860a3acc5724cfdbdf36927da1dc9080",
+  "parentCommit": "fb4df0c1e923445ac880201eacac5023a3fdc2e8",
+  "date": "2026-06-22T01:01:12+08:00",
+  "text": "Prevent optimized dependency changes from triggering reloads by making Element Plus styles load consistently. Disable automatic style imports in the Element Plus resolvers and import the library’s base stylesheet explicitly.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/main.ts"
+    ],
+    "symbols": []
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "m-a3ec9e2",
+  "source": "mined",
+  "commit": "a3ec9e2ad2f3f80c6ce42994396a2c9d69b0b24d",
+  "parentCommit": "75206acfe3e6f3afa8f9a3e165d80a6b50877936",
+  "date": "2024-12-10T17:36:58+08:00",
+  "text": "Position the right-side settings button using a percentage of the viewport height instead of a configurable pixel offset, so it stays consistently placed across screen sizes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/RightPanel/index.vue"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/RightPanel/index.vue#RightPanel"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

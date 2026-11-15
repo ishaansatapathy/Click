@@ -1,0 +1,24 @@
+{
+  "id": "m-7f8fca1",
+  "source": "mined",
+  "commit": "7f8fca14d836357d8b8ed9fcd2a8a7878e8d9919",
+  "parentCommit": "fa55b36d3e4c7b37b043e3663c49f1c1b6123b0e",
+  "date": "2022-10-28T18:05:16+08:00",
+  "text": "Add a notification panel with separate notification, message, and task content, and render the selected tab’s entries in the panel.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Notify/List.vue",
+      "src/common/components/Notify/data.ts",
+      "src/common/components/Notify/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Notify/data.ts#messageData",
+      "sym:src/common/components/Notify/data.ts#notifyData",
+      "sym:src/common/components/Notify/data.ts#todoData",
+      "sym:src/common/components/Notify/index.vue#Notify"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

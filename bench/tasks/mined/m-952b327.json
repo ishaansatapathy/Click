@@ -1,0 +1,23 @@
+{
+  "id": "m-952b327",
+  "source": "mined",
+  "commit": "952b327261c83b799104f5a31cba8124061aafe1",
+  "parentCommit": "b7987218c0407dde840427605aed548fc62150a3",
+  "date": "2024-03-22T18:58:56+08:00",
+  "text": "Fix content-area fullscreen so it fills the viewport without a top gap and modal dialogs remain visible. Hide the surrounding layout elements while fullscreen is active, and restore the page’s normal layout when fullscreen ends.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/layouts/components/TagsView/ScrollPane.vue",
+      "src/layouts/components/TagsView/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

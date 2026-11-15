@@ -1,0 +1,21 @@
+{
+  "id": "m-4a27131",
+  "source": "mined",
+  "commit": "4a27131c6d9ad0206584f6543d2f1bbaffa6f006",
+  "parentCommit": "5f0e91c5ec1edcd6909b0a1991ededee3f3dbee6",
+  "date": "2023-08-15T13:36:54+08:00",
+  "text": "Fix menu search for routes without names and routes with required dynamic parameters. Ensure keyboard navigation handles duplicate or missing route names correctly, and provide clear feedback when a route cannot be opened from search.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

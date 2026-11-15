@@ -1,0 +1,20 @@
+{
+  "id": "m-f46f9f5",
+  "source": "mined",
+  "commit": "f46f9f50919bf21bb862f5a73096f01cbda0c70b",
+  "parentCommit": "fa0eadd98644dc95fe0ed9510ad0eff98eefe4ca",
+  "date": "2024-11-27T19:13:47+08:00",
+  "text": "Clarify the left navigation menu titles so they better describe their sections: label the demo collection, documentation links, and permission examples more specifically.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes",
+      "sym:src/router/index.ts#dynamicRoutes"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-2cd7b16",
+  "source": "mined",
+  "commit": "2cd7b161e8058072a3e569d2c8a4265b6e291b91",
+  "parentCommit": "ab6aa206957fc6fff1893a3393b4390cbc944a49",
+  "date": "2023-08-22T16:06:49+08:00",
+  "text": "Update menu search so selecting an external-link result opens it in a new tab instead of attempting internal navigation. Clarify that external links do not need a route name.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

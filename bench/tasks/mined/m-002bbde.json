@@ -1,0 +1,21 @@
+{
+  "id": "m-002bbde",
+  "source": "mined",
+  "commit": "002bbdec8ff37d32e760fd244f999b1cc452c388",
+  "parentCommit": "e4d9673a2bd86e013fbf86b2f6f2ee1715014227",
+  "date": "2023-05-21T10:47:42+08:00",
+  "text": "Standardize enum naming by renaming the device type enum to follow the project’s enum naming convention, and update its references throughout the layout and store.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/composables/useResize.ts",
+      "src/layouts/index.vue",
+      "src/pinia/stores/app.ts"
+    ],
+    "symbols": [
+      "sym:src/pinia/stores/app.ts#useAppStore"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

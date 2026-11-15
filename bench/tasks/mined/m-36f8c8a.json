@@ -1,0 +1,21 @@
+{
+  "id": "m-36f8c8a",
+  "source": "mined",
+  "commit": "36f8c8acf2ae82e75fb1b04e55d72d0afe4848a2",
+  "parentCommit": "a3dce0e0f26d7dc381aed7437ef8ff0144d54757",
+  "date": "2023-08-28T16:52:17+08:00",
+  "text": "Remove the obsolete warning about clearing cached layout settings, and make the fullscreen-loading success message display its returned arguments clearly.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/App.vue",
+      "src/pages/demo/composable-demo/use-fullscreen-loading.vue"
+    ],
+    "symbols": [
+      "sym:src/App.vue#App",
+      "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

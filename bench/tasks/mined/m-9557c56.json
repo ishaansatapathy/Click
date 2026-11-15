@@ -1,0 +1,21 @@
+{
+  "id": "m-9557c56",
+  "source": "mined",
+  "commit": "9557c5679ee634a22f64e37d6b854d10d0ddad6b",
+  "parentCommit": "907dc21d5592b3d06868a580d63cdd9794402049",
+  "date": "2022-11-12T10:17:05+08:00",
+  "text": "Add an option to enter fullscreen for the main content area from the tags bar, while preserving the existing whole-page fullscreen behavior. Show the area fullscreen control only when fullscreen controls are enabled in settings.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/Screenfull/index.vue",
+      "src/layouts/components/TagsView/ScrollPane.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/Screenfull/index.vue#Screenfull",
+      "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

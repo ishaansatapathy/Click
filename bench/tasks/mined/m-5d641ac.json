@@ -1,0 +1,20 @@
+{
+  "id": "m-5d641ac",
+  "source": "mined",
+  "commit": "5d641ace1fefeba551ee2c88304f811467bae210",
+  "parentCommit": "ebfa35d92f30f04a1b09fe2d9844c1b1ab5acae0",
+  "date": "2023-02-28T14:12:38+08:00",
+  "text": "Refactor theme configuration to define the default theme once and derive its type from that constant. Use the selected theme value directly when applying and persisting changes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useTheme.ts#ThemeName",
+      "sym:src/common/composables/useTheme.ts#setTheme"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

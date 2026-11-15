@@ -1,0 +1,21 @@
+{
+  "id": "m-46e9ea2",
+  "source": "mined",
+  "commit": "46e9ea2f28978f36414c389bca64403ead870617",
+  "parentCommit": "6593db0d21ed1ecadc932abd4803d0e9ab74d533",
+  "date": "2023-08-29T19:12:56+08:00",
+  "text": "Improve route metadata by adding titles to hidden pages, clarifying the UnoCSS page title, and organizing documentation links under an external-links menu. Remove the duplicate documentation link from the navigation dropdown.",
+  "type": "multi-hop",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/NavigationBar/index.vue",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar",
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

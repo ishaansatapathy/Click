@@ -1,0 +1,19 @@
+{
+  "id": "m-2b081e4",
+  "source": "mined",
+  "commit": "2b081e4eb4db1da2013409d9f6f3945148ee7314",
+  "parentCommit": "9acc5f156e373849ba7ea03c5023522fc2c5860d",
+  "date": "2025-02-17T18:19:01+08:00",
+  "text": "Improve type narrowing after calling `isString` so TypeScript recognizes the argument as a string when the check succeeds.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/utils/validate.ts"
+    ],
+    "symbols": [
+      "sym:src/common/utils/validate.ts#isString"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

@@ -1,0 +1,20 @@
+{
+  "id": "m-e71967e",
+  "source": "mined",
+  "commit": "e71967eaf8e3bf2c2801acbd1dbda0ccf26362ff",
+  "parentCommit": "f3fd669cadf7be08432bdd03c5f98acbeae31629",
+  "date": "2022-10-21T18:02:20+08:00",
+  "text": "Add a deep blue theme option with coordinated application and component colors, and make it available alongside the existing themes.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/composables/useTheme.ts"
+    ],
+    "symbols": [
+      "sym:src/common/composables/useTheme.ts#ThemeName",
+      "sym:src/common/composables/useTheme.ts#useTheme"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}

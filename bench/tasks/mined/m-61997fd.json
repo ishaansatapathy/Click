@@ -1,0 +1,19 @@
+{
+  "id": "m-61997fd",
+  "source": "mined",
+  "commit": "61997fd1020e823f5c9e0f80a03cbbf6f8d7e59a",
+  "parentCommit": "30b47544932b8c207ff557bb05af7c713a46b19a",
+  "date": "2024-11-25T10:19:15+08:00",
+  "text": "Simplify the theme-switch transition handler while preserving the existing behavior of applying the selected theme with or without View Transitions.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/ThemeSwitch/index.vue"
+    ],
+    "symbols": [
+      "sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch"
+    ]
+  },
+  "split": "test",
+  "e2e": false
+}

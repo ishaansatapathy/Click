@@ -1,0 +1,17 @@
+{
+  "id": "m-d4f6f5b",
+  "source": "mined",
+  "commit": "d4f6f5b7178664e92d90d8d8e1f4eec8e5dfa8e6",
+  "parentCommit": "07bde250ff1b7ce2ad03f9666d05872181ad11ff",
+  "date": "2023-06-21T11:47:16+08:00",
+  "text": "Optimize layout state access by using Pinia’s `storeToRefs` for settings values, removing redundant computed wrappers while preserving the existing layout behavior.",
+  "type": "single-file",
+  "groundTruth": {
+    "files": [
+      "src/layouts/index.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

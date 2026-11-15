@@ -1,0 +1,18 @@
+{
+  "id": "m-f12f330",
+  "source": "mined",
+  "commit": "f12f33014e75a5d730a7115f888104041c0d4523",
+  "parentCommit": "e32e3226d64b86e6984d763934f0357ad0bfe486",
+  "date": "2023-08-14T16:00:12+08:00",
+  "text": "Fix search menu scrolling so keyboard navigation keeps the active item visible and mouse hover does not override arrow-key selection.",
+  "type": "multi-file",
+  "groundTruth": {
+    "files": [
+      "src/common/components/SearchMenu/Modal.vue",
+      "src/common/components/SearchMenu/Result.vue"
+    ],
+    "symbols": []
+  },
+  "split": "train",
+  "e2e": false
+}

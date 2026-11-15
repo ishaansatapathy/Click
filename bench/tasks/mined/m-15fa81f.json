@@ -1,0 +1,31 @@
+{
+  "id": "m-15fa81f",
+  "source": "mined",
+  "commit": "15fa81f5fe22b0f3ff66c60a551ba7719bd44829",
+  "parentCommit": "95b9691b2056cb0efee6ac8ca1b5d73fa950c63b",
+  "date": "2023-02-22T15:53:04+08:00",
+  "text": "Add keep-alive caching for routes marked to preserve their state, and manage cached views alongside visited tags. Refreshing or closing tags should clear the appropriate cached views so navigation and tag actions behave consistently.",
+  "type": "impact",
+  "groundTruth": {
+    "files": [
+      "src/layouts/components/AppMain/index.vue",
+      "src/layouts/components/TagsView/index.vue",
+      "src/pages/demo/element-plus/index.vue",
+      "src/pages/demo/vxe-table/index.vue",
+      "src/pinia/stores/tags-view.ts",
+      "src/pinia/stores/user.ts",
+      "src/router/index.ts"
+    ],
+    "symbols": [
+      "sym:src/layouts/components/AppMain/index.vue#AppMain",
+      "sym:src/layouts/components/TagsView/index.vue#TagsView",
+      "sym:src/pages/demo/element-plus/index.vue#ElementPlus",
+      "sym:src/pages/demo/vxe-table/index.vue#VxeTable",
+      "sym:src/pinia/stores/tags-view.ts#useTagsViewStore",
+      "sym:src/pinia/stores/user.ts#useUserStore",
+      "sym:src/router/index.ts#constantRoutes"
+    ]
+  },
+  "split": "train",
+  "e2e": false
+}
