@@ -253,7 +253,7 @@ function Integrations() {
       </div>
       <div className="lp-int-rows">
         <div className="lp-int-list">
-          {['Claude Code hook', 'MCP server', 'CLI'].map((w, i) => (
+          {['Any MCP client', 'Claude Code hook', 'CLI'].map((w, i) => (
             <Reveal key={w} className="lp-int-word" delay={i * 120}>
               {w.toUpperCase()}
             </Reveal>
@@ -262,10 +262,10 @@ function Integrations() {
         <Reveal className="lp-int-note">
           <span className="lp-orange-tag">Install</span>
           <p className="lp-mono small">
-            One command wires Click into the agent you already use. A prompt hook adds context to every message; the MCP server answers
-            on demand; a Stop hook learns from what the agent actually read.
+            Works with the agent you already use: Claude Code, Codex, Cursor or any MCP client. The MCP server answers on demand; in
+            Claude Code a prompt hook also adds context to every message and a Stop hook learns from what the agent actually read.
           </p>
-          <code className="lp-code">npx click init</code>
+          <code className="lp-code">npm i -g click-context</code>
         </Reveal>
       </div>
     </section>
@@ -426,7 +426,7 @@ function UseCases() {
 }
 
 function BuiltOn() {
-  const items = ['HYDRADB', 'VUE 3', 'CLAUDE CODE', 'MCP'];
+  const items = ['HYDRADB', 'VUE 3', 'ANY AGENT', 'MCP'];
   return (
     <section className="lp-built" aria-label="Built on">
       <div className="lp-built-row">

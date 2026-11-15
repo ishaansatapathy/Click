@@ -103,12 +103,12 @@ function Connect({ onDone }: { onDone: () => void }) {
       setTimeout(() => setCopied(null), 1400);
     });
   };
-  const cmds = ['npx click init', 'click index', 'click status'];
+  const cmds = ['npm i -g click-context', 'click index', 'click hooks install'];
   return (
     <div className="empty">
       <IsoStack />
       <h1>Connect your first agent</h1>
-      <p>Install Click in a Vue repository. It indexes the code into HydraDB and wires itself into Claude Code (a prompt hook) or any MCP client.</p>
+      <p>Install Click in a Vue repository. It indexes the code into HydraDB and wires itself into the agents you use: Claude Code, Codex, Cursor or any MCP client.</p>
       <div className="empty-actions">
         <button type="button" className="btn primary" onClick={() => copy(cmds[0]!)}>
           <Icon name="plus" /> {copied === cmds[0] ? 'Copied' : 'Install Click'}
