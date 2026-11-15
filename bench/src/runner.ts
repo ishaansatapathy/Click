@@ -70,6 +70,7 @@ interface RunMetadata {
   now?: Date;
   concurrency?: number;
   latency?: 'context' | 'wall';
+  symbolLocations?: ReadonlyMap<string, SymbolLocation>;
 }
 
 export function parseRunnerArgs(args: readonly string[]): RunnerOptions {
@@ -116,7 +117,7 @@ export async function runBenchmark(
     const context = await retriever(task, options.budget);
     const wallMs = performance.now() - started;
     contexts[index] = context;
-    const symbols = symbolLocations(task.groundTruth.symbols);
+    const symbols = symbolLocations(task.groundTruth.symbols, metadata.symbolLocations);
     const strict = recallStrict(task, context);
     const retrieved = new Set(context.items.filter((item) => item.path !== null && (item.mode === 'body' || item.mode === 'file')).map((item) => item.path!));
     return {
@@ -183,9 +184,14 @@ export async function regenerateResultsMarkdown(resultsPath: string, markdownPat
   await writeFile(markdownPath, `${header}${table}\n`, 'utf8');
 }
 
-function symbolLocations(ids: string[]): Map<string, SymbolLocation> {
+function symbolLocations(ids: string[], atH?: ReadonlyMap<string, SymbolLocation>): Map<string, SymbolLocation> {
   const result = new Map<string, SymbolLocation>();
   for (const id of ids) {
+    const indexed = atH?.get(id);
+    if (indexed) {
+      result.set(id, indexed);
+      continue;
+    }
     const parsed = parseId(id);
     if (parsed?.kind === 'sym') result.set(id, { id, path: parsed.path });
   }
@@ -235,7 +241,11 @@ async function main(): Promise<void> {
   const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
   const repo = resolve(benchDir, 'repo');
   const files = new Set((await spawnGit(['ls-tree', '-r', '--name-only', config.pinnedSha], repo)).split(/\r?\n/).filter(Boolean));
-  const nodeIds = new Set((await buildIndex(repo)).graph.nodes.map((node) => node.id));
+  const index = await buildIndex(repo);
+  const nodeIds = new Set(index.graph.nodes.map((node) => node.id));
+  const symbolsAtH = new Map(index.graph.nodes.flatMap((node): [string, SymbolLocation][] => (
+    node.id.startsWith('sym:') && node.path ? [[node.id, { id: node.id, path: node.path, range: node.range }]] : []
+  )));
   const validation = validateTasks(
     await loadTaskValues(resolve(benchDir, 'tasks')),
     files,
@@ -252,7 +262,11 @@ async function main(): Promise<void> {
           ? httpRetriever({ baseUrl: process.env.CLICK_DAEMON_URL, variant: options.variant, token: process.env.CLICK_DAEMON_TOKEN })
           : options.retriever === 'http' ? httpRetriever() : inProcessRetriever(options.variant);
   const gitSha = (await spawnGit(['rev-parse', 'HEAD'], resolve(benchDir, '..'))).trim();
-  const run = await runBenchmark(tasks, retriever, options, { gitSha, latency: options.retriever === 'http' ? 'wall' : 'context' });
+  const run = await runBenchmark(tasks, retriever, options, {
+    gitSha,
+    latency: options.retriever === 'http' ? 'wall' : 'context',
+    symbolLocations: symbolsAtH,
+  });
   await writeRunArtifacts(benchDir, run);
   process.stdout.write(`Completed ${run.row.runId}: n=${run.row.n}, strict=${run.row.metrics.recallStrict.toFixed(3)}\n`);
 }

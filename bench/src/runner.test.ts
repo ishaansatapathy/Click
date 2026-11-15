@@ -29,6 +29,23 @@ describe('runner options', () => {
 });
 
 describe('runBenchmark', () => {
+  it('counts a V1 chunk whose range covers a ground-truth symbol at H', async () => {
+    const value = task(1);
+    const id = 'sym:src/1.ts#target';
+    value.groundTruth.symbols = [id];
+    const run = await runBenchmark([value], async (_task, budget) => ({
+      contextId: 'ctx', text: '', tokens: 10, budget,
+      items: [{ nodeId: 'chunk:src/1.ts#target#0', path: 'src/1.ts', name: 'target', mode: 'body', tokens: 10, range: { startLine: 8, endLine: 20 } }],
+      seeds: [], variant: 'V1', configHash: 'cfg', pruner: 'none', graphVersion: 'g', weightsVersion: null,
+      timings: { total: 1 }, degraded: [],
+    }), options, {
+      gitSha: 'abc',
+      symbolLocations: new Map([[id, { id, path: 'src/1.ts', range: { startLine: 10, endLine: 12 } }]]),
+    });
+    expect(run.details[0]?.symbolRecall).toBe(1);
+    expect(run.row.metrics.symbolRecall).toBe(1);
+  });
+
   it('caps concurrency at four and aggregates metrics, pruners, degradation, and latency', async () => {
     let active = 0;
     let peak = 0;
