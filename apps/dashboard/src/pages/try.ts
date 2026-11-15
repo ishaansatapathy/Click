@@ -28,7 +28,7 @@ function resultCard(title: string, sub: string, a: Answer, other: Answer): HTMLE
     { class: 'card' },
     h('div', { class: 'q' }, sub),
     h('h3', {}, title),
-    h('p', { class: 'small muted' }, `${a.tokens.toLocaleString()} of ${a.budget.toLocaleString()} tokens · ${bodies.length} code blocks from ${files.size} files · ${a.ms} ms in your browser`),
+    h('p', { class: 'small muted' }, `${a.tokens.toLocaleString()} of ${a.budget.toLocaleString()} tokens · ${bodies.length} code blocks from ${files.size} files · ${a.ms < 1 ? 'under 1' : a.ms} ms in your browser`),
     extra.length && a.mode === 'graph' ? h('p', { class: 'small' }, h('b', {}, `${extra.length} file${extra.length > 1 ? 's' : ''} only the graph found: `), extra.map((p) => String(p).replace(/^src\//, '')).join(', ')) : null,
     h(
       'ul',

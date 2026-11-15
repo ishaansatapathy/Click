@@ -113,6 +113,7 @@ export const overview: Page = ({ data }) => {
           h('li', {}, 'Learning is not shown to help: the gain is small and its interval includes zero, on simulated outcomes only.'),
           h('li', {}, `Latency: V3 is about ${ms(lat)} slower at p95 than V2, because the graph lives in HydraDB and every request asks it for a neighbourhood.`),
           h('li', {}, 'One repository (a Vue admin template). The benchmark is public so others can add theirs.'),
+          h('li', {}, 'Agent-level token savings are not claimed yet: the figures above are about retrieval inside a budget. The end-to-end harness (tokens per solved task, stock agent vs agent with Click) exists; its real runs are what would back that claim.'),
         ),
       ),
     ),
