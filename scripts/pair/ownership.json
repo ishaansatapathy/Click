@@ -22,11 +22,12 @@
     "scripts/pair/**"
   ],
   "open": [
-    "docs/**"
+    "docs/**",
+    "apps/dashboard/public/data/**"
   ],
   "laneA": [
     "bench/**",
-    "apps/**",
+    "apps/!(dashboard)/**",
     "infra/**",
     "packages/core/src/store/**",
     "packages/core/src/retrieve/semantic*.ts",
@@ -37,6 +38,7 @@
     "README.md"
   ],
   "laneB": [
-    "packages/**"
+    "packages/**",
+    "apps/dashboard/**"
   ]
 }

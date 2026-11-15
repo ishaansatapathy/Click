@@ -359,12 +359,6 @@
       ]
     },
     {
-      "prompt": "221",
-      "waits": [
-        "gate/G3"
-      ]
-    },
-    {
       "prompt": "220",
       "waits": [
         "gate/G5"
@@ -373,22 +367,10 @@
     {
       "prompt": "222",
       "waits": [
-        "gate/G5"
-      ]
-    },
-    {
-      "prompt": "223",
-      "waits": [
-        "gate/G5"
-      ]
-    },
-    {
-      "prompt": "224",
-      "waits": [
-        "gate/G5"
+        "gate/G3"
       ],
       "emits": [
-        "sync/live-link"
+        "sync/dashboard-data"
       ]
     },
     {
@@ -652,6 +634,9 @@
       "prompt": "176"
     },
     {
+      "prompt": "221"
+    },
+    {
       "prompt": "178",
       "emits": [
         "sync/package"
@@ -679,6 +664,21 @@
       "prompt": "192",
       "waits": [
         "sync/winner"
+      ]
+    },
+    {
+      "prompt": "223",
+      "waits": [
+        "sync/dashboard-data"
+      ]
+    },
+    {
+      "prompt": "224",
+      "waits": [
+        "sync/dashboard-data"
+      ],
+      "emits": [
+        "sync/live-link"
       ]
     },
     {
