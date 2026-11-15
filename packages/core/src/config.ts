@@ -19,6 +19,8 @@ export const variantConfigSchema = z.object({
     }),
     count: z.number().int().positive(),
     rrfK: z.number().positive(),
+    /** Seed slots reserved for the best semantic nodes in hybrid fusion (0 = off). Prompt 087b / 134. */
+    reserve: z.number().int().min(0).max(8).default(5),
   }),
   semantic: z.object({
     mode: z.enum(['local', 'off']),
@@ -81,6 +83,7 @@ const hybridSeeds: VariantConfig['seeds'] = {
   weights: { symbol: 1.5, bm25: 1, semantic: 1 },
   count: 8,
   rrfK: 60,
+  reserve: 5,
 };
 
 const noExpand: VariantConfig['expand'] = {
