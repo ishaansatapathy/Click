@@ -22,7 +22,7 @@ export interface ProbeResult {
   embedding: { ms: number; dims: number; model: string };
 }
 
-export const PROBE_USAGE = 'usage: click probe [--root <dir>] [--query <text>]';
+export const PROBE_USAGE = 'usage: click probe [--root <dir>] [--query <text>] [--openai-embedding]';
 
 function percentile(sorted: number[], q: number): number {
   return sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * q) - 1)] ?? 0;
@@ -31,6 +31,7 @@ function percentile(sorted: number[], q: number): number {
 export async function runProbe(argv: readonly string[], io: ProbeIo, cwd = process.cwd(), deps: ProbeDeps = {}): Promise<number> {
   let root = cwd;
   let query = 'add a loading state to checkout';
+  let openaiEmbedding = false;
   for (let index = 0; index < argv.length; index++) {
     const flag = argv[index]!;
     const value = () => argv[++index];
@@ -42,13 +43,13 @@ export async function runProbe(argv: readonly string[], io: ProbeIo, cwd = proce
       const next = value();
       if (!next) return usageError('--query needs text', io);
       query = next;
-    } else return usageError(`unknown option ${flag}`, io);
+    } else if (flag === '--openai-embedding') openaiEmbedding = true;
+    else return usageError(`unknown option ${flag}`, io);
   }
   loadLocalEnv(cwd);
   const build = await (deps.build ?? ((repo) => buildIndex(repo)))(root);
   const graph = deps.graph ?? new HydraDbGraphStore();
   await graph.getIndexVersion?.();
-  const embedder = deps.embedder ?? new OpenAIEmbedder({ cache: new DiskCache('embed', { dir: pushPaths(root).cacheDir }) });
   const degrees = new Map<string, number>();
   for (const edge of build.graph.edges) {
     degrees.set(edge.from, (degrees.get(edge.from) ?? 0) + 1);
@@ -73,14 +74,15 @@ export async function runProbe(argv: readonly string[], io: ProbeIo, cwd = proce
   const hubs = await graph.hubs(15);
   const hubsMs = performance.now() - start;
   start = performance.now();
-  const [vector] = await embedder.embed([query], 'query');
+  const embedder = deps.embedder ?? (openaiEmbedding ? new OpenAIEmbedder({ cache: new DiskCache('embed', { dir: pushPaths(root).cacheDir }) }) : undefined);
+  const [vector] = embedder ? await embedder.embed([query], 'query') : [];
   const embeddingMs = performance.now() - start;
   const result: ProbeResult = {
     version: build.graph.version,
     neighbourhood: { runs: 20, p50Ms: round(percentile(latencies, 0.5)), p95Ms: round(percentile(latencies, 0.95)), edges: edgeCount },
     impact: { ms: round(impactMs), paths: paths.length },
     hubs: { ms: round(hubsMs), count: hubs.length },
-    embedding: { ms: round(embeddingMs), dims: vector?.length ?? 0, model: embedder.model },
+    embedding: { ms: round(embeddingMs), dims: vector?.length ?? 0, model: embedder?.model ?? 'off' },
   };
   io.out(JSON.stringify(result, null, 2));
   return 0;

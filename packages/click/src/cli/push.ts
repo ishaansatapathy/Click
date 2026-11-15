@@ -8,6 +8,7 @@ import { OpenAIEmbedder } from '../../../core/src/store/embed.js';
 import { HydraDbGraphStore } from '../../../core/src/store/hydradb-graph.js';
 import { MemoryStore } from '../../../core/src/store/memory.js';
 import type { Embedder, GraphStore, Store } from '../../../core/src/store/types.js';
+import type { ChunkRecord } from '../../../core/src/types.js';
 import { pushPaths, readLastPushedVersion, readSnapshot, writeLastPushedVersion, writeSnapshot } from './push-state.js';
 
 export interface PushIo { out: (text: string) => void; err: (text: string) => void }
@@ -18,11 +19,11 @@ export interface PushDeps {
   embedder?: Embedder;
 }
 
-interface PushArgs { root: string; full: boolean }
-export const PUSH_USAGE = 'usage: click push [--root <dir>] [--full]';
+interface PushArgs { root: string; full: boolean; openaiEmbeddings: boolean }
+export const PUSH_USAGE = 'usage: click push [--root <dir>] [--full] [--openai-embeddings]';
 
 export function parsePushArgs(argv: readonly string[], cwd: string): PushArgs | string {
-  const args: PushArgs = { root: cwd, full: false };
+  const args: PushArgs = { root: cwd, full: false, openaiEmbeddings: false };
   for (let index = 0; index < argv.length; index++) {
     const flag = argv[index]!;
     if (flag === '--root') {
@@ -30,6 +31,7 @@ export function parsePushArgs(argv: readonly string[], cwd: string): PushArgs | 
       if (!value) return '--root needs a directory';
       args.root = resolve(cwd, value);
     } else if (flag === '--full') args.full = true;
+    else if (flag === '--openai-embeddings') args.openaiEmbeddings = true;
     else return `unknown option ${flag}`;
   }
   return args;
@@ -46,7 +48,6 @@ export async function runPush(argv: readonly string[], io: PushIo, cwd = process
   const build = await (deps.build ?? ((root) => buildIndex(root)))(args.root);
   const graph = deps.graph ?? new HydraDbGraphStore();
   const store = deps.store ?? new MemoryStore(paths.memstore);
-  const embedder = deps.embedder ?? new OpenAIEmbedder({ cache: new DiskCache('embed', { dir: paths.cacheDir }) });
   const previousVersion = await readLastPushedVersion(args.root);
   const previous = previousVersion ? await readSnapshot(args.root, previousVersion) : null;
   const full = args.full || previous === null;
@@ -76,11 +77,18 @@ export async function runPush(argv: readonly string[], io: PushIo, cwd = process
     changedEdges = delta.upsertEdges.length + delta.deleteEdgeKeys.length;
   }
 
-  const chunks = await indexSemanticChunks(build.chunks, build.graph.version, { store, embedder });
+  let chunks: ChunkRecord[];
+  if (args.openaiEmbeddings || deps.embedder) {
+    const embedder = deps.embedder ?? new OpenAIEmbedder({ cache: new DiskCache('embed', { dir: paths.cacheDir }) });
+    chunks = await indexSemanticChunks(build.chunks, build.graph.version, { store, embedder });
+  } else {
+    chunks = build.chunks.map((chunk) => structuredClone(chunk));
+    await store.upsert({ chunks }, build.graph.version);
+  }
   await store.putConventions(build.conventions);
   await writeSnapshot(args.root, { v: 1, graph: build.graph, chunks });
   await writeLastPushedVersion(args.root, build.graph.version);
-  io.out(`Pushed ${build.graph.version} (${full ? 'full' : 'delta'}: ${changedNodes} node changes, ${changedEdges} edge changes, ${chunks.length} embedded chunks)`);
+  io.out(`Pushed ${build.graph.version} (${full ? 'full' : 'delta'}: ${changedNodes} node changes, ${changedEdges} edge changes, ${chunks.length} chunks${args.openaiEmbeddings || deps.embedder ? ' embedded' : ' local-only'})`);
   return 0;
 }
 

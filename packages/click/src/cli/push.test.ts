@@ -73,6 +73,16 @@ describe('click push / pull / probe', () => {
     });
   });
 
+  it('is local-only unless OpenAI embeddings are explicitly enabled', async () => {
+    const repo = await root();
+    const output = io();
+    expect(await runPush(['--root', repo], output.value, repo, {
+      build: async () => build, graph: new VersionedFakeGraphStore(), store: new MemoryStore(),
+    })).toBe(0);
+    expect(output.lines.out[0]).toContain('local-only');
+    expect((await readSnapshot(repo))?.chunks.every((chunk) => chunk.vector === undefined)).toBe(true);
+  });
+
   it('probe performs twenty neighbourhood reads plus impact, hubs, and one query embedding', async () => {
     const repo = await root();
     const graph = new VersionedFakeGraphStore();
