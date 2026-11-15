@@ -6,7 +6,7 @@
 // context", never a broken agent. `request` / `ensureRunning` are the CLI mode: they throw ClientError with a message to show.
 // Starting is guarded by a lock file so several clients that find no daemon at the same moment spawn only one.
 
-import { spawn, type SpawnOptions } from 'node:child_process';
+import type { SpawnOptions } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, open, rm, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -18,6 +18,30 @@ export const TOKEN_HEADER = 'x-click-token';
 export const HEALTH_TIMEOUT_MS = 150;
 const AUTOSTART_LOCK = 'autostart.lock';
 const AUTOSTART_LOCK_TTL_MS = 15_000;
+
+/**
+ * One plain HTTP/1.1 request on a socket of its own, closed afterwards. Not fetch: undici keeps connections alive for seconds, which
+ * would hold a short-lived hook process open (and ending it with process.exit while sockets close crashes node on Windows).
+ */
+async function nodeRequest(port: number, path: string, method: string, headers: Record<string, string>, body: string | undefined, signal: AbortSignal): Promise<{ status: number; text: string }> {
+  const { request: httpRequest } = await import('node:http'); // loaded only when a request is really made: a skipped hook never pays for it
+  return new Promise((resolve, reject) => {
+    const req = httpRequest({ host: '127.0.0.1', port, path, method, agent: false, signal, headers: { ...headers, connection: 'close', ...(body !== undefined ? { 'content-length': String(Buffer.byteLength(body)) } : {}) } }, (res) => {
+      const chunks: Buffer[] = [];
+      res.on('data', (c: Buffer) => chunks.push(c));
+      res.on('end', () => resolve({ status: res.statusCode ?? 0, text: Buffer.concat(chunks).toString('utf8') }));
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    req.end(body);
+  });
+}
+
+/** CLICK_DEBUG=1 explains on STDERR (never stdout: hooks speak JSON there) why a hook-mode call came back empty. */
+function debug(what: string, e: unknown): void {
+  if (process.env.CLICK_DEBUG) process.stderr.write(`click client: ${what}: ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}
+`);
+}
 
 export class ClientError extends Error {
   constructor(
@@ -67,13 +91,13 @@ export function defaultCliPath(here: string = dirname(fileURLToPath(import.meta.
 
 export class ClickClient {
   readonly dir: string;
-  private readonly fetchFn: typeof fetch;
-  private readonly spawnFn: NonNullable<ClientOptions['spawnFn']>;
+  private readonly fetchFn: typeof fetch | undefined;
+  private readonly spawnFn: ClientOptions['spawnFn'];
 
   constructor(private readonly o: ClientOptions) {
     this.dir = o.dir ?? clickDir(o.root);
-    this.fetchFn = o.fetchFn ?? fetch;
-    this.spawnFn = o.spawnFn ?? ((cmd, args, opts) => spawn(cmd, args, opts));
+    this.fetchFn = o.fetchFn;
+    this.spawnFn = o.spawnFn;
   }
 
   /** daemon.json, if it describes a process that is still alive (the token must never go to anything else). */
@@ -87,13 +111,13 @@ export class ClickClient {
   }
 
   private async fetchJson(info: DaemonInfo, path: string, init: { method: string; body?: unknown }, timeoutMs: number): Promise<{ status: number; body: unknown }> {
-    const res = await this.fetchFn(this.url(info, path), {
-      method: init.method,
-      headers: { [TOKEN_HEADER]: info.token, ...(init.body !== undefined ? { 'content-type': 'application/json' } : {}) },
-      ...(init.body !== undefined ? { body: JSON.stringify(init.body) } : {}),
-      signal: AbortSignal.timeout(Math.max(1, timeoutMs)),
-    });
-    const text = await res.text();
+    const payload = init.body !== undefined ? JSON.stringify(init.body) : undefined;
+    const signal = AbortSignal.timeout(Math.max(1, Math.floor(timeoutMs))); // must be an integer or AbortSignal.timeout throws
+    const headers = { [TOKEN_HEADER]: info.token, ...(payload !== undefined ? { 'content-type': 'application/json' } : {}) };
+    const res = this.fetchFn
+      ? await this.fetchFn(this.url(info, path), { method: init.method, headers, ...(payload !== undefined ? { body: payload } : {}), signal }).then(async (r) => ({ status: r.status, text: await r.text() }))
+      : await nodeRequest(info.port, path, init.method, headers, payload, signal);
+    const text = res.text;
     let body: unknown = null;
     try {
       body = text ? JSON.parse(text) : null;
@@ -108,7 +132,8 @@ export class ClickClient {
     try {
       const r = await this.fetchJson(info, '/health', { method: 'GET' }, timeoutMs);
       return r.status === 200 && r.body && typeof r.body === 'object' && (r.body as HealthBody).ok ? (r.body as HealthBody) : null;
-    } catch {
+    } catch (e) {
+      debug('health', e);
       return null;
     }
   }
@@ -135,7 +160,8 @@ export class ClickClient {
           if (attempt === 1) return false;
         }
       }
-      this.spawnFn(process.execPath, [this.o.cliPath ?? defaultCliPath(), 'serve', '--root', this.o.root], { detached: true, stdio: 'ignore', windowsHide: true, cwd: this.o.root }).unref();
+      const spawnFn = this.spawnFn ?? (await import('node:child_process')).spawn; // loaded only when a daemon really has to be started
+      spawnFn(process.execPath, [this.o.cliPath ?? defaultCliPath(), 'serve', '--root', this.o.root], { detached: true, stdio: 'ignore', windowsHide: true, cwd: this.o.root }).unref();
       return true;
     } catch {
       return false;
@@ -155,8 +181,10 @@ export class ClickClient {
       const left = end - Date.now();
       if (left <= 0) return null;
       const r = await this.fetchJson(info, path, { method: o.method ?? (o.body === undefined ? 'GET' : 'POST'), body: o.body }, left);
+      if (r.status !== 200) debug(`${path} answered`, r.status);
       return r.status === 200 ? (r.body as T) : null;
-    } catch {
+    } catch (e) {
+      debug(path, e);
       return null;
     }
   }
