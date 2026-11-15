@@ -1,6 +1,6 @@
-import { randomBytes } from 'node:crypto';
-import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { writeFileAtomic } from './atomic.js';
 import { sha1 } from './hash.js';
 import { clickDir } from './paths.js';
 
@@ -25,7 +25,6 @@ export interface DiskCacheOptions {
 
 const NS_RE = /^[A-Za-z0-9_-]+$/;
 const SAFE_KEY_RE = /^[A-Za-z0-9_-]{2,128}$/;
-const RETRYABLE_RENAME = new Set(['EPERM', 'EBUSY', 'EACCES']); // Windows can hold a file briefly
 
 const isTruthy = (v: string | undefined): boolean => v !== undefined && v !== '' && v !== '0' && v.toLowerCase() !== 'false';
 
@@ -71,16 +70,7 @@ export class DiskCache {
   async set(key: string, value: unknown): Promise<void> {
     const json = JSON.stringify(value);
     if (json === undefined) throw new TypeError('DiskCache.set: value is not JSON-serialisable');
-    const file = this.fileFor(key);
-    await mkdir(dirname(file), { recursive: true });
-    const tmp = `${file}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
-    try {
-      await writeFile(tmp, json, 'utf8');
-      await renameWithRetry(tmp, file);
-    } catch (e) {
-      await rm(tmp, { force: true });
-      throw e;
-    }
+    await writeFileAtomic(this.fileFor(key), json);
   }
 
   /** Cached value, or compute and store it. In cache-only mode a miss throws instead of computing. */
@@ -90,18 +80,5 @@ export class DiskCache {
     const value = await compute();
     await this.set(key, value);
     return value;
-  }
-}
-
-async function renameWithRetry(from: string, to: string): Promise<void> {
-  for (let attempt = 0; ; attempt++) {
-    try {
-      await rename(from, to);
-      return;
-    } catch (e) {
-      const code = (e as NodeJS.ErrnoException).code ?? '';
-      if (attempt >= 5 || !RETRYABLE_RENAME.has(code)) throw e;
-      await new Promise((r) => setTimeout(r, 5 * (attempt + 1)));
-    }
   }
 }
