@@ -23,6 +23,7 @@
   ],
   "open": [
     "docs/**",
+    "README.md",
     "apps/dashboard/public/data/**"
   ],
   "laneA": [
@@ -34,8 +35,7 @@
     "packages/core/src/indexer/profile*.ts",
     "packages/click/src/mcp/**",
     "packages/click/src/install/{codex,claude-mcp}*.ts",
-    "packages/click/src/cli/{init,uninstall,statusline,push,pull,probe}*.ts",
-    "README.md"
+    "packages/click/src/cli/{init,uninstall,statusline,push,pull,probe}*.ts"
   ],
   "laneB": [
     "packages/**",

@@ -43,7 +43,7 @@ describe('classify (PLAN §14.4)', () => {
     ['packages/click/src/install/codex.ts', 'laneA'],
     ['packages/click/src/install/claude-mcp.test.ts', 'laneA'],
     ['packages/click/src/cli/init.ts', 'laneA'],
-    ['README.md', 'laneA'],
+    ['README.md', 'open'],
     ['packages/core/src/indexer/resolve.ts', 'laneB'],
     ['packages/core/src/retrieve/lexical.ts', 'laneB'],
     ['packages/core/src/testing/fakes.ts', 'laneB'],
