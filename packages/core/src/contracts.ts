@@ -3,7 +3,7 @@
 // can build in parallel against the same shapes. Sources: SPEC §5.6, §5.8, §14.
 
 import type { VariantConfig } from './config.js';
-import type { Embedder, Store } from './store/types.js';
+import type { Embedder, GraphStore, Store } from './store/types.js';
 import type {
   ChunkRecord,
   EdgeKind,
@@ -132,7 +132,9 @@ export type LogEvent = OutcomeEvent | CheckResultEvent;
 // ---------------------------------------------------------------- pipeline (SPEC §6, ARCHITECTURE §6)
 
 export interface PipelineDeps {
-  store: Store;
+  store: Store; // chunks + semantic index (local)
+  /** contract/1: HydraDB (or a fake). Absent or failing → the pipeline falls back to the local graph replica. */
+  graph?: GraphStore;
   embedder?: Embedder;
   root: string;
   now?: () => number;
