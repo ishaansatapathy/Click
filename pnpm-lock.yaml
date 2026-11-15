@@ -68,6 +68,9 @@ importers:
       js-tiktoken:
         specifier: ^1.0.21
         version: 1.0.21
+      openai:
+        specifier: ^7.57.0
+        version: 7.57.0(zod@4.6.7)
       zod:
         specifier: ^4.6.7
         version: 4.6.7
