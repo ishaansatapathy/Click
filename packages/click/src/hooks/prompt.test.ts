@@ -2,13 +2,14 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { findRoot, readHookConfig } from './hook-config.js';
+import { findRoot, isOptedIn, OPT_IN_FILE, readHookConfig } from './hook-config.js';
 import { gateRule, MAX_CONTEXT_CHARS, runPromptHook, type HookDeps } from './prompt.js';
 
 let root: string;
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'click-hook-'));
   mkdirSync(join(root, '.click'));
+  writeFileSync(join(root, OPT_IN_FILE), ''); // the repo opted in
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));
 
@@ -149,6 +150,47 @@ describe('gateRule', () => {
   });
 });
 
+describe('opting in (a machine-wide ~/.click must not turn every folder below it into a Click repo)', () => {
+  it('a home directory with a .click (token, caches) never opts anything in, and is never a repo itself', () => {
+    const home = mkdtempSync(join(tmpdir(), 'click-home-'));
+    try {
+      mkdirSync(join(home, '.click'));
+      writeFileSync(join(home, '.click', 'hydradb-token'), 'secret');
+      const project = join(home, 'Documents', 'some-project', 'src');
+      mkdirSync(project, { recursive: true });
+      expect(findRoot(project, {}, home)).toBeNull();
+      expect(isOptedIn(home, home)).toBe(false);
+      writeFileSync(join(home, 'click.config.json'), '{}');
+      writeFileSync(join(home, OPT_IN_FILE), '');
+      expect(findRoot(project, {}, home)).toBeNull(); // not even with every marker: the home directory is not a repo
+      expect(findRoot(project, { CLAUDE_PROJECT_DIR: home }, home)).toBeNull();
+      // a real repo under the home directory still works
+      writeFileSync(join(home, 'Documents', 'some-project', 'click.config.json'), '{}');
+      expect(findRoot(project, {}, home)).toBe(join(home, 'Documents', 'some-project'));
+    } finally {
+      rmSync(home, { recursive: true, force: true });
+    }
+  });
+
+  it('every sign of a real Click repo counts: config file, marker, running daemon, an index', () => {
+    const r = mkdtempSync(join(tmpdir(), 'click-signs-'));
+    try {
+      const home = join(r, 'h');
+      expect(isOptedIn(r, home)).toBe(false);
+      mkdirSync(join(r, '.click', 'graph'), { recursive: true });
+      expect(isOptedIn(r, home)).toBe(false);
+      writeFileSync(join(r, '.click', 'graph', 'CURRENT'), 'v1');
+      expect(isOptedIn(r, home)).toBe(true);
+      rmSync(join(r, '.click'), { recursive: true });
+      writeFileSync(join(r, '.click.tmp'), '');
+      writeFileSync(join(r, 'click.config.json'), '{}');
+      expect(isOptedIn(r, home)).toBe(true);
+    } finally {
+      rmSync(r, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('hook-config', () => {
   it('readHookConfig tolerates anything', () => {
     expect(readHookConfig(root)).toEqual({ mode: 'always', budgetTokens: 4000 });
@@ -165,15 +207,19 @@ describe('hook-config', () => {
     try {
       const inner = join(outer, 'a', 'b');
       mkdirSync(inner, { recursive: true });
-      expect(findRoot(inner, {})).toBeNull();
+      const home = join(outer, 'elsewhere-home'); // an isolated boundary: whatever the real home directory holds cannot leak in
+      mkdirSync(home);
+      expect(findRoot(inner, {}, home)).toBeNull();
       mkdirSync(join(outer, '.click'));
-      expect(findRoot(inner, {})).toBe(outer);
+      expect(findRoot(inner, {}, home)).toBeNull(); // a bare .click is not an opt-in
+      writeFileSync(join(outer, OPT_IN_FILE), '');
+      expect(findRoot(inner, {}, home)).toBe(outer);
       mkdirSync(join(outer, 'a', '.click'));
       writeFileSync(join(outer, 'a', '.click', 'daemon.json'), '{}');
-      expect(findRoot(inner, {})).toBe(join(outer, 'a'));
-      expect(findRoot(inner, { CLAUDE_PROJECT_DIR: outer })).toBe(join(outer, 'a')); // a running daemon still wins
+      expect(findRoot(inner, {}, home)).toBe(join(outer, 'a'));
+      expect(findRoot(inner, { CLAUDE_PROJECT_DIR: outer }, home)).toBe(join(outer, 'a')); // a running daemon still wins
       rmSync(join(outer, 'a', '.click'), { recursive: true });
-      expect(findRoot(inner, { CLAUDE_PROJECT_DIR: root })).toBe(root);
+      expect(findRoot(inner, { CLAUDE_PROJECT_DIR: root }, home)).toBe(root);
       expect(existsSync(root)).toBe(true);
     } finally {
       rmSync(outer, { recursive: true, force: true });

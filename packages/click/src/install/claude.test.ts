@@ -35,7 +35,7 @@ describe('installClaudeHooks (PROMPTS 117)', () => {
     expect(readSettings()).toEqual({ hooks: { UserPromptSubmit: [{ hooks: [OURS(paths.prompt)] }] } });
     expect(readFileSync(settingsPath(), 'utf8').endsWith('\n')).toBe(true);
     expect(existsSync(settingsPath() + '.click-bak')).toBe(false); // nothing to back up yet
-    expect(existsSync(join(root, '.click'))).toBe(true);
+    expect(existsSync(join(root, '.click', 'enabled'))).toBe(true); // the repo is now opted in for the hook
   });
 
   it('adds the Stop hook too once its file exists (or when asked)', async () => {

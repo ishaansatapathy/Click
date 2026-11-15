@@ -35,7 +35,7 @@ describe('click hooks (G2 support)', () => {
     expect(existsSync(join(repo, '.click'))).toBe(true);
     const s = await run(['status']);
     expect(s.out).toContain('UserPromptSubmit');
-    expect(s.out).toContain('.click directory: present');
+    expect(s.out).toContain('opted in: yes');
     expect((await run(['install', '--local'])).out).toContain('already installed');
     expect((await run(['uninstall', '--local'])).out).toContain('removed UserPromptSubmit');
     expect((await run(['status'])).out).toContain('no Click hooks installed');

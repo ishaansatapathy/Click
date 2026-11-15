@@ -9,11 +9,12 @@
 // The original file is copied to settings.json.click-bak before the first change, and a settings file that is not valid JSON is
 // never touched.
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { copyFile, mkdir, readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { writeFileAtomic } from '../../../core/src/util/atomic.js';
+import { OPT_IN_FILE } from '../hooks/hook-config.js';
 
 export class InstallError extends Error {
   constructor(message: string) {
@@ -207,10 +208,11 @@ async function backupOnce(path: string, existed: boolean): Promise<boolean> {
   return true;
 }
 
-/** `.click/` must exist for the hook to act (it only runs in repos that opted in), and must not be committed. */
+/** The repo opts in to the hook by having `.click/enabled` (a bare `.click` is not enough); `.click/` must not be committed. */
 export function ensureClickDir(root: string): void {
   try {
     mkdirSync(join(root, '.click'), { recursive: true });
+    if (!existsSync(join(root, OPT_IN_FILE))) writeFileSync(join(root, OPT_IN_FILE), 'This repo uses Click: the prompt hook acts here. Remove this file (or run `click hooks uninstall`) to opt out.\n');
     const exclude = join(root, '.git', 'info', 'exclude');
     if (existsSync(join(root, '.git'))) {
       const text = existsSync(exclude) ? readFileSync(exclude, 'utf8') : '';

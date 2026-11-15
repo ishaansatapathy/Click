@@ -107,6 +107,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
   it('no daemon: prints nothing, exits 0 quickly, and starts one in the background', async () => {
     const root = tmp('click-nodaemon-');
     mkdirSync(join(root, '.click'));
+    writeFileSync(join(root, '.click', 'enabled'), ''); // opted in, no daemon yet
     const marker = join(root, 'started.txt');
     const fakeCli = join(root, 'fake-click.js');
     writeFileSync(fakeCli, `require('node:fs').writeFileSync(${JSON.stringify(marker)}, process.argv.slice(2).join(' '));`);

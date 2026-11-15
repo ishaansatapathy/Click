@@ -11,6 +11,7 @@ import { join, resolve } from 'node:path';
 import { defaultCliPath } from '../client.js';
 import { defaultHookPaths, installClaudeHooks, InstallError, isClickCommand, uninstallClaudeHooks, type HookPaths, type SettingsFile } from '../install/claude.js';
 import { GitHookError, installGitHook, uninstallGitHook } from '../install/githook.js';
+import { isOptedIn } from '../hooks/hook-config.js';
 import { parseArgs } from './args.js';
 
 export interface HooksIo {
@@ -78,7 +79,7 @@ export async function runHooks(argv: readonly string[], io: HooksIo, cwd: string
       }
     }
     if (!any) io.out('no Click hooks installed in this repo (run `click hooks install --local`)');
-    io.out(`.click directory: ${existsSync(join(root, '.click')) ? 'present (the hook acts in this repo)' : 'missing (the hook ignores this repo until it exists)'}`);
+    io.out(`opted in: ${isOptedIn(root) ? 'yes (the hook acts in this repo)' : 'no (the hook ignores this repo; `click hooks install` opts it in)'}`);
     return 0;
   } catch (e) {
     if (e instanceof InstallError || e instanceof GitHookError) {
