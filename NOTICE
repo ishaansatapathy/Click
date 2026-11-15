@@ -1,0 +1,21 @@
+Click
+Copyright (c) 2026 Ishaan Satapathy. Licensed under the MIT License (see LICENSE).
+
+Third-party software used by Click
+----------------------------------
+
+HydraDB (open source edition, v0.4.0)
+  https://github.com/hydra-db/hydradb
+  Licensed under the Elastic License 2.0 (ELv2).
+  Click does not include, modify or redistribute HydraDB. It runs the unmodified upstream
+  Docker images (graph-node, graph-indexer) on the user's own machine through
+  infra/hydradb/docker-compose.yml, as a self-hosted database. Click is not offered as,
+  and does not provide, HydraDB as a managed service.
+
+v3-admin-vite (benchmark repository and the in-browser demo's sample project)
+  https://github.com/un-pany/v3-admin-vite
+  Copyright (c) 2022-present pany. Licensed under the MIT License.
+  A copy of its indexed source files is bundled in apps/dashboard/public/data/demo.json
+  so the website's playground can run Click's retrieval in the browser.
+
+npm dependencies are listed in each package.json and keep their own licenses.
