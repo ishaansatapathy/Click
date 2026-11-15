@@ -165,11 +165,12 @@ const v4: VariantConfig = {
   prune: { ...noPrune, chain: ['jev', 'rerank', 'none'] },
 };
 
-// Until Prompt 149 selects a measured winner, delivery uses the safe no-network-pruner V3 base.
+// Until Prompt 149 selects the overall measured winner, delivery uses the V3 base. Prompt 137 selected body-only with
+// no prefix on train: it tied body-signature recall, cut p95, and the prefix cost 4-5 strict-recall points at 4k.
 const delivery: VariantConfig = {
   ...v3,
   id: 'delivery',
-  pack: { ...v3.pack, prefix: true, sessionDedupe: true },
+  pack: { ...v3.pack, strategy: 'body-only', prefix: false, sessionDedupe: true },
 };
 
 export const PRESETS = Object.freeze({ V1: v1, V2: v2, V3: v3, V3r: v3r, V4: v4, delivery });

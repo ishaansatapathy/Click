@@ -20,7 +20,7 @@ describe('variant config presets', () => {
     expect(PRESETS.V2).toMatchObject({ units: 'symbol', expand: { kind: 'none' } });
     expect(PRESETS.V3).toMatchObject({ expand: { kind: 'ppr', usePriors: true } });
     expect(PRESETS.V4.prune.chain).toEqual(['jev', 'rerank', 'none']);
-    expect(PRESETS.delivery.pack).toMatchObject({ prefix: true, sessionDedupe: true });
+    expect(PRESETS.delivery.pack).toMatchObject({ strategy: 'body-only', prefix: false, sessionDedupe: true });
   });
 
   it('graph source: HydraDB by default (2 hops, frontier 200, 250 ms deadline); V3r is V3 on the local replica', () => {
