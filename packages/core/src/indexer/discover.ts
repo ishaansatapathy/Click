@@ -21,6 +21,8 @@ export type SkipReason = 'too-large' | 'missing' | 'unreadable';
 
 export interface DiscoverResult {
   files: SourceFile[];
+  /** Every listed repo path (assets, styles, json…), sorted. The resolver needs it to resolve non-code imports. */
+  allPaths: string[];
   skipped: { path: string; reason: SkipReason }[];
   mode: 'git' | 'walk';
 }
@@ -53,9 +55,10 @@ export async function discover(root: string, opts: DiscoverOptions = {}): Promis
   const maxBytes = opts.maxBytes ?? DEFAULT_MAX_BYTES;
   const listed = opts.forceWalk ? null : await gitList(root);
   const mode = listed ? 'git' : 'walk';
-  const paths = [...new Set((listed ?? (await walk(root))).map((p) => normPath(root, p)))]
-    .filter(isCandidate)
-    .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const allPaths = [...new Set((listed ?? (await walk(root))).map((p) => normPath(root, p)))].sort((a, b) =>
+    a < b ? -1 : a > b ? 1 : 0,
+  );
+  const paths = allPaths.filter(isCandidate);
 
   const files: SourceFile[] = [];
   const skipped: DiscoverResult['skipped'] = [];
@@ -64,7 +67,7 @@ export async function discover(root: string, opts: DiscoverOptions = {}): Promis
     if ('reason' in r) skipped.push(r);
     else files.push(r);
   }
-  return { files, skipped, mode };
+  return { files, allPaths, skipped, mode };
 }
 
 async function readOne(root: string, path: string, maxBytes: number): Promise<SourceFile | { path: string; reason: SkipReason }> {

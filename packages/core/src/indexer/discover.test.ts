@@ -79,6 +79,10 @@ describe('discover on the fixture repo', () => {
     expect(r.mode).toBe('git');
     expect(r.files.map((f) => [f.path, f.class])).toEqual(EXPECTED);
     expect(r.skipped).toEqual([]);
+    // allPaths lists every repo file (configs, .d.ts, json…), sorted; files are its indexable subset.
+    expect(r.allPaths).toEqual(expect.arrayContaining(['package.json', 'tsconfig.json', 'src/env.d.ts', 'src/main.ts']));
+    expect([...r.allPaths].sort()).toEqual(r.allPaths);
+    expect(r.files.every((f) => r.allPaths.includes(f.path))).toBe(true);
   });
 
   it('gives the same answer with the fallback walker', async () => {
