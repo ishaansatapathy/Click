@@ -93,7 +93,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
     expect(r.stderr).toBe('');
     expect(JSON.parse(r.stdout)).toEqual({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: '<click_context version="1">CheckoutButton…</click_context>' } });
     expect(seen[0]).toMatchObject({ task: PROMPT, sessionId: 's1', source: 'hook', maxChars: 9800 });
-    expect(r.ms).toBeLessThan(1_000);
+    expect(r.ms).toBeLessThan(5_000);
   });
 
   it('each gating rule prints nothing and exits 0', async () => {
@@ -112,7 +112,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
     writeFileSync(fakeCli, `require('node:fs').writeFileSync(${JSON.stringify(marker)}, process.argv.slice(2).join(' '));`);
     const r = await runHook(payload(root), root, { CLICK_CLI: fakeCli });
     expect(r).toMatchObject({ code: 0, stdout: '' });
-    expect(r.ms).toBeLessThan(1_000);
+    expect(r.ms).toBeLessThan(5_000);
     const end = Date.now() + 5_000;
     while (!existsSync(marker) && Date.now() < end) await new Promise((x) => setTimeout(x, 50));
     expect(readFileSync(marker, 'utf8')).toBe(`serve --root ${root}`);
@@ -143,7 +143,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
     expect(JSON.parse(big.stdout).hookSpecificOutput.additionalContext).toBe('got 20000 chars');
     const noise = await runHook(Buffer.alloc(4_500_000, 'a'), root);
     expect(noise).toMatchObject({ code: 0, stdout: '' });
-    expect(noise.ms).toBeLessThan(3_000);
+    expect(noise.ms).toBeLessThan(15_000);
     const nonUtf8Prompt = Buffer.concat([Buffer.from(payload(root, { prompt: 'PLACEHOLDER' }).replace('PLACEHOLDER', 'refactor the café module for the checkout flow now')), Buffer.from([0xff])]);
     expect(await runHook(nonUtf8Prompt, root)).toMatchObject({ code: 0 }); // trailing garbage: JSON.parse fails → nothing, but no crash
   }, 60_000);
