@@ -39,9 +39,9 @@ function fakes(over: Partial<Fakes> = {}): { f: Fakes; gitOps: GitOps; runCheck:
 }
 
 const worlds: World[] = [];
-async function world(over: Partial<Fakes> = {}) {
+async function world(over: Partial<Fakes> = {}, learnDebounceMs = 30) {
   const k = fakes(over);
-  const w = await startWorld({ ref, seedGraph: false, config: { gitOps: k.gitOps, git: k.gitOps.head, runCheck: k.runCheck, learnDebounceMs: 30, debounceMs: 30 } });
+  const w = await startWorld({ ref, seedGraph: false, config: { gitOps: k.gitOps, git: k.gitOps.head, runCheck: k.runCheck, learnDebounceMs, debounceMs: 30 } });
   worlds.push(w);
   return { w, ...k };
 }
@@ -197,13 +197,12 @@ describe('the learning loop, end to end (PROMPTS 156)', () => {
   });
 
   it('a burst of outcomes is one derive (5 s debounce, shortened here), and derive time is logged and small', async () => {
-    const { w } = await world();
+    const { w } = await world({}, 1_500); // longer than the whole burst, so the quiet period that triggers a derive cannot be reached in the middle of it
     await ctx(w, 'L3');
     const { path } = await reachedItem(w, 'L3');
     for (let i = 0; i < 12; i++) await w.json('/outcome', { sessionId: 'L3', filesEdited: [path], check: { kind: 'none', passed: true } });
     await w.daemon.settled();
-    expect(w.daemon.learner.stats.runs).toBeLessThanOrEqual(3);
-    expect(w.daemon.learner.stats.runs).toBeGreaterThanOrEqual(1);
+    expect(w.daemon.learner.stats.runs).toBe(1); // twelve outcomes, one derive
     expect(w.daemon.learner.stats.lastMs).toBeLessThan(1_000);
     expect((await w.daemon.weights.load())?.events).toBe(12);
   });
