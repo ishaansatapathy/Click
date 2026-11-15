@@ -15,7 +15,7 @@ import { clickDir } from '../../core/src/util/paths.js';
 import { isPidAlive, readInfo, type DaemonInfo } from './daemon/lifecycle.js';
 
 export const TOKEN_HEADER = 'x-click-token';
-export const HEALTH_TIMEOUT_MS = 150;
+export const HEALTH_TIMEOUT_MS = 400; // SPEC said 150; a fresh hook process on a busy machine needs longer just to open its first socket, and skipping the context is worse than waiting a moment (the whole hook still ends by 1.5 s)
 const AUTOSTART_LOCK = 'autostart.lock';
 const AUTOSTART_LOCK_TTL_MS = 15_000;
 

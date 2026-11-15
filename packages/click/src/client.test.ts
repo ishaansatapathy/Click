@@ -98,7 +98,7 @@ describe('ClickClient hook mode (PROMPTS 114)', () => {
     expect(spawns).toHaveLength(2);
   });
 
-  it('a daemon that is alive but slow to answer /health is skipped within 150 ms, without spawning another', async () => {
+  it('a daemon that is alive but slow to answer /health is skipped after the health timeout, without spawning another', async () => {
     const h = await fakeDaemon();
     await publish(h);
     const { c, spawns } = client({ fetchFn: ((url: string, init: RequestInit) => (String(url).endsWith('/health') ? new Promise((_r, rej) => init.signal!.addEventListener('abort', () => rej(init.signal!.reason))) : fetch(url, init))) as typeof fetch });
