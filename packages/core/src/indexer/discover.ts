@@ -40,6 +40,9 @@ export function isCandidate(path: string): boolean {
   return SOURCE_EXTS.has(posix.extname(path));
 }
 
+/** Paths that become graph nodes: candidates minus ambient `.d.ts` maps (components.d.ts is read for its map only). */
+export const isIndexedPath = (path: string): boolean => isCandidate(path) && !path.endsWith('.d.ts');
+
 export function classifyFile(path: string): FileClass {
   if (AUTO_IMPORT_DTS.test(path) || /(^|\/)dist\//.test(path) || /\.gen\.[cm]?[jt]sx?$/.test(path)) return 'generated';
   if (/(^|\/)(tests?|__tests__)\//.test(path) || /\.(spec|test)\.[cm]?[jt]sx?$/.test(path)) return 'test';
