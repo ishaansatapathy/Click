@@ -80,6 +80,8 @@ export interface RequestOptions {
   body?: unknown;
   /** Total time for the whole call, discovery and health check included. */
   deadlineMs: number;
+  /** Hook mode only: start a daemon when there is none (default true). The Stop hook must not: a session ending is no reason to boot one. */
+  autostart?: boolean;
 }
 
 /** Where the CLI lives next to this file: dist/click.js, whether we run from dist/click.js or dist/hooks/*.js. */
@@ -174,7 +176,7 @@ export class ClickClient {
       const end = Date.now() + o.deadlineMs;
       const info = await this.discover();
       if (!info) {
-        await this.autostart();
+        if (o.autostart !== false) await this.autostart();
         return null;
       }
       if (!(await this.health(info, Math.min(this.o.healthTimeoutMs ?? HEALTH_TIMEOUT_MS, end - Date.now())))) return null;

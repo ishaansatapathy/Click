@@ -1,4 +1,5 @@
 // PROMPTS 116 / 178: build the shippable files with esbuild.
+//   dist/hooks/stop.js     the Stop hook, same rules
 //   dist/hooks/prompt.js   everything inlined, no dependencies: it starts on every prompt, so it must start fast
 //   dist/click.js          the CLI and daemon; the TypeScript and Vue compilers stay external (dependencies of the package)
 // More entries (hooks/stop.js, mcp.js) are added by their prompts.
@@ -32,6 +33,9 @@ export async function bundle(o: BundleOptions = {}): Promise<{ outdir: string; f
   const hook = join(outdir, 'hooks', 'prompt.js');
   await build({ ...common, entryPoints: [join(SRC, 'hooks', 'prompt-bin.ts')], outfile: hook, minify: true });
   files.push(hook);
+  const stop = join(outdir, 'hooks', 'stop.js');
+  await build({ ...common, entryPoints: [join(SRC, 'hooks', 'stop-bin.ts')], outfile: stop, minify: true });
+  files.push(stop);
   if (!o.hooksOnly) {
     const cli = join(outdir, 'click.js');
     // everything inlined except the compilers; CommonJS dependencies inside an ES module bundle need `require`, so it is provided

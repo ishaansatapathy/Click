@@ -15,6 +15,7 @@ import { runPush } from './push.js';
 import { runReindex } from './reindexCmd.js';
 import { runServe } from './serve.js';
 import { runStatus } from './status.js';
+import { runWeights } from './weightsCmd.js';
 
 export interface CliIo {
   out: (text: string) => void;
@@ -33,6 +34,7 @@ export const COMMANDS: Readonly<Record<string, { run: CommandRunner; help: strin
   context: { run: runContext, help: 'print the context for a task: "<task>" [--stdin] [--json] [--budget N] [--variant V]' },
   reindex: { run: runReindex, help: 'tell the daemon to refresh its graph [--changed] [paths...]' },
   hooks: { run: runHooks, help: 'install | uninstall | status of the Claude Code (and git) hooks [--local] [--git]' },
+  weights: { run: runWeights, help: 'what Click has learned: --show | --rollback' },
   status: { run: runStatus, help: 'is the daemon up, what graph, what it last served [--json]' },
 };
 
