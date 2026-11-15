@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "bin": { "click": "dist/click.js" },
-  "dependencies": { "@click/core": "workspace:*" }
+  "bin": {
+    "click": "dist/click.js"
+  },
+  "dependencies": {
+    "@click/core": "workspace:*",
+    "zod": "^4.6.7"
+  }
 }
