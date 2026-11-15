@@ -31,6 +31,8 @@ describe('classify (PLAN §14.4)', () => {
     ['docs/hydradb-notes.md', 'open'],
     ['bench/src/runner.ts', 'laneA'],
     ['bench/scripts/fixtures/x.txt', 'laneA'],
+    ['infra/hydradb/docker-compose.yml', 'laneA'],
+    ['apps/dashboard/src/main.ts', 'laneA'],
     ['packages/core/src/store/hydradb.ts', 'laneA'],
     ['packages/core/src/retrieve/semantic.ts', 'laneA'],
     ['packages/core/src/retrieve/semantic.test.ts', 'laneA'],

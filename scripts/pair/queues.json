@@ -1,142 +1,691 @@
 {
   "$comment": "Mirror of PROMPTS.md 'Pair dispatch'. Order matters: pair:status picks the first prompt that is not done and whose waits (sync tags) all exist. Every prompt in a dependent block repeats the block's waits.",
-  "preSplitTags": ["sync/interfaces"],
+  "preSplitTags": [
+    "sync/interfaces"
+  ],
   "a": [
-    { "prompt": "020", "ask": true },
-    { "prompt": "028" },
-    { "prompt": "030" },
-    { "prompt": "029" },
-    { "prompt": "021", "emits": ["sync/bench-repo"] },
-    { "prompt": "022", "emits": ["sync/profile"] },
-    { "prompt": "023" },
-    { "prompt": "024" },
-    { "prompt": "025" },
-    { "prompt": "026" },
-    { "prompt": "027" },
-    { "prompt": "031" },
-    { "prompt": "032" },
-    { "prompt": "033" },
-    { "prompt": "034", "ask": true },
-    { "prompt": "039", "gate": "G1a" },
-    { "prompt": "070", "waits": ["sync/build"] },
-    { "prompt": "071", "waits": ["sync/build"] },
-    { "prompt": "072", "waits": ["sync/build"] },
-    { "prompt": "073", "waits": ["sync/build"] },
-    { "prompt": "073a", "waits": ["sync/build"] },
-    { "prompt": "074", "waits": ["sync/build"], "emits": ["sync/task-commits"] },
-    { "prompt": "100" },
-    { "prompt": "101" },
-    { "prompt": "102", "emits": ["sync/memstore"] },
-    { "prompt": "103" },
-    { "prompt": "104" },
-    { "prompt": "105" },
-    { "prompt": "106" },
-    { "prompt": "107" },
-    { "prompt": "108", "emits": ["sync/semantic"] },
-    { "prompt": "029b", "waits": ["sync/pipeline"] },
-    { "prompt": "130", "waits": ["sync/pipeline"] },
-    { "prompt": "131", "waits": ["sync/pipeline"] },
-    { "prompt": "132", "waits": ["sync/pipeline"] },
-    { "prompt": "133", "waits": ["sync/pipeline"], "emits": ["sync/analysis-1"] },
-    { "prompt": "136", "waits": ["sync/pipeline"] },
-    { "prompt": "137", "waits": ["sync/pipeline"] },
-    { "prompt": "135", "waits": ["sync/pipeline", "sync/fix-1"], "emits": ["sync/analysis-2"] },
-    { "prompt": "138", "waits": ["sync/pipeline", "sync/daemon"] },
-    { "prompt": "142", "waits": ["sync/pipeline", "sync/pruners"] },
-    { "prompt": "149", "waits": ["sync/pipeline"], "emits": ["sync/winner", "gate/G3"], "gate": "G3" },
-    { "prompt": "170", "waits": ["sync/daemon"] },
-    { "prompt": "173" },
-    { "prompt": "174" },
-    { "prompt": "175", "waits": ["sync/hook"] },
-    { "prompt": "177", "waits": ["sync/daemon"] },
-    { "prompt": "158", "waits": ["sync/cochange"] },
-    { "prompt": "159", "waits": ["sync/learn"] },
-    { "prompt": "160", "waits": ["sync/learn"] },
-    { "prompt": "161", "waits": ["sync/learn"] },
-    { "prompt": "162", "waits": ["sync/learn"] },
-    { "prompt": "169", "waits": ["sync/learn"], "emits": ["gate/G4"], "gate": "G4" },
-    { "prompt": "180", "waits": ["sync/package"] },
-    { "prompt": "181", "waits": ["sync/package"], "emits": ["gate/G5"], "gate": "G5" },
-    { "prompt": "182", "waits": ["sync/package"] },
-    { "prompt": "193", "waits": ["sync/e2e"] },
-    { "prompt": "194", "waits": ["sync/e2e"] },
-    { "prompt": "200", "waits": ["gate/G5"] },
-    { "prompt": "201", "waits": ["gate/G5"] },
-    { "prompt": "202", "waits": ["gate/G5"] },
-    { "prompt": "203", "waits": ["gate/G5"] },
-    { "prompt": "204", "waits": ["gate/G5"] },
-    { "prompt": "205", "waits": ["sync/e2e"], "emits": ["gate/G6"], "gate": "G6", "ask": true }
+    {
+      "prompt": "020",
+      "ask": true
+    },
+    {
+      "prompt": "028"
+    },
+    {
+      "prompt": "030"
+    },
+    {
+      "prompt": "029"
+    },
+    {
+      "prompt": "021",
+      "emits": [
+        "sync/bench-repo"
+      ]
+    },
+    {
+      "prompt": "022",
+      "emits": [
+        "sync/profile"
+      ]
+    },
+    {
+      "prompt": "023"
+    },
+    {
+      "prompt": "024"
+    },
+    {
+      "prompt": "025"
+    },
+    {
+      "prompt": "026"
+    },
+    {
+      "prompt": "027"
+    },
+    {
+      "prompt": "031"
+    },
+    {
+      "prompt": "032"
+    },
+    {
+      "prompt": "033"
+    },
+    {
+      "prompt": "034",
+      "ask": true
+    },
+    {
+      "prompt": "039",
+      "gate": "G1a"
+    },
+    {
+      "prompt": "100"
+    },
+    {
+      "prompt": "101"
+    },
+    {
+      "prompt": "102",
+      "emits": [
+        "sync/memstore"
+      ]
+    },
+    {
+      "prompt": "105"
+    },
+    {
+      "prompt": "103"
+    },
+    {
+      "prompt": "104"
+    },
+    {
+      "prompt": "106",
+      "emits": [
+        "sync/hydra"
+      ]
+    },
+    {
+      "prompt": "107",
+      "waits": [
+        "sync/build",
+        "sync/hydra"
+      ]
+    },
+    {
+      "prompt": "108",
+      "emits": [
+        "sync/semantic"
+      ]
+    },
+    {
+      "prompt": "070",
+      "waits": [
+        "sync/build"
+      ]
+    },
+    {
+      "prompt": "071",
+      "waits": [
+        "sync/build"
+      ]
+    },
+    {
+      "prompt": "072",
+      "waits": [
+        "sync/build"
+      ]
+    },
+    {
+      "prompt": "073",
+      "waits": [
+        "sync/build"
+      ]
+    },
+    {
+      "prompt": "073a",
+      "waits": [
+        "sync/build"
+      ]
+    },
+    {
+      "prompt": "074",
+      "waits": [
+        "sync/build"
+      ],
+      "emits": [
+        "sync/task-commits"
+      ]
+    },
+    {
+      "prompt": "029b",
+      "waits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "130",
+      "waits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "131",
+      "waits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "132",
+      "waits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "133",
+      "waits": [
+        "sync/pipeline"
+      ],
+      "emits": [
+        "sync/analysis-1"
+      ]
+    },
+    {
+      "prompt": "136",
+      "waits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "137",
+      "waits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "135",
+      "waits": [
+        "sync/pipeline",
+        "sync/fix-1"
+      ],
+      "emits": [
+        "sync/analysis-2"
+      ]
+    },
+    {
+      "prompt": "143",
+      "waits": [
+        "sync/pipeline",
+        "sync/hydra"
+      ]
+    },
+    {
+      "prompt": "144",
+      "waits": [
+        "sync/pipeline",
+        "sync/hydra"
+      ]
+    },
+    {
+      "prompt": "138",
+      "waits": [
+        "sync/pipeline",
+        "sync/daemon"
+      ]
+    },
+    {
+      "prompt": "149",
+      "waits": [
+        "sync/pipeline"
+      ],
+      "emits": [
+        "sync/winner",
+        "gate/G3"
+      ],
+      "gate": "G3"
+    },
+    {
+      "prompt": "170",
+      "waits": [
+        "sync/daemon"
+      ]
+    },
+    {
+      "prompt": "173"
+    },
+    {
+      "prompt": "174"
+    },
+    {
+      "prompt": "175",
+      "waits": [
+        "sync/hook"
+      ]
+    },
+    {
+      "prompt": "177",
+      "waits": [
+        "sync/daemon"
+      ]
+    },
+    {
+      "prompt": "158",
+      "waits": [
+        "sync/cochange"
+      ]
+    },
+    {
+      "prompt": "159",
+      "waits": [
+        "sync/learn"
+      ]
+    },
+    {
+      "prompt": "160",
+      "waits": [
+        "sync/learn"
+      ]
+    },
+    {
+      "prompt": "161",
+      "waits": [
+        "sync/learn"
+      ]
+    },
+    {
+      "prompt": "162",
+      "waits": [
+        "sync/learn"
+      ]
+    },
+    {
+      "prompt": "169",
+      "waits": [
+        "sync/learn"
+      ],
+      "emits": [
+        "gate/G4"
+      ],
+      "gate": "G4"
+    },
+    {
+      "prompt": "180",
+      "waits": [
+        "sync/package"
+      ]
+    },
+    {
+      "prompt": "181",
+      "waits": [
+        "sync/package"
+      ],
+      "emits": [
+        "gate/G5"
+      ],
+      "gate": "G5"
+    },
+    {
+      "prompt": "182",
+      "waits": [
+        "sync/package"
+      ]
+    },
+    {
+      "prompt": "193",
+      "waits": [
+        "sync/e2e"
+      ]
+    },
+    {
+      "prompt": "194",
+      "waits": [
+        "sync/e2e"
+      ]
+    },
+    {
+      "prompt": "200",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "201",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "202",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "203",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "204",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "221",
+      "waits": [
+        "gate/G3"
+      ]
+    },
+    {
+      "prompt": "220",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "222",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "223",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "224",
+      "waits": [
+        "gate/G5"
+      ],
+      "emits": [
+        "sync/live-link"
+      ]
+    },
+    {
+      "prompt": "226",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "227",
+      "waits": [
+        "gate/G5"
+      ]
+    },
+    {
+      "prompt": "225",
+      "waits": [
+        "sync/live-link"
+      ]
+    },
+    {
+      "prompt": "205",
+      "waits": [
+        "sync/e2e",
+        "sync/live-link"
+      ],
+      "emits": [
+        "gate/G6"
+      ],
+      "gate": "G6",
+      "ask": true
+    }
   ],
   "b": [
-    { "prompt": "040" },
-    { "prompt": "041" },
-    { "prompt": "042" },
-    { "prompt": "043" },
-    { "prompt": "044" },
-    { "prompt": "045" },
-    { "prompt": "046" },
-    { "prompt": "047" },
-    { "prompt": "048" },
-    { "prompt": "049" },
-    { "prompt": "050" },
-    { "prompt": "051" },
-    { "prompt": "052" },
-    { "prompt": "053" },
-    { "prompt": "054" },
-    { "prompt": "055" },
-    { "prompt": "056" },
-    { "prompt": "057", "emits": ["sync/build"] },
-    { "prompt": "058" },
-    { "prompt": "059" },
-    { "prompt": "060" },
-    { "prompt": "061" },
-    { "prompt": "069", "waits": ["sync/bench-repo"], "emits": ["gate/G1"], "gate": "G1" },
-    { "prompt": "080" },
-    { "prompt": "081" },
-    { "prompt": "082" },
-    { "prompt": "083" },
-    { "prompt": "084" },
-    { "prompt": "085" },
-    { "prompt": "086" },
-    { "prompt": "087" },
-    { "prompt": "088" },
-    { "prompt": "089" },
-    { "prompt": "090" },
-    { "prompt": "091" },
-    { "prompt": "092" },
-    { "prompt": "093" },
-    { "prompt": "094", "emits": ["sync/pipeline"] },
-    { "prompt": "110" },
-    { "prompt": "111" },
-    { "prompt": "112" },
-    { "prompt": "113" },
-    { "prompt": "114" },
-    { "prompt": "115", "emits": ["sync/daemon"] },
-    { "prompt": "116" },
-    { "prompt": "117" },
-    { "prompt": "118", "emits": ["sync/hook"] },
-    { "prompt": "119", "emits": ["gate/G2"], "gate": "G2", "ask": true },
-    { "prompt": "134", "waits": ["sync/analysis-1"], "emits": ["sync/fix-1"] },
-    { "prompt": "135", "waits": ["sync/analysis-2"] },
-    { "prompt": "139" },
-    { "prompt": "140" },
-    { "prompt": "141", "emits": ["sync/pruners"] },
-    { "prompt": "150" },
-    { "prompt": "151" },
-    { "prompt": "152" },
-    { "prompt": "153" },
-    { "prompt": "154" },
-    { "prompt": "155" },
-    { "prompt": "156", "emits": ["sync/learn"] },
-    { "prompt": "157", "waits": ["sync/task-commits"], "emits": ["sync/cochange"] },
-    { "prompt": "171" },
-    { "prompt": "172" },
-    { "prompt": "176" },
-    { "prompt": "178", "emits": ["sync/package"] },
-    { "prompt": "179" },
-    { "prompt": "190", "waits": ["sync/winner"] },
-    { "prompt": "191", "waits": ["sync/winner"], "emits": ["sync/e2e"] },
-    { "prompt": "192", "waits": ["sync/winner"] },
-    { "prompt": "205", "waits": ["sync/e2e"], "gate": "G6", "ask": true }
+    {
+      "prompt": "040"
+    },
+    {
+      "prompt": "041"
+    },
+    {
+      "prompt": "042"
+    },
+    {
+      "prompt": "043"
+    },
+    {
+      "prompt": "044"
+    },
+    {
+      "prompt": "045"
+    },
+    {
+      "prompt": "046"
+    },
+    {
+      "prompt": "047"
+    },
+    {
+      "prompt": "048"
+    },
+    {
+      "prompt": "049"
+    },
+    {
+      "prompt": "050"
+    },
+    {
+      "prompt": "051"
+    },
+    {
+      "prompt": "052"
+    },
+    {
+      "prompt": "053"
+    },
+    {
+      "prompt": "054"
+    },
+    {
+      "prompt": "055"
+    },
+    {
+      "prompt": "056"
+    },
+    {
+      "prompt": "057",
+      "emits": [
+        "sync/build"
+      ]
+    },
+    {
+      "prompt": "058"
+    },
+    {
+      "prompt": "059"
+    },
+    {
+      "prompt": "060"
+    },
+    {
+      "prompt": "061"
+    },
+    {
+      "prompt": "069",
+      "waits": [
+        "sync/bench-repo"
+      ],
+      "emits": [
+        "gate/G1"
+      ],
+      "gate": "G1"
+    },
+    {
+      "prompt": "011b"
+    },
+    {
+      "prompt": "080"
+    },
+    {
+      "prompt": "081"
+    },
+    {
+      "prompt": "082"
+    },
+    {
+      "prompt": "083"
+    },
+    {
+      "prompt": "084"
+    },
+    {
+      "prompt": "085"
+    },
+    {
+      "prompt": "086"
+    },
+    {
+      "prompt": "087"
+    },
+    {
+      "prompt": "088"
+    },
+    {
+      "prompt": "089"
+    },
+    {
+      "prompt": "090"
+    },
+    {
+      "prompt": "091"
+    },
+    {
+      "prompt": "092"
+    },
+    {
+      "prompt": "093"
+    },
+    {
+      "prompt": "094",
+      "emits": [
+        "sync/pipeline"
+      ]
+    },
+    {
+      "prompt": "110"
+    },
+    {
+      "prompt": "111"
+    },
+    {
+      "prompt": "112"
+    },
+    {
+      "prompt": "113"
+    },
+    {
+      "prompt": "114"
+    },
+    {
+      "prompt": "115",
+      "emits": [
+        "sync/daemon"
+      ]
+    },
+    {
+      "prompt": "116"
+    },
+    {
+      "prompt": "117"
+    },
+    {
+      "prompt": "118",
+      "emits": [
+        "sync/hook"
+      ]
+    },
+    {
+      "prompt": "119",
+      "emits": [
+        "gate/G2"
+      ],
+      "gate": "G2",
+      "ask": true
+    },
+    {
+      "prompt": "134",
+      "waits": [
+        "sync/analysis-1"
+      ],
+      "emits": [
+        "sync/fix-1"
+      ]
+    },
+    {
+      "prompt": "135",
+      "waits": [
+        "sync/analysis-2"
+      ]
+    },
+    {
+      "prompt": "150"
+    },
+    {
+      "prompt": "151"
+    },
+    {
+      "prompt": "152"
+    },
+    {
+      "prompt": "153"
+    },
+    {
+      "prompt": "154"
+    },
+    {
+      "prompt": "155"
+    },
+    {
+      "prompt": "156",
+      "emits": [
+        "sync/learn"
+      ]
+    },
+    {
+      "prompt": "157",
+      "waits": [
+        "sync/task-commits"
+      ],
+      "emits": [
+        "sync/cochange"
+      ]
+    },
+    {
+      "prompt": "171"
+    },
+    {
+      "prompt": "172"
+    },
+    {
+      "prompt": "176"
+    },
+    {
+      "prompt": "178",
+      "emits": [
+        "sync/package"
+      ]
+    },
+    {
+      "prompt": "179"
+    },
+    {
+      "prompt": "190",
+      "waits": [
+        "sync/winner"
+      ]
+    },
+    {
+      "prompt": "191",
+      "waits": [
+        "sync/winner"
+      ],
+      "emits": [
+        "sync/e2e"
+      ]
+    },
+    {
+      "prompt": "192",
+      "waits": [
+        "sync/winner"
+      ]
+    },
+    {
+      "prompt": "205",
+      "waits": [
+        "sync/e2e",
+        "sync/live-link"
+      ],
+      "gate": "G6",
+      "ask": true
+    }
   ]
 }

@@ -26,6 +26,8 @@
   ],
   "laneA": [
     "bench/**",
+    "apps/**",
+    "infra/**",
     "packages/core/src/store/**",
     "packages/core/src/retrieve/semantic*.ts",
     "packages/core/src/indexer/profile*.ts",
