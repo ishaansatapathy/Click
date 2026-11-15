@@ -16,7 +16,7 @@ import { runContext } from './context.js';
 import { dispatch } from './index.js';
 import { runIndex } from './indexCmd.js';
 import { runReindex } from './reindexCmd.js';
-import { runServe } from './serve.js';
+import { findHydraTokenFile, runServe } from './serve.js';
 import { runStatus } from './status.js';
 
 function capture() {
@@ -269,6 +269,27 @@ describe('click serve + click context against it (PROMPTS 115 done-criterion)', 
     expect(e.err()).toContain('hook.mode');
     expect(await runServe(['--zzz'], capture().io, process.cwd())).toBe(2);
   }, 60_000);
+});
+
+describe('findHydraTokenFile', () => {
+  it('env wins (the store reads it itself), then the repo, then the home directory', () => {
+    const repo = mkdtempSync(join(tmpdir(), 'click-tok-repo-'));
+    const home = mkdtempSync(join(tmpdir(), 'click-tok-home-'));
+    try {
+      expect(findHydraTokenFile(repo, {}, home)).toBeUndefined();
+      mkdirSync(join(home, '.click'));
+      writeFileSync(join(home, '.click', 'hydradb-token'), 'x');
+      expect(findHydraTokenFile(repo, {}, home)).toBe(join(home, '.click', 'hydradb-token'));
+      mkdirSync(join(repo, '.click'));
+      writeFileSync(join(repo, '.click', 'hydradb-token'), 'x');
+      expect(findHydraTokenFile(repo, {}, home)).toBe(join(repo, '.click', 'hydradb-token'));
+      expect(findHydraTokenFile(repo, { HYDRADB_TOKEN_FILE: '/elsewhere' }, home)).toBeUndefined();
+      expect(findHydraTokenFile(repo, { HYDRADB_TOKEN: 'abc' }, home)).toBeUndefined();
+    } finally {
+      rmSync(repo, { recursive: true, force: true });
+      rmSync(home, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('dispatcher', () => {

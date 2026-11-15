@@ -1,6 +1,8 @@
 // PROMPTS 115: `click serve` runs the per-repo daemon in the foreground (clients start it detached when needed).
 //   click serve [--root <dir>]
 
+import { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { createDaemon, type Daemon } from '../daemon/daemon.js';
 import { DaemonLockedError } from '../daemon/lifecycle.js';
@@ -33,6 +35,16 @@ export interface ServeDeps {
 
 export const SERVE_USAGE = 'usage: click serve [--root <dir>]';
 
+/**
+ * Where the HydraDB token is. The daemon's working directory is the repo it serves, but HydraDB (one instance for all repos) writes its
+ * token elsewhere, so look in the places it can be: the env vars (handled by the store itself), then `<repo>/.click/hydradb-token`,
+ * then `~/.click/hydradb-token`.
+ */
+export function findHydraTokenFile(root: string, env: Record<string, string | undefined> = process.env, home: string = homedir()): string | undefined {
+  if (env.HYDRADB_TOKEN || env.HYDRADB_TOKEN_FILE) return undefined;
+  return [join(root, '.click', 'hydradb-token'), join(home, '.click', 'hydradb-token')].find((p) => existsSync(p));
+}
+
 export function loadLocalEnv(root: string): void {
   try {
     process.loadEnvFile(join(root, '.env'));
@@ -61,7 +73,8 @@ export async function runServe(argv: readonly string[], io: ServeIo, cwd: string
   if (deps.graph !== undefined) graph = deps.graph;
   else {
     try {
-      graph = new HydraDbGraphStore();
+      const tokenFile = findHydraTokenFile(root);
+      graph = new HydraDbGraphStore(tokenFile ? { tokenFile } : {});
     } catch {
       graph = null; // no HydraDB configured: the local replica serves everything
     }
