@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import type { GraphEdge, GraphNode } from '../types.js';
+import { netCounter } from '../util/http.js';
 import { HydraDbGraphStore, HydraHttpClient, HydraQueryError, decodeCell, vid } from './hydradb-graph.js';
 
 function json(value: unknown, status = 200): Response {
@@ -85,6 +86,97 @@ describe('HydraDbGraphStore write side', () => {
     await store.removeGraph({ nodeIds: ['file:src/a.ts'], edgeKeys: ['file:src/a.ts|imports|file:src/b.ts'] });
     expect(queries[0]).toContain('[r:IMPORTS]');
     expect(queries[1]).toContain('DETACH DELETE');
+  });
+});
+
+describe('HydraDbGraphStore read side', () => {
+  it('runs per-kind and direction neighbourhood reads in parallel under one logical call', async () => {
+    const queries: string[] = [];
+    const store = new HydraDbGraphStore({ token: 'secret', fetch: async (_url, init) => {
+      const request = JSON.parse(String(init?.body)) as { query: string; parameters: { ids: number[] } };
+      queries.push(request.query);
+      const incoming = request.query.includes('<-[r:CALLS]');
+      const secondHop = request.parameters.ids.includes(vid('dep'));
+      const values = incoming
+        ? secondHop
+          ? [{ src: 'second', dst: 'dep', w: null }]
+          : [{ src: 'dep', dst: 'target', w: 1.5 }]
+        : secondHop ? [{ src: 'dep', dst: 'target', w: 1.5 }] : [];
+      return json({ columns: ['src', 'dst', 'w'], rows: values.map((row) => [
+        { type: 'string', value: row.src }, { type: 'string', value: row.dst },
+        row.w === null ? { type: 'null' } : { type: 'float', value: row.w },
+      ]), next_cursor: null });
+    } });
+    const counted = await netCounter.run(() => store.neighbourhood(['target'], { hops: 2, kinds: ['calls'] }));
+    expect(counted.calls).toBe(1);
+    expect(queries).toHaveLength(4);
+    expect(counted.result).toEqual([
+      { from: 'dep', to: 'target', kind: 'calls', w: 1.5 },
+      { from: 'second', to: 'dep', kind: 'calls', w: null },
+    ]);
+  });
+
+  it('decodes OSS path payloads into dependent-to-target ids and kinds', async () => {
+    const path = {
+      nodes: [
+        { properties: { key: { String: 'target' } } },
+        { properties: { key: { String: 'dep' } } },
+      ],
+      relationships: [{ edge_type: 'CALLS' }],
+    };
+    const store = new HydraDbGraphStore({ token: 'secret', fetch: async () => json({
+      columns: ['path'], rows: [[{ type: 'path', value: path }]], next_cursor: null,
+    }) });
+    await expect(store.impact('target', { maxHops: 2, kinds: ['calls'] }))
+      .resolves.toEqual([{ path: ['dep', 'target'], kinds: ['calls'] }]);
+  });
+
+  it('projects only present relationship types, writes PageRank once per version, and caches results', async () => {
+    const queries: string[] = [];
+    const store = new HydraDbGraphStore({ token: 'secret', fetch: async (_url, init) => {
+      const query = (JSON.parse(String(init?.body)) as { query: string }).query;
+      queries.push(query);
+      if (query.includes('RETURN a.id AS id LIMIT 1')) {
+        return json({ columns: ['id'], rows: query.includes('[:CALLS]') ? [[{ type: 'vertex_id', value: 1 }]] : [], next_cursor: null });
+      }
+      if (query.includes('RETURN n.key AS id')) return json({
+        columns: ['id', 'score'], rows: [[{ type: 'string', value: 'hub' }, { type: 'float', value: 0.9 }]], next_cursor: null,
+      });
+      return json({ columns: [], rows: [], next_cursor: null });
+    } });
+    await store.upsertGraph({}, 'v1');
+    await expect(store.hubs(3)).resolves.toEqual([{ id: 'hub', score: 0.9 }]);
+    const afterFirst = queries.length;
+    await expect(store.hubs(3)).resolves.toEqual([{ id: 'hub', score: 0.9 }]);
+    expect(queries).toHaveLength(afterFirst);
+    expect(queries.find((query) => query.includes('gds.graph.project'))).toContain("['CALLS']");
+    expect(queries.find((query) => query.includes('gds.pageRank.write'))).toContain('tolerance: 0.0001');
+  });
+
+  it('loads typed nodes and edges without leaking Hydra vertex ids', async () => {
+    const store = new HydraDbGraphStore({ token: 'secret', fetch: async (_url, init) => {
+      const query = (JSON.parse(String(init?.body)) as { query: string }).query;
+      if (query.includes('RETURN n.key AS id')) return json({
+        columns: ['id', 'kind', 'path', 'hasPath', 'name', 'startLine', 'endLine', 'hasRange', 'signature', 'hasSignature', 'fileHash', 'tokens', 'sigTokens'],
+        rows: [[
+          { type: 'string', value: 'a' }, { type: 'string', value: 'function' }, { type: 'string', value: 'src/a.ts' },
+          { type: 'boolean', value: true }, { type: 'string', value: 'a' }, { type: 'integer', value: 1 },
+          { type: 'integer', value: 2 }, { type: 'boolean', value: true }, { type: 'string', value: 'function a()' },
+          { type: 'boolean', value: true }, { type: 'string', value: 'hash' }, { type: 'integer', value: 3 },
+          { type: 'integer', value: 2 },
+        ]], next_cursor: null,
+      });
+      if (query.includes('[r:CALLS]')) return json({
+        columns: ['src', 'dst', 'metaJson'], rows: [[
+          { type: 'string', value: 'a' }, { type: 'string', value: 'b' }, { type: 'null' },
+        ]], next_cursor: null,
+      });
+      return json({ columns: ['src', 'dst', 'metaJson'], rows: [], next_cursor: null });
+    } });
+    const pages: { nodes?: GraphNode[]; edges?: GraphEdge[] }[] = [];
+    for await (const page of store.loadAll()) pages.push(page);
+    expect(pages.flatMap((page) => page.nodes ?? [])).toEqual([node('a', 'a')]);
+    expect(pages.flatMap((page) => page.edges ?? [])).toContainEqual(edge('a', 'b'));
   });
 });
 

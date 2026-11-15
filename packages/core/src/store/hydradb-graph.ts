@@ -3,12 +3,13 @@ import { join } from 'node:path';
 
 import type { EdgeKind, GraphEdge, GraphNode } from '../types.js';
 import { Deadline } from '../util/deadline.js';
-import { fetchJson, HttpError } from '../util/http.js';
+import { fetchJson, HttpError, netCounter } from '../util/http.js';
 import { sha1 } from '../util/hash.js';
+import { edgeKey } from '../util/ids.js';
 import { clickDir } from '../util/paths.js';
 import type { EdgeRow, GraphStore, ImpactOptions, NeighbourhoodOptions } from './types.js';
 
-const EDGE_KINDS: EdgeKind[] = [
+export const EDGE_KINDS: EdgeKind[] = [
   'contains', 'imports', 'uses_component', 'passes_prop', 'emits_to', 'calls',
   'uses_store', 'uses_composable', 'routes_to', 'has_type', 'tested_by', 'co_changed',
 ];
@@ -29,6 +30,8 @@ export interface HydraQueryOptions {
   signal?: AbortSignal;
   deadline?: Deadline;
   pageSize?: number;
+  /** Suppress the per-HTTP logical count when an operation has already counted its aggregate call. */
+  countLogical?: boolean;
 }
 
 export interface HydraDbGraphStoreOptions {
@@ -142,6 +145,7 @@ export class HydraHttpClient {
         timeoutMs: this.timeoutMs,
         retries: options.retries,
         fetch: this.doFetch,
+        countLogical: options.countLogical,
       });
     } catch (error) {
       if (error instanceof HttpError) {
@@ -168,6 +172,9 @@ export class HydraHttpClient {
 export class HydraDbGraphStore implements GraphStore {
   readonly name = 'hydradb';
   readonly client: HydraHttpClient;
+  private indexVersion: string | undefined;
+  private projectedVersion: string | undefined;
+  private readonly hubCache = new Map<number, { id: string; score: number }[]>();
 
   constructor(options: HydraDbGraphStoreOptions = {}) {
     this.client = new HydraHttpClient(options);
@@ -177,7 +184,7 @@ export class HydraDbGraphStore implements GraphStore {
     return this.client.health(signal);
   }
 
-  async upsertGraph(batch: { nodes?: GraphNode[]; edges?: GraphEdge[] }, _indexVersion: string): Promise<void> {
+  async upsertGraph(batch: { nodes?: GraphNode[]; edges?: GraphEdge[] }, indexVersion: string): Promise<void> {
     for (const nodes of chunks(batch.nodes ?? [], BATCH_SIZE)) {
       await this.client.query(NODE_UPSERT, { rows: nodes.map(nodeRow) });
     }
@@ -194,6 +201,15 @@ export class HydraDbGraphStore implements GraphStore {
         await this.client.query(query, { rows: edges.map((edge) => ({ src: vid(edge.from), dst: vid(edge.to) })) });
       }
     }
+    await mapConcurrent((batch.edges ?? []).filter((edge) => edge.meta !== undefined), 8, async (edge) => {
+      await this.client.query(
+        `MATCH (a {id: $src})-[r:${relationshipType(edge.kind)}]->(b {id: $dst}) SET r.metaJson = $metaJson`,
+        { src: vid(edge.from), dst: vid(edge.to), metaJson: JSON.stringify(edge.meta) },
+      );
+    });
+    this.indexVersion = indexVersion;
+    this.projectedVersion = undefined;
+    this.hubCache.clear();
   }
 
   async removeGraph(ids: { nodeIds?: string[]; edgeKeys?: string[] }): Promise<void> {
@@ -209,40 +225,158 @@ export class HydraDbGraphStore implements GraphStore {
         rows: nodeIds.map((id) => ({ id: vid(id) })),
       });
     }
+    this.projectedVersion = undefined;
+    this.hubCache.clear();
   }
 
-  async neighbourhood(_ids: string[], _opts: NeighbourhoodOptions, _signal?: AbortSignal): Promise<EdgeRow[]> {
-    throw new Error('HydraDbGraphStore.neighbourhood is implemented in prompt 106');
+  async neighbourhood(ids: string[], opts: NeighbourhoodOptions, signal?: AbortSignal): Promise<EdgeRow[]> {
+    if (ids.length === 0) return [];
+    const kinds = opts.kinds ?? EDGE_KINDS;
+    assertEdgeKinds(kinds);
+    netCounter.call();
+
+    const hop = async (frontier: string[]): Promise<EdgeRow[]> => {
+      const hydraIds = frontier.map(vid);
+      const parts = await Promise.all(kinds.flatMap((kind) => {
+        const type = relationshipType(kind);
+        return [
+          this.client.query(
+            `MATCH (a:CodeNode)-[r:${type}]->(b) WHERE a.id IN $ids RETURN a.key AS src, b.key AS dst, r.w AS w`,
+            { ids: hydraIds }, { signal, countLogical: false },
+          ),
+          this.client.query(
+            `MATCH (a:CodeNode)<-[r:${type}]-(b) WHERE a.id IN $ids RETURN b.key AS src, a.key AS dst, r.w AS w`,
+            { ids: hydraIds }, { signal, countLogical: false },
+          ),
+        ];
+      }));
+      return parts.flatMap((rows, partIndex) => rows.map((row) => ({
+        from: requiredString(row.src, 'src'),
+        to: requiredString(row.dst, 'dst'),
+        kind: kinds[Math.floor(partIndex / 2)]!,
+        w: optionalNumber(row.w, 'w'),
+      })));
+    };
+
+    const seen = new Map<string, EdgeRow>();
+    const add = (rows: EdgeRow[]) => {
+      for (const row of rows) if (seen.size < (opts.maxEdges ?? Infinity)) seen.set(edgeKey(row.from, row.kind, row.to), row);
+    };
+    const first = await hop(ids);
+    add(first);
+    if (opts.hops === 2 && seen.size < (opts.maxEdges ?? Infinity)) {
+      const seeds = new Set(ids);
+      const frontier = [...new Set(first.flatMap((row) => [row.from, row.to]))]
+        .filter((id) => !seeds.has(id))
+        .slice(0, opts.maxFrontier ?? Infinity);
+      if (frontier.length) add(await hop(frontier));
+    }
+    return [...seen.values()].slice(0, opts.maxEdges ?? Infinity);
   }
 
-  async impact(_id: string, _opts: ImpactOptions, _signal?: AbortSignal): Promise<{ path: string[]; kinds: EdgeKind[] }[]> {
-    throw new Error('HydraDbGraphStore.impact is implemented in prompt 106');
+  async impact(id: string, opts: ImpactOptions, signal?: AbortSignal): Promise<{ path: string[]; kinds: EdgeKind[] }[]> {
+    const kinds = opts.kinds ?? EDGE_KINDS;
+    assertEdgeKinds(kinds);
+    if (!Number.isInteger(opts.maxHops) || opts.maxHops < 1) return [];
+    const limit = opts.limit ?? 500;
+    if (!Number.isInteger(limit) || limit < 1) return [];
+    const relTypes = kinds.map((kind) => `'${relationshipType(kind)}'`).join(',');
+    const rows = await this.client.query(
+      `CALL algo.SSpaths({sourceNode: ${vid(id)}, relTypes: [${relTypes}], relDirection: 'incoming', maxLen: ${opts.maxHops}, pathCount: ${limit}}) YIELD path RETURN path`,
+      {}, { signal },
+    );
+    return rows.map((row) => decodeImpactPath(row.path, id))
+      .filter((path) => path.path.length > 1)
+      .sort((a, b) => a.path.length - b.path.length)
+      .slice(0, limit);
   }
 
-  async hubs(_k: number, _signal?: AbortSignal): Promise<{ id: string; score: number }[]> {
-    throw new Error('HydraDbGraphStore.hubs is implemented in prompt 106');
+  async hubs(k: number, signal?: AbortSignal): Promise<{ id: string; score: number }[]> {
+    if (!Number.isInteger(k) || k < 1) return [];
+    const cached = this.hubCache.get(k);
+    if (cached && this.projectedVersion === this.indexVersion) return structuredClone(cached);
+    const version = this.indexVersion ?? 'unknown';
+    if (this.projectedVersion !== version) {
+      const graphName = `code_${sha1(version).slice(0, 12)}`;
+      // HydraDB has no index generation for relationship types that have never been written;
+      // including one makes graph.project fail, so discover the non-empty types first.
+      const present = await Promise.all(EDGE_KINDS.map(async (kind) => {
+        const type = relationshipType(kind);
+        const rows = await this.client.query(`MATCH (a:CodeNode)-[:${type}]->(b) RETURN a.id AS id LIMIT 1`, {}, { signal });
+        return rows.length ? type : undefined;
+      }));
+      const types = present.filter((type): type is string => type !== undefined).map((type) => `'${type}'`).join(',');
+      try {
+        await this.client.query(`CALL gds.graph.project('${graphName}', 'CodeNode', [${types}])`, {}, { signal });
+      } catch (error) {
+        // A new process may reuse the projection for the same immutable index version.
+        if (!(error instanceof HydraQueryError) || !error.message.includes('already exists')) throw error;
+      }
+      await this.client.query(`CALL gds.pageRank.write('${graphName}', {maxIterations: 100, dampingFactor: 0.85, tolerance: 0.0001, writeProperty: 'pr'})`, {}, { signal });
+      this.projectedVersion = version;
+      this.hubCache.clear();
+    }
+    const rows = await this.client.query(
+      'MATCH (n:CodeNode) RETURN n.key AS id, n.pr AS score ORDER BY score DESC LIMIT $k',
+      { k }, { signal },
+    );
+    const result = rows.map((row) => ({ id: requiredString(row.id, 'id'), score: requiredNumber(row.score, 'score') }));
+    this.hubCache.set(k, result);
+    return structuredClone(result);
   }
 
-  async setEdgeWeights(_updates: { key: string; w: number }[]): Promise<void> {
-    throw new Error('HydraDbGraphStore.setEdgeWeights is implemented in prompt 106');
+  async setEdgeWeights(updates: { key: string; w: number }[]): Promise<void> {
+    await mapConcurrent(updates, 8, async (update) => {
+      if (!Number.isFinite(update.w)) throw new Error(`invalid edge weight for ${update.key}`);
+      const edge = parseEdgeKey(update.key);
+      await this.client.query(
+        `MATCH (a {id: $src})-[r:${relationshipType(edge.kind)}]->(b {id: $dst}) SET r.w = $w`,
+        { src: vid(edge.from), dst: vid(edge.to), w: update.w },
+      );
+    });
   }
 
   async *loadAll(): AsyncIterable<{ nodes?: GraphNode[]; edges?: GraphEdge[] }> {
-    throw new Error('HydraDbGraphStore.loadAll is implemented in prompt 106');
+    const rows = await this.client.query(
+      'MATCH (n:CodeNode) RETURN n.key AS id, n.kind AS kind, n.path AS path, n.hasPath AS hasPath, n.name AS name, n.startLine AS startLine, n.endLine AS endLine, n.hasRange AS hasRange, n.signature AS signature, n.hasSignature AS hasSignature, n.doc AS doc, n.hasDoc AS hasDoc, n.metaJson AS metaJson, n.hasMeta AS hasMeta, n.fileHash AS fileHash, n.tokens AS tokens, n.sigTokens AS sigTokens',
+      {}, { pageSize: PAGE_SIZE },
+    );
+    for (const page of chunks(rows, PAGE_SIZE)) yield { nodes: page.map(decodeNode) };
+    for (const kind of EDGE_KINDS) {
+      const type = relationshipType(kind);
+      const edgeRows = await this.client.query(
+        `MATCH (a:CodeNode)-[r:${type}]->(b) RETURN a.key AS src, b.key AS dst, r.metaJson AS metaJson`,
+        {}, { pageSize: PAGE_SIZE },
+      );
+      for (const page of chunks(edgeRows, PAGE_SIZE)) {
+        yield { edges: page.map((row) => {
+          const from = requiredString(row.src, 'src');
+          const to = requiredString(row.dst, 'dst');
+          const meta = row.metaJson === null ? undefined : JSON.parse(requiredString(row.metaJson, 'metaJson')) as GraphEdge['meta'];
+          return { key: edgeKey(from, kind, to), from, to, kind, ...(meta === undefined ? {} : { meta }) };
+        }) };
+      }
+    }
   }
 }
 
 const NODE_UPSERT = `UNWIND $rows AS row MERGE (n {id: row.id})
 SET n:CodeNode, n.key = row.key, n.kind = row.kind, n.name = row.name,
-    n.path = row.path, n.startLine = row.startLine, n.endLine = row.endLine,
-    n.signature = row.signature, n.fileHash = row.fileHash,
+    n.path = row.path, n.hasPath = row.hasPath,
+    n.startLine = row.startLine, n.endLine = row.endLine, n.hasRange = row.hasRange,
+    n.signature = row.signature, n.hasSignature = row.hasSignature, n.fileHash = row.fileHash,
+    n.doc = row.doc, n.hasDoc = row.hasDoc, n.metaJson = row.metaJson, n.hasMeta = row.hasMeta,
     n.tokens = row.tokens, n.sigTokens = row.sigTokens`;
 
 function nodeRow(node: GraphNode): Record<string, unknown> {
   return {
-    id: vid(node.id), key: node.id, kind: node.kind, name: node.name, path: node.path,
-    startLine: node.range?.startLine ?? null, endLine: node.range?.endLine ?? null,
-    signature: node.signature ?? null, fileHash: node.fileHash, tokens: node.tokens, sigTokens: node.sigTokens,
+    id: vid(node.id), key: node.id, kind: node.kind, name: node.name,
+    path: node.path ?? '', hasPath: node.path !== null,
+    startLine: node.range?.startLine ?? 0, endLine: node.range?.endLine ?? 0, hasRange: node.range !== undefined,
+    signature: node.signature ?? '', hasSignature: node.signature !== undefined,
+    doc: node.doc ?? '', hasDoc: node.doc !== undefined,
+    metaJson: node.meta === undefined ? '' : JSON.stringify(node.meta), hasMeta: node.meta !== undefined,
+    fileHash: node.fileHash, tokens: node.tokens, sigTokens: node.sigTokens,
   };
 }
 
@@ -252,10 +386,12 @@ function decodeRow(columns: string[], row: HydraCell[]): Record<string, unknown>
 }
 
 export function decodeCell(cell: HydraCell): unknown {
-  if (!cell || typeof cell !== 'object' || typeof cell.type !== 'string' || !('value' in cell)) {
+  if (!cell || typeof cell !== 'object' || typeof cell.type !== 'string') {
     throw new HydraQueryError('HydraDB returned a malformed typed cell');
   }
-  return cell.type === 'null' ? null : cell.value;
+  if (cell.type === 'null') return null;
+  if (!('value' in cell)) throw new HydraQueryError('HydraDB returned a typed cell without a value');
+  return cell.value;
 }
 
 function parseEdgeKey(key: string): { from: string; kind: EdgeKind; to: string } {
@@ -265,6 +401,109 @@ function parseEdgeKey(key: string): { from: string; kind: EdgeKind; to: string }
     if (at >= 0) return { from: key.slice(0, at), kind, to: key.slice(at + separator.length) };
   }
   throw new Error(`invalid edge key: ${key}`);
+}
+
+function assertEdgeKinds(kinds: EdgeKind[]): void {
+  for (const kind of kinds) relationshipType(kind);
+}
+
+function requiredString(value: unknown, field: string): string {
+  if (typeof value !== 'string') throw new HydraQueryError(`HydraDB returned non-string ${field}`);
+  return value;
+}
+
+function requiredNumber(value: unknown, field: string): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) throw new HydraQueryError(`HydraDB returned non-number ${field}`);
+  return value;
+}
+
+function optionalNumber(value: unknown, field: string): number | null {
+  return value === null || value === undefined ? null : requiredNumber(value, field);
+}
+
+function decodeNode(row: Record<string, unknown>): GraphNode {
+  const hasPath = row.hasPath === true;
+  const hasRange = row.hasRange === true;
+  const hasSignature = row.hasSignature === true;
+  const hasDoc = row.hasDoc === true;
+  const hasMeta = row.hasMeta === true;
+  return {
+    id: requiredString(row.id, 'id'),
+    kind: requiredString(row.kind, 'kind') as GraphNode['kind'],
+    path: hasPath ? requiredString(row.path, 'path') : null,
+    name: requiredString(row.name, 'name'),
+    ...(hasRange ? { range: { startLine: requiredNumber(row.startLine, 'startLine'), endLine: requiredNumber(row.endLine, 'endLine') } } : {}),
+    ...(hasSignature ? { signature: requiredString(row.signature, 'signature') } : {}),
+    ...(hasDoc ? { doc: requiredString(row.doc, 'doc') } : {}),
+    ...(hasMeta ? { meta: JSON.parse(requiredString(row.metaJson, 'metaJson')) as Record<string, unknown> } : {}),
+    fileHash: requiredString(row.fileHash, 'fileHash'),
+    tokens: requiredNumber(row.tokens, 'tokens'),
+    sigTokens: requiredNumber(row.sigTokens, 'sigTokens'),
+  };
+}
+
+type RawPath = {
+  vertices?: unknown[];
+  nodes?: unknown[];
+  relationships?: unknown[];
+  edges?: unknown[];
+};
+
+/** HydraDB v0.4 path payloads contain vertex/relationship records; accept both field names used by its JSON and Bolt codecs. */
+function decodeImpactPath(value: unknown, targetId: string): { path: string[]; kinds: EdgeKind[] } {
+  if (!value || typeof value !== 'object') throw new HydraQueryError('HydraDB returned a malformed path');
+  const raw = value as RawPath;
+  const vertices = raw.vertices ?? raw.nodes;
+  const relationships = raw.relationships ?? raw.edges;
+  if (!Array.isArray(vertices) || !Array.isArray(relationships)) throw new HydraQueryError('HydraDB path omitted vertices or relationships');
+  const path = vertices.map(pathNodeKey);
+  const kinds = relationships.map(pathRelationshipKind);
+  if (path.at(-1) !== targetId && path[0] === targetId) {
+    path.reverse();
+    kinds.reverse();
+  }
+  if (path.length !== kinds.length + 1) throw new HydraQueryError('HydraDB path has inconsistent vertices and relationships');
+  return { path, kinds };
+}
+
+function pathNodeKey(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (!value || typeof value !== 'object') throw new HydraQueryError('HydraDB path contains a malformed vertex');
+  const record = value as Record<string, unknown>;
+  const properties = record.properties && typeof record.properties === 'object'
+    ? record.properties as Record<string, unknown>
+    : record;
+  return requiredString(unwrapPathProperty(properties.key), 'path vertex key');
+}
+
+function pathRelationshipKind(value: unknown): EdgeKind {
+  if (typeof value === 'string') return relationshipKind(value);
+  if (!value || typeof value !== 'object') throw new HydraQueryError('HydraDB path contains a malformed relationship');
+  const record = value as Record<string, unknown>;
+  return relationshipKind(requiredString(record.edge_type ?? record.type ?? record.label ?? record.kind, 'path relationship type'));
+}
+
+function unwrapPathProperty(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+  const entries = Object.entries(value as Record<string, unknown>);
+  return entries.length === 1 ? entries[0]![1] : value;
+}
+
+function relationshipKind(type: string): EdgeKind {
+  const kind = type.toLowerCase() as EdgeKind;
+  if (!EDGE_KINDS.includes(kind)) throw new HydraQueryError(`HydraDB returned unsupported relationship type: ${type}`);
+  return kind;
+}
+
+async function mapConcurrent<T>(items: T[], concurrency: number, fn: (item: T) => Promise<void>): Promise<void> {
+  let next = 0;
+  const worker = async () => {
+    while (next < items.length) {
+      const index = next++;
+      await fn(items[index]!);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker));
 }
 
 function chunks<T>(items: T[], size: number): T[][] {
