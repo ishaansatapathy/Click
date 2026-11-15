@@ -6,6 +6,7 @@ import ts from 'typescript';
 import { posix } from 'node:path';
 import type { SymbolRef } from '../contracts.js';
 import { symId } from '../util/ids.js';
+import { isIndexedPath } from './discover.js';
 import type { Resolver } from './resolve.js';
 import type { RawImport } from './ts-imports.js';
 import { stringValue } from './ts-parse.js';
@@ -52,7 +53,7 @@ export function extractTestFile(sf: ts.SourceFile, path: string, imports: RawImp
   for (const imp of imports) {
     if (imp.kind === 'reexport') continue;
     const r = resolve(imp.spec, path);
-    if (r.kind !== 'local') continue;
+    if (r.kind !== 'local' || !isIndexedPath(r.path)) continue;
     const names = imp.names.filter((n) => !n.typeOnly);
     const targets = imp.names.length === 0 ? ['*'] : names.map((n) => n.imported);
     for (const targetName of targets) {

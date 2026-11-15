@@ -27,7 +27,7 @@ export interface ConventionInput {
 const pct = (n: number, total: number): number => Math.round((100 * n) / total);
 const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
 
-function detectedFacts(input: ConventionInput): { slug: string; text: string }[] {
+function detectedFacts(input: ConventionInput, deps: ReadonlySet<string>): { slug: string; text: string }[] {
   const { files, profile } = input;
   const out: { slug: string; text: string }[] = [];
 
@@ -71,7 +71,8 @@ function detectedFacts(input: ConventionInput): { slug: string; text: string }[]
 
   // 3. test stack
   const testFiles = files.filter((f) => f.class === 'test').length;
-  if (testFiles > 0) out.push({ slug: 'test-stack', text: `Tests are written with the repo's test runner in ${plural(testFiles, 'test file')}; keep new tests next to the existing ones.` });
+  const runner = ['vitest', 'jest', 'mocha', 'playwright', 'cypress'].find((r) => deps.has(r));
+  if (testFiles > 0) out.push({ slug: 'test-stack', text: `Tests use ${runner ? runner : "the repo's test runner"} (${plural(testFiles, 'test file')}); keep new tests next to the existing ones.` });
 
   // 4. import style
   const prefixes = [...Object.keys(profile.viteAliases), ...Object.keys(profile.tsconfigPaths).map((k) => k.replace(/\*$/, '').replace(/\/$/, ''))].filter(Boolean);
@@ -105,7 +106,7 @@ function detectedFacts(input: ConventionInput): { slug: string; text: string }[]
   // 6. language mix
   const js = files.filter((f) => f.class === 'src' && /\.(js|mjs)$/.test(f.path)).length;
   const ts = files.filter((f) => f.class === 'src' && /\.tsx?$/.test(f.path)).length;
-  if (ts > 0 && js > 0) out.push({ slug: 'language', text: `New code is TypeScript (${pct(ts, ts + js)}% of source files; ${plural(js, 'JavaScript file')} remain).` });
+  if (ts > 0 && js > 0) out.push({ slug: 'language', text: `New code is TypeScript (${pct(ts, ts + js)}% of source files; ${plural(js, 'JavaScript file')} ${js === 1 ? 'remains' : 'remain'}).` });
   return out;
 }
 
@@ -134,11 +135,21 @@ async function readDoc(root: string, name: string): Promise<string | null> {
   }
 }
 
+/** Dependency names from the root package.json (empty when absent or unreadable). */
+async function packageDeps(root: string): Promise<Set<string>> {
+  try {
+    const pkg = JSON.parse(await readFile(join(root, 'package.json'), 'utf8')) as { dependencies?: object; devDependencies?: object };
+    return new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.devDependencies ?? {})]);
+  } catch {
+    return new Set();
+  }
+}
+
 export async function extractConventions(input: ConventionInput): Promise<Convention[]> {
   const validFrom = input.now.toISOString();
   const mk = (slug: string, text: string, source: string): Convention => ({ id: `conv:${slug}`, text, source, validFrom, validTo: null });
 
-  const out: Convention[] = detectedFacts(input).map((f) => mk(`detected-${f.slug}`, f.text, 'detected'));
+  const out: Convention[] = detectedFacts(input, await packageDeps(input.root)).map((f) => mk(`detected-${f.slug}`, f.text, 'detected'));
   let rules = 0;
   for (const name of RULE_FILES) {
     const doc = await readDoc(input.root, name);

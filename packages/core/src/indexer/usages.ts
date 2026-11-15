@@ -12,6 +12,7 @@ import ts from 'typescript';
 import type { SymbolRef } from '../contracts.js';
 import type { EdgeKind, GraphEdge } from '../types.js';
 import { edgeKey, symId } from '../util/ids.js';
+import { isIndexedPath } from './discover.js';
 import type { Resolver } from './resolve.js';
 import type { RawImport } from './ts-imports.js';
 import type { TsSymbol } from './ts-symbols.js';
@@ -55,7 +56,7 @@ export function localImportBindings(imports: RawImport[], resolve: Resolver, pat
   for (const imp of imports) {
     if (imp.kind !== 'static') continue;
     const r = resolve(imp.spec, path);
-    if (r.kind !== 'local') continue;
+    if (r.kind !== 'local' || !isIndexedPath(r.path)) continue; // assets (images, styles, json) are not graph nodes
     for (const n of imp.names) if (!n.typeOnly) m.set(n.local, { targetPath: r.path, targetName: n.imported });
   }
   return m;

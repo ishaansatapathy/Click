@@ -7,6 +7,7 @@
 import type { SymbolRef } from '../contracts.js';
 import type { GraphEdge } from '../types.js';
 import { edgeKey, symId } from '../util/ids.js';
+import { isIndexedPath } from './discover.js';
 import type { Resolver } from './resolve.js';
 import type { RawImport } from './ts-imports.js';
 import type { TsSymbol, TsSymbolKind } from './ts-symbols.js';
@@ -34,7 +35,7 @@ function importedLocals(imports: RawImport[], resolve: Resolver, path: string): 
   for (const imp of imports) {
     if (imp.kind !== 'static') continue;
     const r = resolve(imp.spec, path);
-    if (r.kind !== 'local') continue;
+    if (r.kind !== 'local' || !isIndexedPath(r.path)) continue;
     for (const n of imp.names) if (n.imported !== '*') m.set(n.local, { targetPath: r.path, targetName: n.imported });
   }
   return m;

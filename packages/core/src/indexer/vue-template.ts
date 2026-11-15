@@ -9,6 +9,7 @@ import ts from 'typescript';
 import type { ComponentTarget, GlobalComponents, SymbolRef } from '../contracts.js';
 import type { RawImport } from './ts-imports.js';
 import { componentName } from '../util/ids.js';
+import { isIndexedPath } from './discover.js';
 import { packageName, type Resolver } from './resolve.js';
 import type { SfcResult } from './vue-sfc.js';
 
@@ -56,7 +57,8 @@ function importBindings(imports: RawImport[], ctx: TemplateCtx): Map<string, Bin
     const r = ctx.resolve(imp.spec, ctx.path);
     for (const n of imp.names) {
       if (n.typeOnly || n.imported === '*') continue;
-      if (r.kind === 'local') m.set(n.local, { kind: 'local', target: { path: r.path, exportName: n.imported } });
+      if (r.kind === 'local' && isIndexedPath(r.path)) m.set(n.local, { kind: 'local', target: { path: r.path, exportName: n.imported } });
+      else if (r.kind === 'local') m.set(n.local, { kind: 'external', pkg: r.path }); // an asset used as a component (`logo.svg?component`): not a graph node
       else if (r.kind === 'external') m.set(n.local, { kind: 'external', pkg: r.pkg });
     }
   }

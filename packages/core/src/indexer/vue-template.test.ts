@@ -67,6 +67,15 @@ describe('extractTemplateUsages on the fixture (PROMPTS 046)', () => {
     ]);
   });
 
+  it('an asset imported and used as a component (svg?component) is external, not a missing local component', () => {
+    const src = `<script setup lang="ts">import Logo from '@/utils/money.ts?component'</script><template><Logo /></template>`;
+    const [u] = extractTemplateUsages(parseVueSfc(src, 'src/views/Z.vue'), ctxFor('src/views/Z.vue'));
+    expect(u?.resolution.kind === 'local').toBe(true); // a real source file: still a local edge
+    const asset = `<script setup lang="ts">import Logo from './icon.svg?component'</script><template><Logo /></template>`;
+    const [a] = extractTemplateUsages(parseVueSfc(asset, 'src/views/Z.vue'), ctxFor('src/views/Z.vue', { resolve: (spec) => (spec.startsWith('./icon') ? { kind: 'local', path: 'src/views/icon.svg' } : { kind: 'unresolved', spec }) }));
+    expect(a?.resolution).toEqual({ kind: 'external', pkg: 'src/views/icon.svg' });
+  });
+
   it('a recursive component referring to itself by file name is "self", not unresolved, and makes no edge', () => {
     const src = '<template><li><Item v-for="c in children" :item="c" /></li></template>';
     const us = extractTemplateUsages(parseVueSfc(src, 'src/layouts/Sidebar/Item.vue'), ctxFor('src/layouts/Sidebar/Item.vue'));

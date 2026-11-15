@@ -21,7 +21,7 @@ describe('extractConventions on the fixture (PROMPTS 054)', () => {
   it('detects facts with real counts', () => {
     expect(text('script-setup')).toBe('Components use <script setup lang="ts"> (7 of 9 .vue files, 78%).');
     expect(text('pinia-style')).toBe('Pinia stores are mixed: 1 setup-style, 1 options-style.');
-    expect(text('test-stack')).toContain('1 test file');
+    expect(text('test-stack')).toBe('Tests use vitest (1 test file); keep new tests next to the existing ones.');
     expect(text('import-alias')).toMatch(/prefer the alias \(@\): \d+% alias, \d+% relative\./);
     expect(text('auto-components')).toBe('Components are auto-imported (2 components): use them in templates without an import.');
     expect(text('auto-imports')).toBeUndefined(); // the fixture has no API auto-imports
