@@ -1,0 +1,641 @@
+{
+  "v": 1,
+  "version": "5540c1136de0",
+  "derivedFrom": "evt_bench_sim_h_09",
+  "events": 158,
+  "params": {
+    "alpha": 0.2,
+    "beta": 0.1,
+    "min": 0.1,
+    "max": 5
+  },
+  "multipliers": {
+    "file:src/common/apis/tables/index.ts|contains|sym:src/common/apis/tables/index.ts#createTableDataApi": 0.81,
+    "file:src/common/apis/tables/index.ts|contains|sym:src/common/apis/tables/index.ts#deleteTableDataApi": 0.6561,
+    "file:src/common/apis/tables/index.ts|imports|file:src/common/apis/tables/type.ts": 0.81,
+    "file:src/common/apis/tables/type.ts|co_changed|file:src/common/components/Notify/index.vue": 0.478297,
+    "file:src/common/apis/tables/type.ts|co_changed|file:src/common/composables/useFetchSelect.ts": 0.6561,
+    "file:src/common/apis/tables/type.ts|co_changed|file:src/common/composables/useTheme.ts": 0.305024,
+    "file:src/common/apis/tables/type.ts|co_changed|file:src/pages/dashboard/index.vue": 0.729,
+    "file:src/common/apis/tables/type.ts|contains|sym:src/common/apis/tables/type.ts#TableResponseData": 0.9,
+    "file:src/common/apis/users/index.ts|imports|file:src/common/apis/users/type.ts": 0.81,
+    "file:src/common/components/Notify/List.vue|contains|sym:src/common/components/Notify/List.vue#List": 1.2,
+    "file:src/common/components/Notify/data.ts|contains|sym:src/common/components/Notify/data.ts#messageData": 1.44,
+    "file:src/common/components/Notify/data.ts|contains|sym:src/common/components/Notify/data.ts#notifyData": 0.9,
+    "file:src/common/components/Notify/data.ts|contains|sym:src/common/components/Notify/data.ts#todoData": 0.9,
+    "file:src/common/components/Notify/data.ts|imports|file:src/common/components/Notify/type.ts": 0.81,
+    "file:src/common/components/Notify/index.vue|imports|file:src/common/components/Notify/type.ts": 1.2,
+    "file:src/common/components/Screenfull/index.vue|co_changed|file:src/layouts/components/AppMain/index.vue": 0.9,
+    "file:src/common/components/Screenfull/index.vue|co_changed|file:src/layouts/components/TagsView/ScrollPane.vue": 0.9,
+    "file:src/common/components/Screenfull/index.vue|co_changed|file:src/layouts/components/TagsView/index.vue": 1,
+    "file:src/common/components/Screenfull/index.vue|contains|sym:src/common/components/Screenfull/index.vue#Screenfull": 1.2,
+    "file:src/common/components/SearchMenu/Footer.vue|contains|sym:src/common/components/SearchMenu/Footer.vue#Footer": 0.9,
+    "file:src/common/components/SearchMenu/Modal.vue|co_changed|file:src/router/index.ts": 1,
+    "file:src/common/composables/useDevice.ts|uses_store|sym:src/pinia/stores/app.ts#useAppStore": 0.81,
+    "file:src/common/composables/useFullscreenLoading.ts|co_changed|file:src/layouts/components/TagsView/ScrollPane.vue": 0.531441,
+    "file:src/common/composables/useGreyAndColorWeakness.ts|co_changed|file:src/layouts/components/AppMain/index.vue": 0.9,
+    "file:src/common/composables/useGreyAndColorWeakness.ts|co_changed|file:src/layouts/modes/LeftMode.vue": 0.9,
+    "file:src/common/composables/useGreyAndColorWeakness.ts|co_changed|file:src/layouts/modes/TopMode.vue": 0.729,
+    "file:src/common/composables/useLayoutMode.ts|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.9,
+    "file:src/common/composables/usePagination.ts|contains|sym:src/common/composables/usePagination.ts#UsePaginationOptions": 1.2,
+    "file:src/common/composables/usePany.ts|co_changed|file:src/common/components/Notify/List.vue": 1.04976,
+    "file:src/common/composables/usePany.ts|co_changed|file:src/common/components/Notify/data.ts": 0.972,
+    "file:src/common/composables/usePany.ts|co_changed|file:src/pages/dashboard/index.vue": 0.637729,
+    "file:src/common/composables/usePany.ts|contains|sym:src/common/composables/usePany.ts#initMobileNotification": 1.04976,
+    "file:src/common/composables/usePany.ts|contains|sym:src/common/composables/usePany.ts#initStarNotification": 1.2,
+    "file:src/common/composables/usePany.ts|contains|sym:src/common/composables/usePany.ts#initStoreNotification": 1.2,
+    "file:src/common/composables/useRouteListener.ts|co_changed|file:src/pinia/stores/tags-view.ts": 0.9,
+    "file:src/common/composables/useRouteListener.ts|contains|sym:src/common/composables/useRouteListener.ts#setRouteChange": 1.08,
+    "file:src/common/composables/useTheme.ts|contains|sym:src/common/composables/useTheme.ts#DefaultThemeName": 0.9,
+    "file:src/common/composables/useTheme.ts|contains|sym:src/common/composables/useTheme.ts#ThemeName": 0.9,
+    "file:src/common/composables/useTheme.ts|imports|file:src/common/utils/local-storage.ts": 0.81,
+    "file:src/common/composables/useTitle.ts|contains|sym:src/common/composables/useTitle.ts#setTitle": 0.81,
+    "file:src/common/composables/useWatermark.ts|contains|sym:src/common/composables/useWatermark.ts#DefaultConfig": 5,
+    "file:src/common/composables/useWatermark.ts|contains|sym:src/common/composables/useWatermark.ts#Observer": 4.299817,
+    "file:src/common/constants/app-key.ts|contains|sym:src/common/constants/app-key.ts#DeviceEnum": 0.729,
+    "file:src/common/constants/app-key.ts|contains|sym:src/common/constants/app-key.ts#LayoutModeEnum": 0.59049,
+    "file:src/common/constants/cache-key.ts|co_changed|file:src/common/composables/useRouteListener.ts": 1,
+    "file:src/common/constants/cache-key.ts|co_changed|file:src/pinia/stores/app.ts": 0.972,
+    "file:src/common/constants/cache-key.ts|co_changed|file:src/router/config.ts": 1,
+    "file:src/common/constants/cache-key.ts|contains|sym:src/common/constants/cache-key.ts#CacheKey": 1.2,
+    "file:src/common/utils/local-storage.ts|contains|sym:src/common/utils/local-storage.ts#getCachedViews": 0.9,
+    "file:src/common/utils/local-storage.ts|contains|sym:src/common/utils/local-storage.ts#getLayoutsConfig": 1.2,
+    "file:src/common/utils/local-storage.ts|contains|sym:src/common/utils/local-storage.ts#getToken": 0.9,
+    "file:src/common/utils/local-storage.ts|contains|sym:src/common/utils/local-storage.ts#removeLayoutsConfig": 1.08,
+    "file:src/common/utils/local-storage.ts|contains|sym:src/common/utils/local-storage.ts#removeToken": 0.9,
+    "file:src/common/utils/local-storage.ts|contains|sym:src/common/utils/local-storage.ts#setVisitedViews": 0.81,
+    "file:src/common/utils/local-storage.ts|imports|file:src/common/composables/useTheme.ts": 0.81,
+    "file:src/common/utils/local-storage.ts|imports|file:src/common/constants/app-key.ts": 0.59049,
+    "file:src/common/utils/local-storage.ts|imports|file:src/layouts/config.ts": 0.9,
+    "file:src/common/utils/local-storage.ts|imports|file:src/pinia/stores/tags-view.ts": 0.9,
+    "file:src/http/axios.ts|contains|sym:src/http/axios.ts#createInstance": 1.2,
+    "file:src/http/axios.ts|contains|sym:src/http/axios.ts#createRequest": 1.2,
+    "file:src/http/axios.ts|contains|sym:src/http/axios.ts#request": 1.2,
+    "file:src/http/axios.ts|imports|file:src/common/utils/local-storage.ts": 0.9,
+    "file:src/layouts/components/AppMain/index.vue|imports|file:src/pinia/stores/tags-view.ts": 0.81,
+    "file:src/layouts/components/Breadcrumb/index.vue|imports|file:src/router/config.ts": 0.9,
+    "file:src/layouts/components/NavigationBar/index.vue|co_changed|file:src/layouts/components/TagsView/index.vue": 1,
+    "file:src/layouts/components/Sidebar/Link.vue|co_changed|file:src/App.vue": 1,
+    "file:src/layouts/components/Sidebar/Link.vue|co_changed|file:src/plugins/vxe-table.ts": 1,
+    "file:src/layouts/components/TagsView/index.vue|co_changed|file:src/layouts/index.vue": 1,
+    "file:src/layouts/components/TagsView/index.vue|imports|file:src/common/composables/useRouteListener.ts": 1.2,
+    "file:src/layouts/components/TagsView/index.vue|imports|file:src/router/config.ts": 0.9,
+    "file:src/layouts/config.ts|contains|sym:src/layouts/config.ts#LayoutsConfig": 1.2,
+    "file:src/layouts/config.ts|contains|sym:src/layouts/config.ts#layoutsConfig": 1.08,
+    "file:src/layouts/modes/LeftMode.vue|imports|file:src/pinia/stores/app.ts": 0.81,
+    "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/components/AppMain/index.vue": 1,
+    "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/components/Logo/index.vue": 1,
+    "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/components/Sidebar/Item.vue": 1,
+    "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/modes/LeftMode.vue": 1,
+    "file:src/main.ts|calls|sym:src/App.vue#App": 0.478297,
+    "file:src/main.ts|calls|sym:src/pinia/index.ts#pinia": 0.9,
+    "file:src/main.ts|calls|sym:src/plugins/index.ts#installPlugins": 1.2,
+    "file:src/main.ts|calls|sym:src/router/index.ts#router": 0.9,
+    "file:src/pages/dashboard/index.vue|imports|file:src/pages/dashboard/components/Admin.vue": 0.9,
+    "file:src/pages/demo/composable-demo/apis/use-fullscreen-loading.ts|contains|sym:src/pages/demo/composable-demo/apis/use-fullscreen-loading.ts#getErrorApi": 0.531441,
+    "file:src/pages/demo/composable-demo/use-fullscreen-loading.vue|co_changed|file:src/App.vue": 0.9,
+    "file:src/pages/demo/composable-demo/use-watermark.vue|co_changed|file:src/layouts/components/RightPanel/index.vue": 1,
+    "file:src/pages/demo/element-plus/index.vue|imports|file:src/common/apis/tables/type.ts": 0.81,
+    "file:src/pages/demo/vxe-table/index.vue|co_changed|file:src/layouts/components/Sidebar/index.vue": 1,
+    "file:src/pages/demo/vxe-table/index.vue|co_changed|file:src/layouts/modes/LeftTopMode.vue": 1,
+    "file:src/pages/demo/vxe-table/index.vue|imports|file:src/common/apis/tables/type.ts": 0.9,
+    "file:src/pages/login/apis/index.ts|imports|file:src/pages/login/apis/type.ts": 0.81,
+    "file:src/pages/login/index.vue|co_changed|file:src/pages/demo/permission/components/SwitchUser.vue": 1,
+    "file:src/pages/login/index.vue|imports|file:src/pages/login/apis/type.ts": 0.729,
+    "file:src/pinia/stores/app.ts|co_changed|file:src/layouts/composables/useResize.ts": 1,
+    "file:src/pinia/stores/permission.ts|contains|sym:src/pinia/stores/permission.ts#filterDynamicRoutes": 0.9,
+    "file:src/pinia/stores/permission.ts|contains|sym:src/pinia/stores/permission.ts#hasPermission": 1.08,
+    "file:src/pinia/stores/permission.ts|contains|sym:src/pinia/stores/permission.ts#usePermissionStoreOutside": 1.2,
+    "file:src/pinia/stores/permission.ts|imports|file:src/router/index.ts": 0.9,
+    "file:src/pinia/stores/settings.ts|contains|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.9,
+    "file:src/pinia/stores/settings.ts|imports|file:src/common/utils/local-storage.ts": 0.9,
+    "file:src/pinia/stores/settings.ts|imports|file:src/layouts/config.ts": 1.08,
+    "file:src/pinia/stores/tags-view.ts|co_changed|file:src/layouts/config.ts": 0.972,
+    "file:src/pinia/stores/tags-view.ts|co_changed|file:src/pages/demo/element-plus/index.vue": 0.9,
+    "file:src/pinia/stores/tags-view.ts|co_changed|file:src/pages/demo/vxe-table/index.vue": 0.81,
+    "file:src/pinia/stores/tags-view.ts|co_changed|file:src/router/index.ts": 0.81,
+    "file:src/pinia/stores/tags-view.ts|contains|sym:src/pinia/stores/tags-view.ts#TagView": 1.728,
+    "file:src/pinia/stores/tags-view.ts|contains|sym:src/pinia/stores/tags-view.ts#useTagsViewStore": 0.9,
+    "file:src/pinia/stores/tags-view.ts|imports|file:src/common/utils/local-storage.ts": 0.9,
+    "file:src/pinia/stores/user.ts|co_changed|file:src/App.vue": 1,
+    "file:src/plugins/element-plus-icons.ts|co_changed|file:src/router/index.ts": 0.972,
+    "file:src/plugins/element-plus-icons.ts|contains|sym:src/plugins/element-plus-icons.ts#installElementPlusIcons": 1.2,
+    "file:src/plugins/permission-directive.ts|contains|sym:src/plugins/permission-directive.ts#installPermissionDirective": 1.2,
+    "file:src/router/config.ts|contains|sym:src/router/config.ts#REDIRECT_PATH": 0.81,
+    "file:src/router/config.ts|contains|sym:src/router/config.ts#routerConfig": 0.9,
+    "file:src/router/guard.ts|co_changed|file:src/pages/dashboard/components/Admin.vue": 1,
+    "file:src/router/guard.ts|co_changed|file:src/pages/dashboard/components/Editor.vue": 1,
+    "file:src/router/guard.ts|imports|file:src/common/composables/useTitle.ts": 0.81,
+    "file:src/router/helper.ts|co_changed|file:src/pages/demo/level2/index.vue": 1.08,
+    "file:src/router/helper.ts|contains|sym:src/router/helper.ts#flatMultiLevelRoutes": 0.729,
+    "file:src/router/helper.ts|contains|sym:src/router/helper.ts#isMultipleRoute": 1.2,
+    "file:src/router/helper.ts|imports|file:src/router/config.ts": 0.9,
+    "file:src/router/index.ts|calls|sym:src/router/guard.ts#registerNavigationGuard": 0.637729,
+    "file:src/router/index.ts|contains|route:/403": 0.9,
+    "file:src/router/index.ts|contains|route:/demo/composable-demo/use-fetch-select": 0.9,
+    "file:src/router/index.ts|contains|route:/demo/composable-demo/use-fullscreen-loading": 0.9,
+    "file:src/router/index.ts|contains|route:/demo/composable-demo/use-watermark": 0.708588,
+    "file:src/router/index.ts|contains|route:/demo/unocss": 0.972,
+    "file:src/router/index.ts|contains|route:/demo/vxe-table": 0.9,
+    "file:src/router/index.ts|contains|route:/link": 1.2,
+    "file:src/router/index.ts|contains|route:/permission/button-level": 0.81,
+    "file:src/router/index.ts|contains|route:/redirect/:path(.*)": 0.81,
+    "file:src/router/index.ts|contains|sym:src/router/index.ts#constantRoutes": 1.2,
+    "file:src/router/index.ts|contains|sym:src/router/index.ts#dynamicRoutes": 2.0736,
+    "route:/demo/composable-demo/use-watermark|routes_to|sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark": 1.2,
+    "sym:src/App.vue#App|uses_composable|sym:src/common/composables/useGreyAndColorWeakness.ts#useGreyAndColorWeakness": 0.162103,
+    "sym:src/App.vue#App|uses_composable|sym:src/common/composables/usePany.ts#usePany": 0.20589,
+    "sym:src/App.vue#App|uses_composable|sym:src/common/composables/useTheme.ts#useTheme": 0.430467,
+    "sym:src/common/apis/tables/index.ts#createTableDataApi|calls|sym:src/http/axios.ts#request": 0.81,
+    "sym:src/common/apis/tables/index.ts#deleteTableDataApi|calls|sym:src/http/axios.ts#request": 0.38742,
+    "sym:src/common/apis/users/index.ts#getCurrentUserApi|calls|sym:src/http/axios.ts#request": 0.81,
+    "sym:src/common/components/Notify/data.ts#messageData|has_type|sym:src/common/components/Notify/type.ts#NotifyItem": 0.729,
+    "sym:src/common/components/Notify/data.ts#todoData|has_type|sym:src/common/components/Notify/type.ts#NotifyItem": 0.9,
+    "sym:src/common/components/Notify/index.vue#Notify|calls|sym:src/common/components/Notify/data.ts#messageData": 0.9,
+    "sym:src/common/components/Notify/index.vue#Notify|calls|sym:src/common/components/Notify/data.ts#notifyData": 1.08,
+    "sym:src/common/components/Notify/index.vue#Notify|calls|sym:src/common/components/Notify/data.ts#todoData": 0.9,
+    "sym:src/common/components/Notify/index.vue#Notify|uses_component|sym:src/common/components/Notify/List.vue#List": 0.9,
+    "sym:src/common/components/SearchMenu/Footer.vue#Footer|uses_composable|sym:src/common/composables/useDevice.ts#useDevice": 0.9,
+    "sym:src/common/components/SearchMenu/Modal.vue#Modal|calls|sym:src/common/utils/validate.ts#isExternal": 0.6561,
+    "sym:src/common/components/SearchMenu/Modal.vue#Modal|emits_to|sym:src/common/components/SearchMenu/index.vue#SearchMenu": 0.81,
+    "sym:src/common/components/SearchMenu/Modal.vue#Modal|uses_component|sym:src/common/components/SearchMenu/Footer.vue#Footer": 0.729,
+    "sym:src/common/components/SearchMenu/Modal.vue#Modal|uses_component|sym:src/common/components/SearchMenu/Result.vue#Result": 0.31381,
+    "sym:src/common/components/SearchMenu/Modal.vue#Modal|uses_composable|sym:src/common/composables/useDevice.ts#useDevice": 0.59049,
+    "sym:src/common/components/SearchMenu/Modal.vue#Modal|uses_store|sym:src/pinia/stores/permission.ts#usePermissionStore": 0.59049,
+    "sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch|uses_composable|sym:src/common/composables/useTheme.ts#useTheme": 2.985984,
+    "sym:src/common/composables/useFetchSelect.ts#useFetchSelect|has_type|sym:src/common/composables/useFetchSelect.ts#FetchSelectProps": 1.44,
+    "sym:src/common/composables/useFullscreenLoading.ts#useFullscreenLoading|has_type|sym:src/common/composables/useFullscreenLoading.ts#UseFullscreenLoading": 0.8748,
+    "sym:src/common/composables/useGreyAndColorWeakness.ts#initGreyAndColorWeakness|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.1,
+    "sym:src/common/composables/usePagination.ts#usePagination|has_type|sym:src/common/composables/usePagination.ts#UsePaginationOptions": 0.9,
+    "sym:src/common/composables/useTheme.ts#setTheme|calls|sym:src/common/utils/css.ts#setCssVar": 0.729,
+    "sym:src/common/composables/useTheme.ts#setTheme|has_type|sym:src/common/composables/useTheme.ts#ThemeName": 2.985984,
+    "sym:src/common/composables/useTheme.ts#useTheme|calls|sym:src/common/composables/useTheme.ts#initTheme": 1.86624,
+    "sym:src/common/composables/useTheme.ts#useTheme|calls|sym:src/common/composables/useTheme.ts#setTheme": 0.9,
+    "sym:src/common/utils/local-storage.ts#getActiveThemeName|calls|sym:src/common/constants/cache-key.ts#CacheKey": 0.81,
+    "sym:src/common/utils/local-storage.ts#getCachedViews|calls|sym:src/common/constants/cache-key.ts#CacheKey": 0.81,
+    "sym:src/common/utils/local-storage.ts#getLayoutsConfig|calls|sym:src/common/constants/cache-key.ts#CacheKey": 1.08,
+    "sym:src/common/utils/local-storage.ts#getSidebarStatus|calls|sym:src/common/constants/cache-key.ts#CacheKey": 0.81,
+    "sym:src/common/utils/local-storage.ts#getToken|calls|sym:src/common/constants/cache-key.ts#CacheKey": 1.08,
+    "sym:src/common/utils/local-storage.ts#removeLayoutsConfig|calls|sym:src/common/constants/cache-key.ts#CacheKey": 0.81,
+    "sym:src/common/utils/local-storage.ts#removeToken|calls|sym:src/common/constants/cache-key.ts#CacheKey": 0.81,
+    "sym:src/common/utils/local-storage.ts#setActiveThemeName|calls|sym:src/common/constants/cache-key.ts#CacheKey": 1.2,
+    "sym:src/common/utils/local-storage.ts#setLayoutsConfig|calls|sym:src/common/constants/cache-key.ts#CacheKey": 1.08,
+    "sym:src/common/utils/local-storage.ts#setVisitedViews|calls|sym:src/common/constants/cache-key.ts#CacheKey": 0.765275,
+    "sym:src/common/utils/permission.ts#checkPermission|calls|sym:src/common/utils/validate.ts#isArray": 0.972,
+    "sym:src/common/utils/permission.ts#checkPermission|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.81,
+    "sym:src/http/axios.ts#createInstance|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.729,
+    "sym:src/http/axios.ts#request|calls|sym:src/http/axios.ts#createRequest": 1.296,
+    "sym:src/layouts/components/AppMain/index.vue#AppMain|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.81,
+    "sym:src/layouts/components/AppMain/index.vue#AppMain|uses_store|sym:src/pinia/stores/tags-view.ts#useTagsViewStore": 0.59049,
+    "sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb|calls|sym:src/router/config.ts#REDIRECT_PATH": 0.729,
+    "sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb|uses_composable|sym:src/common/composables/useRouteListener.ts#useRouteListener": 0.478297,
+    "sym:src/layouts/components/Hamburger/index.vue#Hamburger|emits_to|sym:src/layouts/components/NavigationBar/index.vue#NavigationBar": 0.729,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_component|sym:src/common/components/Screenfull/index.vue#Screenfull": 0.282429,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_component|sym:src/common/components/SearchMenu/index.vue#SearchMenu": 0.9,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_component|sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch": 0.637729,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_component|sym:src/layouts/components/Breadcrumb/index.vue#Breadcrumb": 0.478297,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_component|sym:src/layouts/components/Hamburger/index.vue#Hamburger": 0.9,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_component|sym:src/layouts/components/Sidebar/index.vue#Sidebar": 0.637729,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_composable|sym:src/common/composables/useDevice.ts#useDevice": 0.9,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_composable|sym:src/common/composables/useLayoutMode.ts#useLayoutMode": 0.81,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_store|sym:src/pinia/stores/app.ts#useAppStore": 0.38742,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.228767,
+    "sym:src/layouts/components/NavigationBar/index.vue#NavigationBar|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.348678,
+    "sym:src/layouts/components/Settings/SelectLayoutMode.vue#SelectLayoutMode|calls|sym:src/common/constants/app-key.ts#LayoutModeEnum": 0.729,
+    "sym:src/layouts/components/Settings/SelectLayoutMode.vue#SelectLayoutMode|uses_composable|sym:src/common/composables/useLayoutMode.ts#useLayoutMode": 0.59049,
+    "sym:src/layouts/components/Settings/index.vue#Settings|calls|sym:src/common/utils/local-storage.ts#removeLayoutsConfig": 1.2,
+    "sym:src/layouts/components/Settings/index.vue#Settings|uses_component|sym:src/layouts/components/Settings/SelectLayoutMode.vue#SelectLayoutMode": 1.2,
+    "sym:src/layouts/components/Settings/index.vue#Settings|uses_composable|sym:src/common/composables/useLayoutMode.ts#useLayoutMode": 0.348678,
+    "sym:src/layouts/components/Settings/index.vue#Settings|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.729,
+    "sym:src/layouts/components/Sidebar/Item.vue#Item|calls|sym:src/common/utils/validate.ts#isExternal": 0.478297,
+    "sym:src/layouts/components/Sidebar/Item.vue#Item|uses_component|sym:src/layouts/components/Sidebar/Link.vue#Link": 0.38742,
+    "sym:src/layouts/components/Sidebar/Link.vue#Link|calls|sym:src/common/utils/validate.ts#isExternal": 0.708588,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_component|sym:src/layouts/components/Logo/index.vue#Logo": 0.972,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_component|sym:src/layouts/components/Sidebar/Item.vue#Item": 0.282429,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_composable|sym:src/common/composables/useDevice.ts#useDevice": 0.81,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_composable|sym:src/common/composables/useLayoutMode.ts#useLayoutMode": 0.9,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_store|sym:src/pinia/stores/app.ts#useAppStore": 0.6561,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_store|sym:src/pinia/stores/permission.ts#usePermissionStore": 0.59049,
+    "sym:src/layouts/components/Sidebar/index.vue#Sidebar|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.430467,
+    "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane|uses_component|sym:src/common/components/Screenfull/index.vue#Screenfull": 0.531441,
+    "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane|uses_composable|sym:src/common/composables/useRouteListener.ts#useRouteListener": 0.9,
+    "sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.478297,
+    "sym:src/layouts/components/TagsView/index.vue#TagsView|uses_component|sym:src/layouts/components/TagsView/ScrollPane.vue#ScrollPane": 0.31381,
+    "sym:src/layouts/components/TagsView/index.vue#TagsView|uses_composable|sym:src/common/composables/useRouteListener.ts#useRouteListener": 0.573956,
+    "sym:src/layouts/components/TagsView/index.vue#TagsView|uses_store|sym:src/pinia/stores/permission.ts#usePermissionStore": 0.430467,
+    "sym:src/layouts/components/TagsView/index.vue#TagsView|uses_store|sym:src/pinia/stores/tags-view.ts#useTagsViewStore": 0.78732,
+    "sym:src/layouts/composables/useResize.ts#useResize|uses_composable|sym:src/common/composables/useRouteListener.ts#useRouteListener": 0.59049,
+    "sym:src/layouts/composables/useResize.ts#useResize|uses_store|sym:src/pinia/stores/app.ts#useAppStore": 0.531441,
+    "sym:src/layouts/config.ts#LayoutsConfig|has_type|sym:src/common/constants/app-key.ts#LayoutModeEnum": 0.478297,
+    "sym:src/layouts/config.ts#layoutsConfig|calls|sym:src/common/utils/local-storage.ts#getLayoutsConfig": 1.2,
+    "sym:src/layouts/index.vue#Layouts|calls|sym:src/common/utils/css.ts#setCssVar": 0.6561,
+    "sym:src/layouts/index.vue#Layouts|uses_component|sym:src/layouts/components/RightPanel/index.vue#RightPanel": 0.9,
+    "sym:src/layouts/index.vue#Layouts|uses_component|sym:src/layouts/components/Settings/index.vue#Settings": 0.743847,
+    "sym:src/layouts/index.vue#Layouts|uses_component|sym:src/layouts/modes/LeftMode.vue#LeftMode": 0.38742,
+    "sym:src/layouts/index.vue#Layouts|uses_component|sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode": 0.729,
+    "sym:src/layouts/index.vue#Layouts|uses_component|sym:src/layouts/modes/TopMode.vue#TopMode": 0.708588,
+    "sym:src/layouts/index.vue#Layouts|uses_composable|sym:src/common/composables/useDevice.ts#useDevice": 0.78732,
+    "sym:src/layouts/index.vue#Layouts|uses_composable|sym:src/common/composables/useLayoutMode.ts#useLayoutMode": 0.531441,
+    "sym:src/layouts/index.vue#Layouts|uses_composable|sym:src/common/composables/useWatermark.ts#useWatermark": 0.729,
+    "sym:src/layouts/index.vue#Layouts|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.729,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_component|sym:src/layouts/components/AppMain/index.vue#AppMain": 0.81,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_component|sym:src/layouts/components/NavigationBar/index.vue#NavigationBar": 0.81,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_component|sym:src/layouts/components/Sidebar/index.vue#Sidebar": 0.81,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_component|sym:src/layouts/components/TagsView/index.vue#TagsView": 0.6561,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_composable|sym:src/common/composables/useDevice.ts#useDevice": 0.81,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_composable|sym:src/common/composables/useLayoutMode.ts#useLayoutMode": 0.9,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_store|sym:src/pinia/stores/app.ts#useAppStore": 0.972,
+    "sym:src/layouts/modes/LeftMode.vue#LeftMode|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.9,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_component|sym:src/layouts/components/AppMain/index.vue#AppMain": 0.81,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_component|sym:src/layouts/components/Logo/index.vue#Logo": 1.2,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_component|sym:src/layouts/components/NavigationBar/index.vue#NavigationBar": 0.81,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_component|sym:src/layouts/components/Sidebar/index.vue#Sidebar": 0.51656,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_component|sym:src/layouts/components/TagsView/index.vue#TagsView": 0.729,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_store|sym:src/pinia/stores/app.ts#useAppStore": 0.478297,
+    "sym:src/layouts/modes/LeftTopMode.vue#LeftTopMode|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.9,
+    "sym:src/layouts/modes/TopMode.vue#TopMode|uses_component|sym:src/layouts/components/AppMain/index.vue#AppMain": 0.81,
+    "sym:src/layouts/modes/TopMode.vue#TopMode|uses_component|sym:src/layouts/components/Logo/index.vue#Logo": 1.296,
+    "sym:src/layouts/modes/TopMode.vue#TopMode|uses_component|sym:src/layouts/components/NavigationBar/index.vue#NavigationBar": 0.6561,
+    "sym:src/layouts/modes/TopMode.vue#TopMode|uses_component|sym:src/layouts/components/TagsView/index.vue#TagsView": 0.531441,
+    "sym:src/layouts/modes/TopMode.vue#TopMode|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.81,
+    "sym:src/pages/dashboard/index.vue#Dashboard|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.9,
+    "sym:src/pages/demo/composable-demo/use-fetch-select.vue#UseFetchSelect|calls|sym:src/pages/demo/composable-demo/apis/use-fetch-select.ts#getSelectDataApi": 0.729,
+    "sym:src/pages/demo/composable-demo/use-fetch-select.vue#UseFetchSelect|uses_composable|sym:src/common/composables/useFetchSelect.ts#useFetchSelect": 0.81,
+    "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading|calls|sym:src/pages/demo/composable-demo/apis/use-fullscreen-loading.ts#getErrorApi": 0.8748,
+    "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading|calls|sym:src/pages/demo/composable-demo/apis/use-fullscreen-loading.ts#getSuccessApi": 0.729,
+    "sym:src/pages/demo/composable-demo/use-fullscreen-loading.vue#UseFullscreenLoading|uses_composable|sym:src/common/composables/useFullscreenLoading.ts#useFullscreenLoading": 0.9,
+    "sym:src/pages/demo/composable-demo/use-watermark.vue#UseWatermark|uses_composable|sym:src/common/composables/useWatermark.ts#useWatermark": 0.9,
+    "sym:src/pages/demo/element-plus/index.vue#ElementPlus|calls|sym:src/common/apis/tables/index.ts#createTableDataApi": 0.81,
+    "sym:src/pages/demo/element-plus/index.vue#ElementPlus|calls|sym:src/common/apis/tables/index.ts#updateTableDataApi": 0.9,
+    "sym:src/pages/demo/element-plus/index.vue#ElementPlus|uses_composable|sym:src/common/composables/usePagination.ts#usePagination": 0.6561,
+    "sym:src/pages/demo/permission/button-level.vue#ButtonLevel|calls|sym:src/common/utils/permission.ts#checkPermission": 0.81,
+    "sym:src/pages/demo/permission/button-level.vue#ButtonLevel|uses_component|sym:src/pages/demo/permission/components/SwitchUser.vue#SwitchUser": 0.59049,
+    "sym:src/pages/demo/permission/components/SwitchUser.vue#SwitchUser|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.81,
+    "sym:src/pages/demo/permission/page-level.vue#PageLevel|uses_component|sym:src/pages/demo/permission/components/SwitchUser.vue#SwitchUser": 0.9,
+    "sym:src/pages/demo/vxe-table/index.vue#VxeTable|calls|sym:src/common/apis/tables/index.ts#deleteTableDataApi": 0.81,
+    "sym:src/pages/demo/vxe-table/index.vue#VxeTable|calls|sym:src/common/apis/tables/index.ts#getTableDataApi": 0.6561,
+    "sym:src/pages/error/403.vue#403|uses_component|sym:src/pages/error/components/Layout.vue#Layout": 0.9,
+    "sym:src/pages/error/404.vue#404|uses_component|sym:src/pages/error/components/Layout.vue#Layout": 0.6561,
+    "sym:src/pages/login/apis/index.ts#getCaptchaApi|calls|sym:src/http/axios.ts#request": 0.9,
+    "sym:src/pages/login/index.vue#Login|uses_component|sym:src/common/components/ThemeSwitch/index.vue#ThemeSwitch": 0.31381,
+    "sym:src/pages/login/index.vue#Login|uses_component|sym:src/pages/login/components/Owl.vue#Owl": 0.729,
+    "sym:src/pages/login/index.vue#Login|uses_composable|sym:src/pages/login/composables/useFocus.ts#useFocus": 0.9,
+    "sym:src/pages/login/index.vue#Login|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.6561,
+    "sym:src/pages/login/index.vue#Login|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.8748,
+    "sym:src/pinia/stores/permission.ts#filterDynamicRoutes|calls|sym:src/pinia/stores/permission.ts#hasPermission": 0.8748,
+    "sym:src/pinia/stores/permission.ts#filterDynamicRoutes|has_type|sym:src/pinia/stores/permission.ts#UserPermissionInfo": 1.2,
+    "sym:src/pinia/stores/permission.ts#hasPermission|has_type|sym:src/pinia/stores/permission.ts#UserPermissionInfo": 1.08,
+    "sym:src/pinia/stores/permission.ts#usePermissionStoreOutside|calls|sym:src/pinia/index.ts#pinia": 0.9,
+    "sym:src/pinia/stores/permission.ts#usePermissionStoreOutside|uses_store|sym:src/pinia/stores/permission.ts#usePermissionStore": 1.08,
+    "sym:src/pinia/stores/permission.ts#usePermissionStore|calls|sym:src/pinia/stores/permission.ts#filterDynamicRoutes": 0.9,
+    "sym:src/pinia/stores/permission.ts#usePermissionStore|calls|sym:src/router/helper.ts#flatMultiLevelRoutes": 0.9,
+    "sym:src/pinia/stores/permission.ts#usePermissionStore|calls|sym:src/router/index.ts#dynamicRoutes": 1.2,
+    "sym:src/pinia/stores/settings.ts#useSettingsStoreOutside|calls|sym:src/pinia/index.ts#pinia": 0.9,
+    "sym:src/pinia/stores/settings.ts#useSettingsStore|calls|sym:src/common/utils/local-storage.ts#setLayoutsConfig": 0.81,
+    "sym:src/pinia/stores/settings.ts#useSettingsStore|calls|sym:src/layouts/config.ts#layoutsConfig": 0.9,
+    "sym:src/pinia/stores/tags-view.ts#useTagsViewStoreOutside|calls|sym:src/pinia/index.ts#pinia": 0.729,
+    "sym:src/pinia/stores/tags-view.ts#useTagsViewStore|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.729,
+    "sym:src/pinia/stores/user.ts#useUserStoreOutside|calls|sym:src/pinia/index.ts#pinia": 0.9,
+    "sym:src/pinia/stores/user.ts#useUserStore|calls|sym:src/common/utils/local-storage.ts#getToken": 0.9,
+    "sym:src/pinia/stores/user.ts#useUserStore|calls|sym:src/router/index.ts#resetRouter": 0.81,
+    "sym:src/pinia/stores/user.ts#useUserStore|calls|sym:src/router/index.ts#router": 0.81,
+    "sym:src/pinia/stores/user.ts#useUserStore|uses_store|sym:src/pinia/stores/settings.ts#useSettingsStore": 0.531441,
+    "sym:src/pinia/stores/user.ts#useUserStore|uses_store|sym:src/pinia/stores/tags-view.ts#useTagsViewStore": 0.366029,
+    "sym:src/plugins/index.ts#installPlugins|calls|sym:src/plugins/element-plus-icons.ts#installElementPlusIcons": 0.59049,
+    "sym:src/plugins/index.ts#installPlugins|calls|sym:src/plugins/permission-directive.ts#installPermissionDirective": 0.9,
+    "sym:src/plugins/index.ts#installPlugins|calls|sym:src/plugins/svg-icon.ts#installSvgIcon": 0.9,
+    "sym:src/plugins/index.ts#installPlugins|calls|sym:src/plugins/vxe-table.ts#installVxeTable": 0.9,
+    "sym:src/router/config.ts#routerConfig|has_type|sym:src/router/config.ts#RouterConfig": 1.2,
+    "sym:src/router/guard.ts#registerNavigationGuard|calls|sym:src/common/composables/useRouteListener.ts#setRouteChange": 0.531441,
+    "sym:src/router/guard.ts#registerNavigationGuard|calls|sym:src/common/utils/local-storage.ts#getToken": 0.59049,
+    "sym:src/router/guard.ts#registerNavigationGuard|calls|sym:src/router/config.ts#routerConfig": 0.972,
+    "sym:src/router/guard.ts#registerNavigationGuard|calls|sym:src/router/whitelist.ts#isWhiteList": 0.531441,
+    "sym:src/router/guard.ts#registerNavigationGuard|uses_store|sym:src/pinia/stores/permission.ts#usePermissionStore": 0.430467,
+    "sym:src/router/guard.ts#registerNavigationGuard|uses_store|sym:src/pinia/stores/user.ts#useUserStore": 0.366028,
+    "sym:src/router/helper.ts#flatMultiLevelRoutes|calls|sym:src/router/helper.ts#isMultipleRoute": 0.9,
+    "sym:src/router/helper.ts#flatMultiLevelRoutes|calls|sym:src/router/helper.ts#promoteRouteLevel": 0.81,
+    "sym:src/router/helper.ts#promoteRouteLevel|calls|sym:src/router/helper.ts#addToChildren": 0.531441,
+    "sym:src/router/index.ts#constantRoutes|calls|sym:src/router/config.ts#DASHBOARD_PATH": 0.9,
+    "sym:src/router/index.ts#constantRoutes|calls|sym:src/router/config.ts#REDIRECT_PATH": 0.9,
+    "sym:src/router/index.ts#constantRoutes|calls|sym:src/router/index.ts#Layouts": 0.9,
+    "sym:src/router/index.ts#dynamicRoutes|calls|sym:src/router/index.ts#Layouts": 1.86624,
+    "sym:src/router/index.ts#resetRouter|calls|sym:src/router/index.ts#router": 1.08,
+    "sym:src/router/index.ts#router|calls|sym:src/router/config.ts#routerConfig": 0.9,
+    "sym:src/router/index.ts#router|calls|sym:src/router/helper.ts#flatMultiLevelRoutes": 0.9,
+    "sym:src/router/index.ts#router|calls|sym:src/router/index.ts#constantRoutes": 1.728
+  },
+  "addedEdges": [
+    {
+      "key": "file:src/common/apis/tables/type.ts|co_changed|file:src/common/composables/useFetchSelect.ts",
+      "from": "file:src/common/apis/tables/type.ts",
+      "to": "file:src/common/composables/useFetchSelect.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/apis/tables/type.ts|co_changed|file:src/pages/dashboard/index.vue",
+      "from": "file:src/common/apis/tables/type.ts",
+      "to": "file:src/pages/dashboard/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/components/Screenfull/index.vue|co_changed|file:src/layouts/components/AppMain/index.vue",
+      "from": "file:src/common/components/Screenfull/index.vue",
+      "to": "file:src/layouts/components/AppMain/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/components/Screenfull/index.vue|co_changed|file:src/layouts/components/TagsView/ScrollPane.vue",
+      "from": "file:src/common/components/Screenfull/index.vue",
+      "to": "file:src/layouts/components/TagsView/ScrollPane.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/components/Screenfull/index.vue|co_changed|file:src/layouts/components/TagsView/index.vue",
+      "from": "file:src/common/components/Screenfull/index.vue",
+      "to": "file:src/layouts/components/TagsView/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/components/SearchMenu/Modal.vue|co_changed|file:src/router/index.ts",
+      "from": "file:src/common/components/SearchMenu/Modal.vue",
+      "to": "file:src/router/index.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/composables/useFullscreenLoading.ts|co_changed|file:src/layouts/components/TagsView/ScrollPane.vue",
+      "from": "file:src/common/composables/useFullscreenLoading.ts",
+      "to": "file:src/layouts/components/TagsView/ScrollPane.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/composables/useGreyAndColorWeakness.ts|co_changed|file:src/layouts/components/AppMain/index.vue",
+      "from": "file:src/common/composables/useGreyAndColorWeakness.ts",
+      "to": "file:src/layouts/components/AppMain/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/composables/useGreyAndColorWeakness.ts|co_changed|file:src/layouts/modes/LeftMode.vue",
+      "from": "file:src/common/composables/useGreyAndColorWeakness.ts",
+      "to": "file:src/layouts/modes/LeftMode.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/constants/cache-key.ts|co_changed|file:src/common/composables/useRouteListener.ts",
+      "from": "file:src/common/constants/cache-key.ts",
+      "to": "file:src/common/composables/useRouteListener.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/common/constants/cache-key.ts|co_changed|file:src/router/config.ts",
+      "from": "file:src/common/constants/cache-key.ts",
+      "to": "file:src/router/config.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/components/NavigationBar/index.vue|co_changed|file:src/layouts/components/TagsView/index.vue",
+      "from": "file:src/layouts/components/NavigationBar/index.vue",
+      "to": "file:src/layouts/components/TagsView/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/components/Sidebar/Link.vue|co_changed|file:src/App.vue",
+      "from": "file:src/layouts/components/Sidebar/Link.vue",
+      "to": "file:src/App.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/components/Sidebar/Link.vue|co_changed|file:src/plugins/vxe-table.ts",
+      "from": "file:src/layouts/components/Sidebar/Link.vue",
+      "to": "file:src/plugins/vxe-table.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/components/TagsView/index.vue|co_changed|file:src/layouts/index.vue",
+      "from": "file:src/layouts/components/TagsView/index.vue",
+      "to": "file:src/layouts/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/components/AppMain/index.vue",
+      "from": "file:src/layouts/modes/TopMode.vue",
+      "to": "file:src/layouts/components/AppMain/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/components/Logo/index.vue",
+      "from": "file:src/layouts/modes/TopMode.vue",
+      "to": "file:src/layouts/components/Logo/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/components/Sidebar/Item.vue",
+      "from": "file:src/layouts/modes/TopMode.vue",
+      "to": "file:src/layouts/components/Sidebar/Item.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/layouts/modes/TopMode.vue|co_changed|file:src/layouts/modes/LeftMode.vue",
+      "from": "file:src/layouts/modes/TopMode.vue",
+      "to": "file:src/layouts/modes/LeftMode.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pages/demo/composable-demo/use-fullscreen-loading.vue|co_changed|file:src/App.vue",
+      "from": "file:src/pages/demo/composable-demo/use-fullscreen-loading.vue",
+      "to": "file:src/App.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pages/demo/composable-demo/use-watermark.vue|co_changed|file:src/layouts/components/RightPanel/index.vue",
+      "from": "file:src/pages/demo/composable-demo/use-watermark.vue",
+      "to": "file:src/layouts/components/RightPanel/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pages/demo/vxe-table/index.vue|co_changed|file:src/layouts/components/Sidebar/index.vue",
+      "from": "file:src/pages/demo/vxe-table/index.vue",
+      "to": "file:src/layouts/components/Sidebar/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pages/demo/vxe-table/index.vue|co_changed|file:src/layouts/modes/LeftTopMode.vue",
+      "from": "file:src/pages/demo/vxe-table/index.vue",
+      "to": "file:src/layouts/modes/LeftTopMode.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pages/login/index.vue|co_changed|file:src/pages/demo/permission/components/SwitchUser.vue",
+      "from": "file:src/pages/login/index.vue",
+      "to": "file:src/pages/demo/permission/components/SwitchUser.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pinia/stores/app.ts|co_changed|file:src/layouts/composables/useResize.ts",
+      "from": "file:src/pinia/stores/app.ts",
+      "to": "file:src/layouts/composables/useResize.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pinia/stores/tags-view.ts|co_changed|file:src/pages/demo/element-plus/index.vue",
+      "from": "file:src/pinia/stores/tags-view.ts",
+      "to": "file:src/pages/demo/element-plus/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pinia/stores/tags-view.ts|co_changed|file:src/pages/demo/vxe-table/index.vue",
+      "from": "file:src/pinia/stores/tags-view.ts",
+      "to": "file:src/pages/demo/vxe-table/index.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pinia/stores/tags-view.ts|co_changed|file:src/router/index.ts",
+      "from": "file:src/pinia/stores/tags-view.ts",
+      "to": "file:src/router/index.ts",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/pinia/stores/user.ts|co_changed|file:src/App.vue",
+      "from": "file:src/pinia/stores/user.ts",
+      "to": "file:src/App.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/router/guard.ts|co_changed|file:src/pages/dashboard/components/Admin.vue",
+      "from": "file:src/router/guard.ts",
+      "to": "file:src/pages/dashboard/components/Admin.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    },
+    {
+      "key": "file:src/router/guard.ts|co_changed|file:src/pages/dashboard/components/Editor.vue",
+      "from": "file:src/router/guard.ts",
+      "to": "file:src/pages/dashboard/components/Editor.vue",
+      "kind": "co_changed",
+      "meta": {
+        "source": "learned",
+        "support": 1
+      }
+    }
+  ],
+  "simulated": true,
+  "source": "bench-sim"
+}

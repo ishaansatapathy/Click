@@ -5,6 +5,7 @@ import { OpenAIEmbedder } from '../../packages/core/src/store/embed.js';
 import { HydraDbGraphStore } from '../../packages/core/src/store/hydradb-graph.js';
 import { MemoryStore } from '../../packages/core/src/store/memory.js';
 import type { Embedder, GraphStore, Store } from '../../packages/core/src/store/types.js';
+import type { ContextRecord } from '../../packages/core/src/contracts.js';
 import type { Graph, PackedContext } from '../../packages/core/src/types.js';
 import { DiskCache } from '../../packages/core/src/util/diskCache.js';
 import { fetchJson } from '../../packages/core/src/util/http.js';
@@ -43,6 +44,10 @@ export interface RealInProcessRetrieverOptions {
   embedder?: Embedder | null;
   /** Benchmark-only one-knob tuning overrides, validated by the production config schema. */
   configOverrides?: DeepPartial<VariantConfig>;
+  /** ContextRecord source label; benchmark simulations must never look like real agent traffic. */
+  source?: string;
+  /** Optional audit sink for benchmarks that need the exact attribution record used by learning. */
+  onContext?: (result: { packed: PackedContext; record: ContextRecord }) => void | Promise<void>;
 }
 
 /** Build the production pipeline dependencies once, then call core getContext directly for every benchmark task. */
@@ -73,6 +78,10 @@ export async function realInProcessRetriever(variant: string, options: RealInPro
     variant as PresetName,
     options.configOverrides,
   );
+  if (holder && cfg.expand.useLearned) {
+    const weights = await store.getWeights().catch(() => null);
+    if (weights) holder.swapWeights(weights);
+  }
 
   // HydraDB lazily discovers node keys. Do that once outside the timed benchmark requests; otherwise the pipeline's
   // graph deadline can repeatedly abort the cold discovery under concurrency and measure replica fallback instead.
@@ -96,12 +105,13 @@ export async function realInProcessRetriever(variant: string, options: RealInPro
       {
         root: options.root,
         store,
-        source: 'bench',
+        source: options.source ?? 'bench',
         ...(holder ? { holder } : {}),
         ...(graph ? { graph } : {}),
         ...(embedder ? { embedder } : {}),
       },
     );
+    await options.onContext?.(result);
     return result.packed;
   });
 }
