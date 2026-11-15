@@ -51,7 +51,7 @@ click status                        # the daemon now reads its graph neighbourho
 
 ## 5. Plug it into your agent
 
-Click is agent-agnostic. Any MCP client (Claude Code, Codex, Cursor, VS Code, Windsurf) can ask it for context through the MCP server, and Claude Code can also get it injected into every prompt by a hook.
+Click is agent-agnostic. Any MCP client (Claude Code, Codex, Cursor, VS Code and others) can ask it for context through the MCP server, and Claude Code can also get it injected into every prompt by a hook.
 
 > Status: the Claude Code hook below works today. The MCP server and the one-command installer (`click init`, which detects your agents and wires all of them) are being finished; until then use the hook or the CLI.
 
