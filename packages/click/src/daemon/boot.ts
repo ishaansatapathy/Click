@@ -8,6 +8,7 @@
 import { join } from 'node:path';
 import { GraphHolder } from '../../../core/src/graph/holder.js';
 import { SnapshotStore } from '../../../core/src/graph/snapshot.js';
+import { WeightsFile } from '../../../core/src/learn/weights.js';
 import { buildIndex, graphVersion, type BuildOptions, type BuildResult, type IndexState } from '../../../core/src/indexer/build.js';
 import { buildLexical, type Lexical } from '../../../core/src/pipeline.js';
 import type { GraphStore, Store } from '../../../core/src/store/types.js';
@@ -100,7 +101,8 @@ export async function boot(d: BootDeps): Promise<Booted> {
 
   const finish = async (graph: Graph, source: BootSource, indexState: IndexState | null): Promise<Booted> => {
     const t = now();
-    const weights = await d.store.getWeights().catch(() => null);
+    // learned weights: weights.json is the truth; the store's copy is only a fallback (a repo cloned elsewhere, a deleted .click)
+    const weights = (await new WeightsFile(clickDir(d.root)).load()) ?? (await d.store.getWeights().catch(() => null));
     const holder = new GraphHolder<Lexical>(graph, { buildLexical, weights });
     lap('holder', t);
     ms.total = Math.round(now() - t0);

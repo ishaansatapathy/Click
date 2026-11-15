@@ -19,6 +19,7 @@ import type { SkeletonProvider } from '../../../core/src/pack/prefix.js';
 import type { PrunerRegistry } from '../../../core/src/prune/chain.js';
 import type { Logger } from '../../../core/src/util/log.js';
 import type { DaemonState } from './boot.js';
+import type { GitOps } from './gitdiff.js';
 import type { JsonlWriter } from './jsonl.js';
 import { HttpError, type Route } from './server.js';
 import type { SessionMemory } from './sessions.js';
@@ -58,6 +59,8 @@ export interface RouteDeps {
   now?: () => number;
   /** HEAD of the repo, or null. Injectable for tests. */
   git?: (root: string) => Promise<string | null>;
+  /** For the session baseline (files already modified when the session began). */
+  gitOps?: GitOps;
 }
 
 export async function gitHead(root: string): Promise<string | null> {
@@ -131,7 +134,14 @@ export function createRoutes(d: RouteDeps): Route[] {
 
       const session = req.sessionId ? d.sessions.touch(req.sessionId) : undefined;
       // the session's first context records where the repo was, so the Stop hook can tell what the agent changed
-      const startCommit = session && session.startCommit === undefined ? git(d.root).then((c) => void (session.startCommit = c), () => void (session.startCommit = null)) : undefined;
+      // and which files were already modified then, so they are not blamed on the agent
+      const startCommit =
+        session && session.startCommit === undefined
+          ? (async () => {
+              session.startCommit = await git(d.root).catch(() => null);
+              session.baseline = new Set((session.startCommit ? await d.gitOps?.changedFiles(d.root, session.startCommit).catch(() => null) : null) ?? []);
+            })()
+          : undefined;
 
       const { packed, record } = await getContext(
         { text: req.task, budgetTokens: budget, ...(req.sessionId ? { sessionId: req.sessionId } : {}) },
@@ -155,7 +165,7 @@ export function createRoutes(d: RouteDeps): Route[] {
           const r = ranges.get(i.nodeId);
           return !i.range || !r || (i.range.startLine === r.startLine && i.range.endLine === r.endLine);
         };
-        d.sessions.record(req.sessionId, packed.items.filter((i) => (i.mode === 'body' || i.mode === 'file') && whole(i)).map((i) => i.nodeId), packed.tokens);
+        d.sessions.record(req.sessionId, packed.items.filter((i) => (i.mode === 'body' || i.mode === 'file') && whole(i)).map((i) => i.nodeId), packed.tokens, packed.contextId);
       }
       void d.contexts.append(record);
       d.stats.record(packed, req.sessionId, now() - t0);
