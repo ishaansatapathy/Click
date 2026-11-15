@@ -5,7 +5,7 @@
 
 import ts from 'typescript';
 import type { LineRange } from '../types.js';
-import { lineOf } from './ts-parse.js';
+import { keyName, lineOf, objectKeys, returnedObject, unwrap } from './ts-parse.js';
 
 export interface PiniaStore {
   name: string; // the exported const, e.g. useOrderStore
@@ -17,43 +17,6 @@ export interface PiniaStore {
   /** Setup store whose returned members can't be read statically (e.g. `return state` built in a loop). */
   dynamic?: true;
   range: LineRange;
-}
-
-const keyName = (n: ts.PropertyName | undefined): string | undefined =>
-  n && (ts.isIdentifier(n) || ts.isStringLiteral(n) || ts.isNumericLiteral(n)) ? n.text : undefined;
-
-function objectKeys(o: ts.ObjectLiteralExpression): string[] {
-  const out: string[] = [];
-  for (const p of o.properties) {
-    if (ts.isShorthandPropertyAssignment(p)) out.push(p.name.text);
-    else if (ts.isPropertyAssignment(p) || ts.isMethodDeclaration(p) || ts.isGetAccessorDeclaration(p)) {
-      const k = keyName(p.name);
-      if (k) out.push(k);
-    }
-  }
-  return out;
-}
-
-const unwrap = (e: ts.Expression): ts.Expression => {
-  let x = e;
-  while (ts.isParenthesizedExpression(x) || ts.isAsExpression(x) || ts.isSatisfiesExpression(x)) x = x.expression;
-  return x;
-};
-
-/** The object a function body returns: `() => ({…})` or the last top-level `return {…}` of a block. */
-function returnedObject(body: ts.ConciseBody): ts.ObjectLiteralExpression | undefined {
-  if (!ts.isBlock(body)) {
-    const e = unwrap(body);
-    return ts.isObjectLiteralExpression(e) ? e : undefined;
-  }
-  for (let i = body.statements.length - 1; i >= 0; i--) {
-    const s = body.statements[i]!;
-    if (ts.isReturnStatement(s) && s.expression) {
-      const e = unwrap(s.expression);
-      return ts.isObjectLiteralExpression(e) ? e : undefined;
-    }
-  }
-  return undefined;
 }
 
 type Role = 'state' | 'getter' | 'action';
