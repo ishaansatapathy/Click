@@ -58,6 +58,8 @@ export const variantConfigSchema = z.object({
     smallFileTokens: z.number().int().positive(),
     neighbourSignatures: z.boolean(),
     sessionDedupe: z.boolean(),
+    /** A symbol too big for `maxBodyTokens` is packed as its best chunk(s) instead of as a bare signature (prompt 134). */
+    sliceLarge: z.boolean().default(false),
   }),
   learn: z.object({ gitCoChange: z.boolean() }),
 });
@@ -102,7 +104,12 @@ const basePack: VariantConfig['pack'] = {
   smallFileTokens: 600,
   neighbourSignatures: false,
   sessionDedupe: false,
+  sliceLarge: false,
 };
+
+// Symbol units: a symbol over 600 tokens is shown as its best chunk(s) instead of a bare signature (prompt 134: train strict recall
+// 62% -> 86% at 4k, test 63% -> 77%). V1 packs chunks already, so it keeps basePack unchanged.
+const symbolPack: VariantConfig['pack'] = { ...basePack, maxBodyTokens: 600, sliceLarge: true };
 
 const noPrune: VariantConfig['prune'] = {
   chain: ['none'], threshold: 0.35, floor: 3, timeoutMs: 500, maxCandidates: 40,
@@ -125,7 +132,7 @@ const v2: VariantConfig = {
   seeds: hybridSeeds,
   expand: noExpand,
   prune: noPrune,
-  pack: basePack,
+  pack: symbolPack,
 };
 
 const v3: VariantConfig = {
@@ -135,7 +142,7 @@ const v3: VariantConfig = {
   seeds: hybridSeeds,
   expand: pprExpand,
   prune: noPrune,
-  pack: { ...basePack, neighbourSignatures: true },
+  pack: { ...symbolPack, neighbourSignatures: true },
 };
 
 // Ablation: V3 over the FULL local snapshot instead of HydraDB's 2-hop neighbourhood. Answers "does the HydraDB
