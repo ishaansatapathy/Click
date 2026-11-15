@@ -274,12 +274,12 @@ describe('startDaemon (PROMPTS 110)', () => {
   });
 
   it('shuts itself down when idle, and activity postpones that', async () => {
-    const d = await startDaemon(opts({ idleMs: 150 }));
+    const d = await startDaemon(opts({ idleMs: 1_200 }));
     for (let i = 0; i < 3; i++) {
-      await new Promise((r) => setTimeout(r, 80));
+      await new Promise((r) => setTimeout(r, 350));
       await fetch(`http://127.0.0.1:${d.info.port}/ping`, { headers: { [TOKEN_HEADER]: d.info.token } });
     }
-    expect(existsSync(daemonPaths(join(dir, '.click')).info)).toBe(true); // 240 ms of life, kept alive by traffic
+    expect(existsSync(daemonPaths(join(dir, '.click')).info)).toBe(true); // about 1 s of life against a 1.2 s idle limit: only the traffic kept it alive
     expect(await d.closed).toBe('idle');
     expect(existsSync(daemonPaths(join(dir, '.click')).info)).toBe(false);
     expect(existsSync(daemonPaths(join(dir, '.click')).lock)).toBe(false);

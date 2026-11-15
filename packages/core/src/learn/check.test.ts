@@ -12,7 +12,18 @@ beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), 'click-check-'));
   log = new EventLog<LogEvent>(join(dir, 'outcomes.jsonl'));
 });
-afterEach(() => rmSync(dir, { recursive: true, force: true }));
+afterEach(async () => {
+  // a timed-out check may leave a process that still has the directory as its working directory; Windows refuses to delete it for a moment
+  for (let i = 0; ; i++) {
+    try {
+      rmSync(dir, { recursive: true, force: true });
+      return;
+    } catch (e) {
+      if (i >= 40) throw e;
+      await new Promise((r) => setTimeout(r, 150));
+    }
+  }
+});
 
 let n = 0;
 const outcome = (over: Partial<OutcomeEvent> = {}): OutcomeEvent => ({
