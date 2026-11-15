@@ -19,6 +19,8 @@ export interface PushDeps {
   embedder?: Embedder;
 }
 
+type VersionedGraphStore = GraphStore & { getIndexVersion(signal?: AbortSignal): Promise<string | null> };
+
 interface PushArgs { root: string; full: boolean; openaiEmbeddings: boolean }
 export const PUSH_USAGE = 'usage: click push [--root <dir>] [--full] [--openai-embeddings]';
 
@@ -49,32 +51,50 @@ export async function runPush(argv: readonly string[], io: PushIo, cwd = process
   const graph = deps.graph ?? new HydraDbGraphStore();
   const store = deps.store ?? new MemoryStore(paths.memstore);
   const previousVersion = await readLastPushedVersion(args.root);
+  if (!args.full && previousVersion === build.graph.version && await remoteVersion(graph) === build.graph.version) {
+    io.out(`graph ${build.graph.version} already in HydraDB (nothing to push)`);
+    return 0;
+  }
   const previous = previousVersion ? await readSnapshot(args.root, previousVersion) : null;
   const full = args.full || previous === null;
 
   let changedNodes: number;
   let changedEdges: number;
+  try {
+    if (full) {
+      if (previous) {
+        await graph.removeGraph({ edgeKeys: previous.graph.edges.map((edge) => edge.key), nodeIds: previous.graph.nodes.map((node) => node.id) });
+      }
+      await graph.upsertGraph({ nodes: build.graph.nodes, edges: build.graph.edges }, build.graph.version);
+      changedNodes = build.graph.nodes.length;
+      changedEdges = build.graph.edges.length;
+    } else {
+      const delta = diffGraphs(previous, build);
+      await graph.removeGraph({ edgeKeys: delta.deleteEdgeKeys, nodeIds: delta.deleteNodeIds });
+      await graph.upsertGraph({ nodes: delta.upsertNodes, edges: delta.upsertEdges }, build.graph.version);
+      changedNodes = delta.upsertNodes.length + delta.deleteNodeIds.length;
+      changedEdges = delta.upsertEdges.length + delta.deleteEdgeKeys.length;
+    }
+  } catch (error) {
+    if (!isReusedIdentity(error) || await remoteVersion(graph) !== build.graph.version) throw error;
+    // HydraDB applied this identity on an earlier attempt. Its graph metadata proves the target version is already complete.
+    changedNodes = 0;
+    changedEdges = 0;
+  }
+
   if (full) {
     if (previous) {
-      await graph.removeGraph({ edgeKeys: previous.graph.edges.map((edge) => edge.key), nodeIds: previous.graph.nodes.map((node) => node.id) });
       await store.remove({
         edgeKeys: previous.graph.edges.map((edge) => edge.key),
         nodeIds: previous.graph.nodes.map((node) => node.id),
         chunkIds: previous.chunks.map((chunk) => chunk.id),
       });
     }
-    await graph.upsertGraph({ nodes: build.graph.nodes, edges: build.graph.edges }, build.graph.version);
     await store.upsert({ nodes: build.graph.nodes, edges: build.graph.edges }, build.graph.version);
-    changedNodes = build.graph.nodes.length;
-    changedEdges = build.graph.edges.length;
   } else {
     const delta = diffGraphs(previous, build);
-    await graph.removeGraph({ edgeKeys: delta.deleteEdgeKeys, nodeIds: delta.deleteNodeIds });
-    await graph.upsertGraph({ nodes: delta.upsertNodes, edges: delta.upsertEdges }, build.graph.version);
     await store.remove({ nodeIds: delta.deleteNodeIds, edgeKeys: delta.deleteEdgeKeys, chunkIds: delta.deleteChunkIds });
     await store.upsert({ nodes: delta.upsertNodes, edges: delta.upsertEdges }, build.graph.version);
-    changedNodes = delta.upsertNodes.length + delta.deleteNodeIds.length;
-    changedEdges = delta.upsertEdges.length + delta.deleteEdgeKeys.length;
   }
 
   let chunks: ChunkRecord[];
@@ -90,6 +110,15 @@ export async function runPush(argv: readonly string[], io: PushIo, cwd = process
   await writeLastPushedVersion(args.root, build.graph.version);
   io.out(`Pushed ${build.graph.version} (${full ? 'full' : 'delta'}: ${changedNodes} node changes, ${changedEdges} edge changes, ${chunks.length} chunks${args.openaiEmbeddings || deps.embedder ? ' embedded' : ' local-only'})`);
   return 0;
+}
+
+async function remoteVersion(graph: GraphStore): Promise<string | null> {
+  const candidate = graph as Partial<VersionedGraphStore>;
+  return typeof candidate.getIndexVersion === 'function' ? candidate.getIndexVersion() : null;
+}
+
+function isReusedIdentity(error: unknown): boolean {
+  return error instanceof Error && /idempotency identity was reused for a different request/i.test(error.message);
 }
 
 function loadLocalEnv(cwd: string): void {

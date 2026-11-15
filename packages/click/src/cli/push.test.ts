@@ -19,9 +19,16 @@ const temporary: string[] = [];
 
 class VersionedFakeGraphStore extends FakeGraphStore {
   version: string | null = null;
+  upserts = 0;
+  removes = 0;
   override async upsertGraph(batch: Parameters<FakeGraphStore['upsertGraph']>[0], version: string): Promise<void> {
+    this.upserts++;
     await super.upsertGraph(batch, version);
     this.version = version;
+  }
+  override async removeGraph(batch: Parameters<FakeGraphStore['removeGraph']>[0]): Promise<void> {
+    this.removes++;
+    await super.removeGraph(batch);
   }
   async getIndexVersion(): Promise<string | null> { return this.version; }
 }
@@ -41,7 +48,7 @@ const io = () => {
 };
 
 describe('click push / pull / probe', () => {
-  it('pushes a full graph, persists embedded chunks, then makes a zero-topology delta', async () => {
+  it('pushes a full graph, then an unchanged second push verifies HydraDB and does no writes', async () => {
     const repo = await root();
     const graph = new VersionedFakeGraphStore();
     const store = new MemoryStore();
@@ -57,7 +64,34 @@ describe('click push / pull / probe', () => {
 
     const second = io();
     expect(await runPush(['--root', repo], second.value, repo, { build: async () => build, graph, store, embedder })).toBe(0);
-    expect(second.lines.out[0]).toContain('(delta: 0 node changes, 0 edge changes');
+    expect(second.lines.out).toEqual([`graph ${build.graph.version} already in HydraDB (nothing to push)`]);
+    expect(graph.upserts).toBe(1);
+    expect(graph.removes).toBe(0);
+
+    const forced = io();
+    expect(await runPush(['--root', repo, '--full'], forced.value, repo, { build: async () => build, graph, store, embedder })).toBe(0);
+    expect(forced.lines.out[0]).toContain('(full:');
+    expect(graph.upserts).toBe(2);
+    expect(graph.removes).toBe(1);
+  });
+
+  it('accepts a reused write identity only when HydraDB proves the target version is complete', async () => {
+    const repo = await root();
+    class ReusedIdentityStore extends VersionedFakeGraphStore {
+      proveApplied = true;
+      override async upsertGraph(): Promise<void> {
+        this.upserts++;
+        this.version = this.proveApplied ? build.graph.version : null;
+        throw new Error('DataFusion graph provider error: idempotency identity was reused for a different request');
+      }
+    }
+    const graph = new ReusedIdentityStore();
+    const output = io();
+    expect(await runPush(['--root', repo], output.value, repo, { build: async () => build, graph, store: new MemoryStore() })).toBe(0);
+    expect(output.lines.out[0]).toContain('(full: 0 node changes, 0 edge changes');
+
+    graph.proveApplied = false;
+    await expect(runPush(['--root', await root()], io().value, repo, { build: async () => build, graph, store: new MemoryStore() })).rejects.toThrow(/idempotency identity/);
   });
 
   it('pull rebuilds the local graph and verifies the Hydra metadata version', async () => {
