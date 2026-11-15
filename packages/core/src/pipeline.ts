@@ -225,7 +225,7 @@ export async function getContext(task: Task, cfg: VariantConfig, deps: PipelineI
 
   const known = (id: string): boolean => cg.nodes.has(resolve(id));
   const semantic = semanticHits.filter((h) => known(h.id));
-  let seeds: Seed[] = fuseSeeds({ ...lists, semantic }, { sources: cfg.seeds.sources, weights: cfg.seeds.weights, count: cfg.seeds.count, rrfK: cfg.seeds.rrfK }, resolve);
+  let seeds: Seed[] = fuseSeeds({ ...lists, semantic }, { sources: cfg.seeds.sources, weights: cfg.seeds.weights, count: cfg.seeds.count, rrfK: cfg.seeds.rrfK, semanticReserve: cfg.seeds.reserve }, resolve);
   seeds = withOpenFiles(seeds, task.openFiles, cg);
 
   // ---- candidates
