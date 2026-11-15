@@ -21,7 +21,7 @@ export const variantConfigSchema = z.object({
     rrfK: z.number().positive(),
   }),
   semantic: z.object({
-    mode: z.enum(['hydra', 'local', 'off']),
+    mode: z.enum(['local', 'off']),
     k: z.number().int().positive(),
     timeoutMs: z.number().int().nonnegative(),
   }),
@@ -63,7 +63,7 @@ export type DeepPartial<T> = T extends readonly (infer Item)[]
 const shared: Omit<VariantConfig, 'id' | 'units' | 'seeds' | 'expand' | 'prune' | 'pack'> = {
   budgetTokens: 4_000,
   deadlineMs: 1_200,
-  semantic: { mode: 'hydra', k: 30, timeoutMs: 400 },
+  semantic: { mode: 'local', k: 30, timeoutMs: 400 },
   candidates: 40,
   learn: { gitCoChange: false },
 };

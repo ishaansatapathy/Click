@@ -14,6 +14,7 @@ describe('variant config presets', () => {
   });
 
   it('encodes the intended V1 through V4 differences', () => {
+    expect(PRESETS.V1.semantic).toEqual({ mode: 'local', k: 30, timeoutMs: 400 });
     expect(PRESETS.V1).toMatchObject({ units: 'chunk', expand: { kind: 'none' } });
     expect(PRESETS.V1.seeds.sources).toEqual(['semantic']);
     expect(PRESETS.V2).toMatchObject({ units: 'symbol', expand: { kind: 'none' } });
