@@ -90,6 +90,9 @@ async function main(): Promise<void> {
   else bad('the hook is not installed', `click hooks install --local --root ${repo}`);
 
   console.log('\n5. One real request');
+  // a daemon that has just started answers its first HydraDB queries cold (300-400 ms, around the deadline); a real session keeps
+  // it running for hours, so warm it the way use would before measuring
+  for (let i = 0; i < 2; i++) click(['context', 'warm up the graph', '--budget', '1000', '--json'], 60_000);
   const t0 = Date.now();
   const res = click(['context', task, '--budget', '4000', '--json'], 90_000);
   const ms = Date.now() - t0;
