@@ -51,12 +51,16 @@ export async function runPush(argv: readonly string[], io: PushIo, cwd = process
   const graph = deps.graph ?? new HydraDbGraphStore();
   const store = deps.store ?? new MemoryStore(paths.memstore);
   const previousVersion = await readLastPushedVersion(args.root);
-  if (!args.full && previousVersion === build.graph.version && await remoteVersion(graph) === build.graph.version) {
+  const remote = await remoteVersion(graph);
+  if (!args.full && previousVersion === build.graph.version && remote === build.graph.version) {
     io.out(`graph ${build.graph.version} already in HydraDB (nothing to push)`);
     return 0;
   }
   const previous = previousVersion ? await readSnapshot(args.root, previousVersion) : null;
-  const full = args.full || previous === null;
+  // a delta is only valid against what HydraDB really holds: after a reset (or a push from elsewhere) it no longer holds our last push
+  const remoteDrifted = previousVersion !== null && remote !== null && remote !== previousVersion;
+  const remoteEmpty = remote === null && previousVersion !== null && typeof (graph as { getIndexVersion?: unknown }).getIndexVersion === 'function';
+  const full = args.full || previous === null || remoteDrifted || remoteEmpty;
 
   let changedNodes: number;
   let changedEdges: number;

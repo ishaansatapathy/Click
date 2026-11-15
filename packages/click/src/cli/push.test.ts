@@ -75,6 +75,27 @@ describe('click push / pull / probe', () => {
     expect(graph.removes).toBe(1);
   });
 
+  it('after HydraDB was reset (it no longer holds our last push) the next push uploads the full graph, not an empty delta', async () => {
+    const repo = await root();
+    const store = new MemoryStore();
+    const embedder = new FakeEmbedder(16);
+    const before = new VersionedFakeGraphStore();
+    expect(await runPush(['--root', repo], io().value, repo, { build: async () => build, graph: before, store, embedder })).toBe(0);
+    // a fresh, empty HydraDB: the local record still says this version was pushed
+    const fresh = new VersionedFakeGraphStore();
+    const again = io();
+    expect(await runPush(['--root', repo], again.value, repo, { build: async () => build, graph: fresh, store, embedder })).toBe(0);
+    expect(again.lines.out[0]).toContain('(full:');
+    expect(fresh.nodes.size).toBe(build.graph.nodes.length);
+    // HydraDB holding some OTHER version is treated the same way
+    const other = new VersionedFakeGraphStore();
+    other.version = 'someone-else';
+    const third = io();
+    expect(await runPush(['--root', repo], third.value, repo, { build: async () => build, graph: other, store, embedder })).toBe(0);
+    expect(third.lines.out[0]).toContain('(full:');
+    expect(other.nodes.size).toBe(build.graph.nodes.length);
+  });
+
   it('accepts a reused write identity only when HydraDB proves the target version is complete', async () => {
     const repo = await root();
     class ReusedIdentityStore extends VersionedFakeGraphStore {
