@@ -1,5 +1,6 @@
 // PROMPT 175: one-command project installation and its inverse.
 
+import { installStatusline, uninstallStatusline } from './statusline.js';
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, rm } from 'node:fs/promises';
@@ -198,7 +199,10 @@ export async function runInit(argv: readonly string[], io: InitIo, cwd = process
     }
     await (deps.startDaemon ?? (async (repo) => { await new ClickClient({ root: repo, cliPath: paths.cli }).ensureRunning({ waitMs: 90_000 }); }))(root);
     io.out(`Click initialized in ${root}: .click/enabled; project MCP (${mcpHosts}); ${agents.claude ? 'Claude hooks' : 'Claude hooks not installed'}; ${agents.codex ? 'Codex hook + MCP' : 'Codex not detected'}; ${parsed.flags['no-githook'] ? 'no git hook' : 'git hook'}; daemon started.`);
-    if (parsed.flags.statusline) io.out('Statusline requested; its settings entry is installed by the statusline component when available.');
+    if (parsed.flags.statusline) {
+      const r = installStatusline(root, join(dirname(paths.cli), 'hooks', 'statusline.js'));
+      io.out(r === 'kept-existing' ? 'Statusline: you already have a statusLine in .claude/settings.local.json; it was left as it is.' : 'Statusline: Claude Code now shows "Click ▸ …" under the prompt.');
+    }
     io.out('Undo with `click uninstall`.');
     return 0;
   } catch (error) {
@@ -223,6 +227,7 @@ export async function runUninstall(argv: readonly string[], io: InitIo, cwd = pr
     await uninstallCodex({ root });
     await uninstallClaudeMcp({ root });
     await uninstallClaudeHooks({ root });
+    uninstallStatusline(root);
     await uninstallGitHook({ root });
     if (state) {
       await restoreClaudeSettings(root, state.claudeSettingsExisted);
