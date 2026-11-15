@@ -228,7 +228,8 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
 
   // ---- small-file merge: ≥ 2 bodies from one small file → the whole file
   const byPath = new Map<string, Chosen[]>();
-  for (const c of bodies) if (c.unit.node.path && c.unit.node.kind !== 'file') (byPath.get(c.unit.node.path) ?? byPath.set(c.unit.node.path, []).get(c.unit.node.path)!).push(c);
+  // (chunk units are never merged: V1 is "the retrieved chunks, as they are")
+  for (const c of bodies) if (c.unit.node.path && c.unit.node.kind !== 'file' && !c.unit.chunk) (byPath.get(c.unit.node.path) ?? byPath.set(c.unit.node.path, []).get(c.unit.node.path)!).push(c);
   for (const [path, group] of [...byPath].sort((a, b) => cmp(a[0], b[0]))) {
     if (group.length < 2) continue;
     const fileNode = o.nodes.get(`file:${path}`);
@@ -281,7 +282,9 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
   return finish(o, sorted, degraded);
 }
 
-function finish(o: PackOptions, blocks: Block[], degraded: string[]): PackResult {
+function finish(base: PackOptions, blocks: Block[], degraded: string[]): PackResult {
+  // flags found while packing (stale-body) belong in the header too
+  const o: PackOptions = { ...base, header: { ...base.header, degraded: [...new Set([...base.header.degraded, ...degraded])] } };
   for (;;) {
     // the header holds its own token count: iterate on the (small) header only, the rest is counted once
     const probe = render(o, blocks, o.budget);
