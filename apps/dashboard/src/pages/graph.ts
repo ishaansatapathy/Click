@@ -90,7 +90,7 @@ export const graphPage: Page = ({ data }) => {
     {},
     h('h1', {}, 'Graph explorer'),
     h('p', { class: 'lead muted' }, `${data.results.repo.name}: ${g.nodes.length} files, ${g.edges.length} file-to-file edges (functions and components are folded into their file here to keep it readable; the real graph has ${data.results.repo.nodes} nodes and ${data.results.repo.edges} edges). Click a file to see what breaks if you change it, the same walk the daemon runs for /impact.`),
-    h('div', { class: 'row', style: 'margin-bottom:12px' }, h('div', { style: 'flex:1;min-width:240px' }, picker), h('span', { class: 'small muted' }, 'green = Vue component · amber = store · blue = router · red = would be affected')),
+    h('div', { class: 'row', style: 'margin-bottom:12px' }, h('div', { style: 'flex:1;min-width:240px' }, picker), h('span', { class: 'small muted' }, 'white = Vue component · amber = store · blue = router · orange = would be affected')),
     h('div', { class: 'cols', style: 'grid-template-columns:minmax(0,2fr) minmax(280px,1fr)' }, h('div', { class: 'graph-box' }, svg), panel),
     h('p', { class: 'small muted' }, 'The layout is computed in your browser from graph.json, which is exported from the same index Click stores in HydraDB. Hubs (most connected files) are labelled.'),
   );

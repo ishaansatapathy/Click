@@ -10,6 +10,19 @@
     "data": "tsx scripts/build-data.ts"
   },
   "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5",
     "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "@fontsource/kode-mono": "^5.3.0",
+    "@fontsource/pixelify-sans": "^5.3.0",
+    "@fontsource/space-mono": "^5.3.0",
+    "jose": "^6",
+    "lenis": "^1",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-router-dom": "^7"
   }
 }

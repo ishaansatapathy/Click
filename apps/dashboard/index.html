@@ -3,17 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Click gives coding agents the right code, not the whole repo: a code graph in HydraDB, measured against a plain store." />
-    <title>Click: a context layer for coding agents</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a6df4'/%3E%3Cpath d='M9 22 16 8l7 14h-4l-3-6-3 6z' fill='white'/%3E%3C/svg%3E" />
-    <script>
-      // apply the saved theme before first paint, so there is no flash
-      try { var t = localStorage.getItem('click-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
-    </script>
+    <meta name="theme-color" content="#030303" />
+    <meta name="description" content="Click: structure-aware context for coding agents. A code graph in HydraDB picks the right functions, components and stores for a task, inside a token budget." />
+    <title>Click: context for coding agents</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%23030303'/%3E%3Cpath d='M2 1h5v2H4v2h3v2H2z' fill='%23FF571A'/%3E%3C/svg%3E" />
   </head>
   <body>
-    <div id="app"><p style="padding:2rem;font-family:system-ui">Loading Click…</p></div>
-    <noscript>This page needs JavaScript to draw its charts and the interactive demo.</noscript>
-    <script type="module" src="/src/main.ts"></script>
+    <div id="root"></div>
+    <noscript>Click needs JavaScript for its animations, charts and the in-browser demo.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
