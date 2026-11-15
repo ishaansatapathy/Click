@@ -4,6 +4,7 @@ import { countTokens } from '../../packages/core/src/util/tokens.js';
 import type { BenchTask } from './task.js';
 import {
   emptyRetriever,
+  memoizeBaselineRepo,
   oracleRetriever,
   packFiles,
   randomRetriever,
@@ -25,6 +26,16 @@ const task: BenchTask = {
 };
 
 describe('dummy retrievers', () => {
+  it('memoizes file discovery and bodies, including concurrent reads', async () => {
+    const calls = { list: 0, read: 0 };
+    const repo = memoizeBaselineRepo({
+      async listSourceFiles() { calls.list++; return ['src/a.ts']; },
+      async readFile() { calls.read++; return 'export const a = 1'; },
+    });
+    await Promise.all([repo.listSourceFiles(), repo.listSourceFiles(), repo.readFile('src/a.ts'), repo.readFile('src/a.ts')]);
+    expect(calls).toEqual({ list: 1, read: 1 });
+  });
+
   it('returns a valid empty floor context', async () => {
     const result = await emptyRetriever()(task, 4_000);
     expect(result).toMatchObject({ variant: 'empty', items: [], text: '', tokens: 0, budget: 4_000 });

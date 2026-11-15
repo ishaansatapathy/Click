@@ -1,6 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { buildIndex } from '../../packages/core/src/indexer/build.js';
 import { loadBenchConfig, spawnGit } from '../scripts/fetch-repo.js';
 import { loadRejected, loadTaskValues, validateTasks, type BenchTask } from './task.js';
 
@@ -53,9 +54,11 @@ async function main(): Promise<void> {
   const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
   const repo = resolve(benchDir, 'repo');
   const files = new Set((await spawnGit(['ls-tree', '-r', '--name-only', config.pinnedSha], repo)).split(/\r?\n/).filter(Boolean));
+  const nodeIds = new Set((await buildIndex(repo)).graph.nodes.map((node) => node.id));
   const validation = validateTasks(
     await loadTaskValues(resolve(benchDir, 'tasks')),
     files,
+    nodeIds,
     await loadRejected(resolve(benchDir, 'tasks', 'rejected.txt')),
   );
   if (validation.errors.length) throw new Error(`Task validation failed:\n${validation.errors.join('\n')}`);

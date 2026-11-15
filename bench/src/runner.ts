@@ -4,9 +4,10 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import type { PackedContext } from '../../packages/core/src/types.js';
+import { buildIndex } from '../../packages/core/src/indexer/build.js';
 import { parseId } from '../../packages/core/src/util/ids.js';
 import { loadBenchConfig, spawnGit } from '../scripts/fetch-repo.js';
-import { emptyRetriever, gitBaselineRepo, oracleRetriever, randomRetriever } from './dummy-retrievers.js';
+import { emptyRetriever, gitBaselineRepo, memoizeBaselineRepo, oracleRetriever, randomRetriever } from './dummy-retrievers.js';
 import { perType, percentile, precisionTokens, recallAny, recallStrict, symbolRecall, type SymbolLocation } from './metrics.js';
 import { httpRetriever, inProcessRetriever, type Retriever } from './retriever.js';
 import { loadRejected, loadTaskValues, validateTasks, type BenchTask } from './task.js';
@@ -234,14 +235,16 @@ async function main(): Promise<void> {
   const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
   const repo = resolve(benchDir, 'repo');
   const files = new Set((await spawnGit(['ls-tree', '-r', '--name-only', config.pinnedSha], repo)).split(/\r?\n/).filter(Boolean));
+  const nodeIds = new Set((await buildIndex(repo)).graph.nodes.map((node) => node.id));
   const validation = validateTasks(
     await loadTaskValues(resolve(benchDir, 'tasks')),
     files,
+    nodeIds,
     await loadRejected(resolve(benchDir, 'tasks', 'rejected.txt')),
   );
   if (validation.errors.length) throw new Error(`Task validation failed:\n${validation.errors.join('\n')}`);
   const tasks = selectTasks(validation.tasks, options);
-  const baseline = gitBaselineRepo(repo, config.pinnedSha);
+  const baseline = memoizeBaselineRepo(gitBaselineRepo(repo, config.pinnedSha));
   const retriever = options.retriever === 'empty' ? emptyRetriever()
     : options.retriever === 'random' ? randomRetriever(baseline)
       : options.retriever === 'oracle' ? oracleRetriever(baseline)

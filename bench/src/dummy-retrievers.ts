@@ -24,6 +24,24 @@ export function gitBaselineRepo(repo: string, revision: string): BaselineRepo {
   };
 }
 
+export function memoizeBaselineRepo(repo: BaselineRepo): BaselineRepo {
+  let files: Promise<string[]> | undefined;
+  const bodies = new Map<string, Promise<string>>();
+  return {
+    listSourceFiles() {
+      return files ??= repo.listSourceFiles();
+    },
+    readFile(path) {
+      let body = bodies.get(path);
+      if (!body) {
+        body = repo.readFile(path);
+        bodies.set(path, body);
+      }
+      return body;
+    },
+  };
+}
+
 export function emptyRetriever(): Retriever {
   return async (task, budget) => makeContext(task.id, 'empty', budget, [], '');
 }

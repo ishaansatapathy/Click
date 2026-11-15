@@ -43,7 +43,7 @@ describe('validateTasks', () => {
       { value: task(), origin: 'tasks.jsonl:1' },
       { value: task({ id: 'h-01', source: 'hand', commit: undefined }), origin: 'hand.json' },
     ];
-    expect(validateTasks(values, new Set(['src/a.ts']), new Set([commit]))).toMatchObject({
+    expect(validateTasks(values, new Set(['src/a.ts']), new Set(['sym:src/a.ts#loadAccount']), new Set([commit]))).toMatchObject({
       tasks: [{ id: 'h-01' }], rejected: 1, errors: [],
     });
   });
@@ -53,13 +53,18 @@ describe('validateTasks', () => {
       { value: task(), origin: 'a.json' },
       { value: task(), origin: 'b.json' },
     ];
-    const result = validateTasks(values, new Set(), new Set());
+    const result = validateTasks(values, new Set(), new Set(), new Set());
     expect(result.errors).toContain('duplicate task ID: m-abcdef0 (2 occurrences)');
-    expect(result.errors.filter((error) => error.includes('does not exist at H'))).toHaveLength(2);
+    expect(result.errors.filter((error) => error.includes('ground-truth file does not exist at H'))).toHaveLength(2);
+  });
+
+  it('reports symbols missing from the graph at H', () => {
+    const result = validateTasks([{ value: task(), origin: 'task.json' }], new Set(['src/a.ts']), new Set(), new Set());
+    expect(result.errors).toEqual(['m-abcdef0: ground-truth symbol does not exist at H: sym:src/a.ts#loadAccount']);
   });
 
   it('reports schema errors with their origin', () => {
-    const result = validateTasks([{ value: task({ split: 'bad' }), origin: 'bad.json:4' }], new Set(), new Set());
+    const result = validateTasks([{ value: task({ split: 'bad' }), origin: 'bad.json:4' }], new Set(), new Set(), new Set());
     expect(result.errors[0]).toContain('bad.json:4: split:');
   });
 });

@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createInterface } from 'node:readline';
 import { z } from 'zod';
 
+import { buildIndex } from '../../packages/core/src/indexer/build.js';
 import { loadBenchConfig, spawnGit } from '../scripts/fetch-repo.js';
 
 const sha = z.string().regex(/^[a-f0-9]{40}$/i, 'must be a full Git SHA');
@@ -55,6 +56,7 @@ export interface ValidationResult {
 export function validateTasks(
   values: { value: unknown; origin: string }[],
   filesAtH: ReadonlySet<string>,
+  nodeIdsAtH: ReadonlySet<string>,
   rejectedValues: ReadonlySet<string>,
 ): ValidationResult {
   const tasks: BenchTask[] = [];
@@ -79,6 +81,9 @@ export function validateTasks(
   for (const task of tasks) {
     for (const path of task.groundTruth.files) {
       if (!filesAtH.has(path)) errors.push(`${task.id}: ground-truth file does not exist at H: ${path}`);
+    }
+    for (const id of task.groundTruth.symbols) {
+      if (!nodeIdsAtH.has(id)) errors.push(`${task.id}: ground-truth symbol does not exist at H: ${id}`);
     }
   }
   return { tasks, rejected, errors };
@@ -157,8 +162,9 @@ async function main(): Promise<void> {
   const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
   const repo = resolve(benchDir, 'repo');
   const files = new Set((await spawnGit(['ls-tree', '-r', '--name-only', config.pinnedSha], repo)).split(/\r?\n/).filter(Boolean));
+  const nodeIds = new Set((await buildIndex(repo)).graph.nodes.map((node) => node.id));
   const values = await loadTaskValues(resolve(benchDir, 'tasks'));
-  const result = validateTasks(values, files, await loadRejected(resolve(benchDir, 'tasks', 'rejected.txt')));
+  const result = validateTasks(values, files, nodeIds, await loadRejected(resolve(benchDir, 'tasks', 'rejected.txt')));
   if (values.length === 0) result.errors.push('no benchmark task files found under bench/tasks');
   if (result.errors.length) {
     for (const error of result.errors) process.stderr.write(`ERROR ${error}\n`);
