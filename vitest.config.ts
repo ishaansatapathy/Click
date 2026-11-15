@@ -5,7 +5,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['packages/*/{src,test}/**/*.test.ts', 'bench/{src,scripts,e2e}/**/*.test.ts', 'infra/**/*.test.ts', 'scripts/**/*.test.ts'],
-    exclude: ['**/fixtures/**', '**/node_modules/**', '**/dist/**', '**/*.slow.test.ts'],
+    // These checks are copied into the benchmark repo and run with its Vite aliases and locked dependencies.
+    exclude: ['**/fixtures/**', '**/node_modules/**', '**/dist/**', '**/*.slow.test.ts', 'bench/e2e/checks/**'],
     environment: 'node',
     // Safety nets, not perf assertions (perf budgets are SPEC §18). Real git/IO tests need headroom when
     // both pair-mode seats run pnpm check at once on one laptop.
