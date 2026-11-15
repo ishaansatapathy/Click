@@ -1,5 +1,7 @@
 # Prompt 134: semantic seed reservation A/B
 
+> The reserve A/B verdict remains historical evidence, but its absolute V2/V3 numbers predate the `a1800cb` packer change. Use [`matrix-20261116.md`](matrix-20261116.md) for current headline retrieval numbers.
+
 All runs use cached public benchmark embeddings and the in-process retriever. `reserve=5` is compared with the explicit off switch `reserve=0`; V1 is shown alongside every split/budget comparison. V2 is also retained in the test tables for continuity with the retrieval matrix.
 
 ## Train, 4k

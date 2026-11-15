@@ -1,0 +1,388 @@
+{
+  "v": 1,
+  "trainN": 158,
+  "v1": {
+    "runId": "20261115T184541418Z-5f8add",
+    "ts": "2026-11-15T18:45:41.418Z",
+    "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+    "kind": "retrieval",
+    "variant": "V1",
+    "configHash": "a92e2fac1d53",
+    "budget": 4000,
+    "split": "train",
+    "n": 158,
+    "metrics": {
+      "recallStrict": 0.8380048221820373,
+      "recallAny": 0.8733423749246534,
+      "symbolRecall": 0.24064009661835745,
+      "precisionTokens": 0.23248838191459759,
+      "p50ms": 352,
+      "p95ms": 485
+    },
+    "perType": {
+      "impact": {
+        "n": 5,
+        "recallStrict": 0.5642857142857143
+      },
+      "multi-file": {
+        "n": 20,
+        "recallStrict": 0.975
+      },
+      "multi-hop": {
+        "n": 33,
+        "recallStrict": 0.6994949494949495
+      },
+      "single-file": {
+        "n": 100,
+        "recallStrict": 0.87
+      }
+    },
+    "pruner": {
+      "none": 158
+    },
+    "degraded": {}
+  },
+  "results": [
+    {
+      "case": {
+        "name": "body-signature/prefix-off",
+        "strategy": "body-signature",
+        "prefix": false,
+        "overrides": {
+          "pack": {
+            "strategy": "body-signature",
+            "prefix": false
+          }
+        }
+      },
+      "row": {
+        "runId": "20261115T184610217Z-47b5c9",
+        "ts": "2026-11-15T18:46:10.217Z",
+        "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+        "kind": "retrieval",
+        "variant": "V3",
+        "configHash": "fd0eef51ff80",
+        "budget": 4000,
+        "split": "train",
+        "n": 158,
+        "metrics": {
+          "recallStrict": 0.8591018685955395,
+          "recallAny": 0.8991862567811936,
+          "symbolRecall": 0.8126552795031055,
+          "precisionTokens": 0.15286608917134714,
+          "p50ms": 735,
+          "p95ms": 893.0500000000001
+        },
+        "perType": {
+          "impact": {
+            "n": 5,
+            "recallStrict": 0.780952380952381
+          },
+          "multi-file": {
+            "n": 20,
+            "recallStrict": 0.925
+          },
+          "multi-hop": {
+            "n": 33,
+            "recallStrict": 0.7373737373737373
+          },
+          "single-file": {
+            "n": 100,
+            "recallStrict": 0.89
+          }
+        },
+        "pruner": {
+          "none": 158
+        },
+        "degraded": {}
+      }
+    },
+    {
+      "case": {
+        "name": "body-signature/prefix-on",
+        "strategy": "body-signature",
+        "prefix": true,
+        "overrides": {
+          "pack": {
+            "strategy": "body-signature",
+            "prefix": true
+          }
+        }
+      },
+      "row": {
+        "runId": "20261115T184640958Z-26d02d",
+        "ts": "2026-11-15T18:46:40.958Z",
+        "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+        "kind": "retrieval",
+        "variant": "V3",
+        "configHash": "bce073f5230e",
+        "budget": 4000,
+        "split": "train",
+        "n": 158,
+        "metrics": {
+          "recallStrict": 0.8095238095238094,
+          "recallAny": 0.8685955394816155,
+          "symbolRecall": 0.7753364389233954,
+          "precisionTokens": 0.17312144961544462,
+          "p50ms": 786,
+          "p95ms": 943.2500000000001
+        },
+        "perType": {
+          "impact": {
+            "n": 5,
+            "recallStrict": 0.780952380952381
+          },
+          "multi-file": {
+            "n": 20,
+            "recallStrict": 0.875
+          },
+          "multi-hop": {
+            "n": 33,
+            "recallStrict": 0.6818181818181818
+          },
+          "single-file": {
+            "n": 100,
+            "recallStrict": 0.84
+          }
+        },
+        "pruner": {
+          "none": 158
+        },
+        "degraded": {
+          "graph-replica": 2
+        }
+      }
+    },
+    {
+      "case": {
+        "name": "body-only/prefix-off",
+        "strategy": "body-only",
+        "prefix": false,
+        "overrides": {
+          "pack": {
+            "strategy": "body-only",
+            "prefix": false
+          }
+        }
+      },
+      "row": {
+        "runId": "20261115T184706697Z-15d893",
+        "ts": "2026-11-15T18:47:06.697Z",
+        "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+        "kind": "retrieval",
+        "variant": "V3",
+        "configHash": "5c7fe2d7655b",
+        "budget": 4000,
+        "split": "train",
+        "n": 158,
+        "metrics": {
+          "recallStrict": 0.8591018685955395,
+          "recallAny": 0.8591018685955395,
+          "symbolRecall": 0.8126552795031055,
+          "precisionTokens": 0.15414381193130255,
+          "p50ms": 658.5,
+          "p95ms": 814.6
+        },
+        "perType": {
+          "impact": {
+            "n": 5,
+            "recallStrict": 0.780952380952381
+          },
+          "multi-file": {
+            "n": 20,
+            "recallStrict": 0.925
+          },
+          "multi-hop": {
+            "n": 33,
+            "recallStrict": 0.7373737373737373
+          },
+          "single-file": {
+            "n": 100,
+            "recallStrict": 0.89
+          }
+        },
+        "pruner": {
+          "none": 158
+        },
+        "degraded": {}
+      }
+    },
+    {
+      "case": {
+        "name": "body-only/prefix-on",
+        "strategy": "body-only",
+        "prefix": true,
+        "overrides": {
+          "pack": {
+            "strategy": "body-only",
+            "prefix": true
+          }
+        }
+      },
+      "row": {
+        "runId": "20261115T184733954Z-c1bec1",
+        "ts": "2026-11-15T18:47:33.954Z",
+        "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+        "kind": "retrieval",
+        "variant": "V3",
+        "configHash": "43f003bc601c",
+        "budget": 4000,
+        "split": "train",
+        "n": 158,
+        "metrics": {
+          "recallStrict": 0.8190174804098854,
+          "recallAny": 0.8190174804098854,
+          "symbolRecall": 0.7825828157349897,
+          "precisionTokens": 0.17484418067181004,
+          "p50ms": 684,
+          "p95ms": 850
+        },
+        "perType": {
+          "impact": {
+            "n": 5,
+            "recallStrict": 0.780952380952381
+          },
+          "multi-file": {
+            "n": 20,
+            "recallStrict": 0.875
+          },
+          "multi-hop": {
+            "n": 33,
+            "recallStrict": 0.696969696969697
+          },
+          "single-file": {
+            "n": 100,
+            "recallStrict": 0.85
+          }
+        },
+        "pruner": {
+          "none": 158
+        },
+        "degraded": {}
+      }
+    },
+    {
+      "case": {
+        "name": "whole-file/prefix-off",
+        "strategy": "whole-file",
+        "prefix": false,
+        "overrides": {
+          "pack": {
+            "strategy": "whole-file",
+            "prefix": false
+          }
+        }
+      },
+      "row": {
+        "runId": "20261115T184746733Z-67e316",
+        "ts": "2026-11-15T18:47:46.733Z",
+        "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+        "kind": "retrieval",
+        "variant": "V3",
+        "configHash": "da3311ff4a3e",
+        "budget": 4000,
+        "split": "train",
+        "n": 158,
+        "metrics": {
+          "recallStrict": 0.5724834237492467,
+          "recallAny": 0.5724834237492467,
+          "symbolRecall": 0.5966356107660454,
+          "precisionTokens": 0.21825757892324277,
+          "p50ms": 322,
+          "p95ms": 420.95000000000005
+        },
+        "perType": {
+          "impact": {
+            "n": 5,
+            "recallStrict": 0.4738095238095238
+          },
+          "multi-file": {
+            "n": 20,
+            "recallStrict": 0.65
+          },
+          "multi-hop": {
+            "n": 33,
+            "recallStrict": 0.5176767676767677
+          },
+          "single-file": {
+            "n": 100,
+            "recallStrict": 0.58
+          }
+        },
+        "pruner": {
+          "none": 158
+        },
+        "degraded": {
+          "graph-replica": 1
+        }
+      }
+    },
+    {
+      "case": {
+        "name": "whole-file/prefix-on",
+        "strategy": "whole-file",
+        "prefix": true,
+        "overrides": {
+          "pack": {
+            "strategy": "whole-file",
+            "prefix": true
+          }
+        }
+      },
+      "row": {
+        "runId": "20261115T184800244Z-3e280e",
+        "ts": "2026-11-15T18:48:00.244Z",
+        "gitSha": "910975a7548f144e7de02af11f4c00b2f59770da",
+        "kind": "retrieval",
+        "variant": "V3",
+        "configHash": "d1ebbefc4e5b",
+        "budget": 4000,
+        "split": "train",
+        "n": 158,
+        "metrics": {
+          "recallStrict": 0.536618444846293,
+          "recallAny": 0.536618444846293,
+          "symbolRecall": 0.5392080745341615,
+          "precisionTokens": 0.2283082495401266,
+          "p50ms": 335,
+          "p95ms": 439.3
+        },
+        "perType": {
+          "impact": {
+            "n": 5,
+            "recallStrict": 0.3904761904761905
+          },
+          "multi-file": {
+            "n": 20,
+            "recallStrict": 0.55
+          },
+          "multi-hop": {
+            "n": 33,
+            "recallStrict": 0.47979797979797983
+          },
+          "single-file": {
+            "n": 100,
+            "recallStrict": 0.56
+          }
+        },
+        "pruner": {
+          "none": 158
+        },
+        "degraded": {
+          "graph-replica": 8
+        }
+      }
+    }
+  ],
+  "winner": {
+    "name": "body-only/prefix-off",
+    "strategy": "body-only",
+    "prefix": false,
+    "overrides": {
+      "pack": {
+        "strategy": "body-only",
+        "prefix": false
+      }
+    }
+  }
+}
