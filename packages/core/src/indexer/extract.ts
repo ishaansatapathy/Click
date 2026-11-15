@@ -40,21 +40,43 @@ export function ctxHashOf(ctx: ExtractCtx): string {
   return hashOf({ profile: ctx.profileHash, paths: hashOf([...ctx.allPaths].sort()), globals });
 }
 
-/** Global `app.component('Name', Comp)` registrations across the repo's TS files (cheap pre-filter on the text). */
-export function collectGlobals(files: readonly SourceFile[], profile: RepoProfile, allPaths: ReadonlySet<string>): GlobalComponents {
+/** Global registrations found in ONE file: `app.component('Name', Comp)`. Null for files that cannot contain any (cheap text pre-filter). */
+export type Registrations = ReturnType<typeof findGlobalRegistrations>;
+export function fileRegistrations(f: SourceFile, resolve: Resolver): Registrations | null {
+  if (f.path.endsWith('.vue') || f.class !== 'src' || !f.content.includes('.component(')) return null;
+  const sf = parseTs(f.content, f.path);
+  const found = findGlobalRegistrations(sf, extractTsImports(sf), resolve, f.path);
+  return found.size > 0 ? found : null;
+}
+
+export function collectRegistrations(files: readonly SourceFile[], profile: RepoProfile, allPaths: ReadonlySet<string>): Map<string, Registrations> {
   const resolve = makeResolver(profile, allPaths);
-  const out = new Map<string, ReturnType<typeof findGlobalRegistrations> extends Map<string, infer V> ? V : never>();
+  const out = new Map<string, Registrations>();
   for (const f of files) {
-    if (f.path.endsWith('.vue') || f.class !== 'src' || !f.content.includes('.component(')) continue;
-    const sf = parseTs(f.content, f.path);
-    for (const [name, target] of findGlobalRegistrations(sf, extractTsImports(sf), resolve, f.path)) if (!out.has(name)) out.set(name, target);
+    const r = fileRegistrations(f, resolve);
+    if (r) out.set(f.path, r);
   }
   return out;
 }
 
+/** Merge per-file registrations into one map. First file (by path order) wins a name: deterministic, and independent of discovery order. */
+export function mergeRegistrations(regs: ReadonlyMap<string, Registrations>): GlobalComponents {
+  const out = new Map<string, Registrations extends Map<string, infer V> ? V : never>();
+  for (const path of [...regs.keys()].sort()) for (const [name, target] of regs.get(path)!) if (!out.has(name)) out.set(name, target);
+  return out;
+}
+
+/** Global registrations across the repo's TS files. */
+export const collectGlobals = (files: readonly SourceFile[], profile: RepoProfile, allPaths: ReadonlySet<string>): GlobalComponents =>
+  mergeRegistrations(collectRegistrations(files, profile, allPaths));
+
+export function makeExtractCtx(root: string, profile: RepoProfile, allPaths: ReadonlySet<string>, globals: GlobalComponents): ExtractCtx {
+  return { root, profile, profileHash: profileHashOf(profile), allPaths, globals };
+}
+
 export function buildExtractCtx(root: string, profile: RepoProfile, files: readonly SourceFile[], allPaths: Iterable<string>): ExtractCtx {
   const paths = new Set(allPaths);
-  return { root, profile, profileHash: profileHashOf(profile), allPaths: paths, globals: collectGlobals(files, profile, paths) };
+  return makeExtractCtx(root, profile, paths, collectGlobals(files, profile, paths));
 }
 
 // The resolver is built once per (profile, path set), not once per file.

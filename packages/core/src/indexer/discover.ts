@@ -65,7 +65,7 @@ export async function discover(root: string, opts: DiscoverOptions = {}): Promis
 
   const files: SourceFile[] = [];
   const skipped: DiscoverResult['skipped'] = [];
-  const results = await mapLimit(paths, READ_CONCURRENCY, (p) => readOne(root, p, maxBytes));
+  const results = await mapLimit(paths, READ_CONCURRENCY, (p) => readSourceFile(root, p, maxBytes));
   for (const r of results) {
     if ('reason' in r) skipped.push(r);
     else files.push(r);
@@ -73,7 +73,8 @@ export async function discover(root: string, opts: DiscoverOptions = {}): Promis
   return { files, allPaths, skipped, mode };
 }
 
-async function readOne(root: string, path: string, maxBytes: number): Promise<SourceFile | { path: string; reason: SkipReason }> {
+/** Read, normalise and hash one repo file (shared by discovery and incremental re-indexing). Never throws. */
+export async function readSourceFile(root: string, path: string, maxBytes: number = DEFAULT_MAX_BYTES): Promise<SourceFile | { path: string; reason: SkipReason }> {
   const full = join(root, path);
   try {
     const st = await stat(full);
