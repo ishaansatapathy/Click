@@ -8,6 +8,7 @@ import { VERSION } from '../version.js';
 import { runContext } from './context.js';
 import { runHooks } from './hooksCmd.js';
 import { runIndex } from './indexCmd.js';
+import { runInit, runUninstall } from './init.js';
 import { runMap } from './map.js';
 import { runProbe } from './probe.js';
 import { runPull } from './pull.js';
@@ -34,6 +35,8 @@ export const COMMANDS: Readonly<Record<string, { run: CommandRunner; help: strin
   context: { run: runContext, help: 'print the context for a task: "<task>" [--stdin] [--json] [--budget N] [--variant V]' },
   reindex: { run: runReindex, help: 'tell the daemon to refresh its graph [--changed] [paths...]' },
   hooks: { run: runHooks, help: 'install | uninstall | status of the Claude Code (and git) hooks [--local] [--git]' },
+  init: { run: runInit, help: 'install Click for the agents in this repository [--dry-run]' },
+  uninstall: { run: runUninstall, help: 'remove Click agent integrations; keep graph/cache data' },
   weights: { run: runWeights, help: 'what Click has learned: --show | --rollback' },
   status: { run: runStatus, help: 'is the daemon up, what graph, what it last served [--json]' },
 };
