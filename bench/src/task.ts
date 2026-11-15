@@ -53,6 +53,18 @@ export interface ValidationResult {
   errors: string[];
 }
 
+export function taskCommitShas(tasks: readonly BenchTask[]): string[] {
+  return [...new Set(tasks.flatMap((task) => task.commit ? [task.commit] : []))].sort();
+}
+
+export function taskCommitFileError(tasks: readonly BenchTask[], contents: string): string | null {
+  const expected = taskCommitShas(tasks);
+  const actual = contents.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return expected.length === actual.length && expected.every((shaValue, index) => shaValue === actual[index])
+    ? null
+    : `bench/data/task-commits.txt is stale: expected ${expected.length} sorted accepted task SHA(s), found ${actual.length}`;
+}
+
 export function validateTasks(
   values: { value: unknown; origin: string }[],
   filesAtH: ReadonlySet<string>,
@@ -136,6 +148,17 @@ export async function loadRejected(path: string): Promise<Set<string>> {
   }
 }
 
+export async function validateTaskDirectory(root: string): Promise<ValidationResult> {
+  const config = loadBenchConfig(resolve(root, 'bench.config.json'));
+  const repo = resolve(root, 'repo');
+  const files = new Set((await spawnGit(['ls-tree', '-r', '--name-only', config.pinnedSha], repo)).split(/\r?\n/).filter(Boolean));
+  const nodeIds = new Set((await buildIndex(repo)).graph.nodes.map((node) => node.id));
+  const values = await loadTaskValues(resolve(root, 'tasks'));
+  const result = validateTasks(values, files, nodeIds, await loadRejected(resolve(root, 'tasks', 'rejected.txt')));
+  if (values.length === 0) result.errors.push('no benchmark task files found under bench/tasks');
+  return result;
+}
+
 function isRejected(task: BenchTask, rejected: ReadonlySet<string>): boolean {
   return rejected.has(task.id) || (task.commit !== undefined && (
     rejected.has(task.commit) || rejected.has(task.commit.slice(0, 7)) || rejected.has(`m-${task.commit.slice(0, 7)}`)
@@ -159,13 +182,12 @@ if (import.meta.url === invokedPath) void main().catch((error: unknown) => {
 });
 
 async function main(): Promise<void> {
-  const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
-  const repo = resolve(benchDir, 'repo');
-  const files = new Set((await spawnGit(['ls-tree', '-r', '--name-only', config.pinnedSha], repo)).split(/\r?\n/).filter(Boolean));
-  const nodeIds = new Set((await buildIndex(repo)).graph.nodes.map((node) => node.id));
-  const values = await loadTaskValues(resolve(benchDir, 'tasks'));
-  const result = validateTasks(values, files, nodeIds, await loadRejected(resolve(benchDir, 'tasks', 'rejected.txt')));
-  if (values.length === 0) result.errors.push('no benchmark task files found under bench/tasks');
+  const result = await validateTaskDirectory(benchDir);
+  let taskCommitContents = '';
+  try { taskCommitContents = await readFile(resolve(benchDir, 'data', 'task-commits.txt'), 'utf8'); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+  const commitError = taskCommitFileError(result.tasks, taskCommitContents);
+  if (commitError) result.errors.push(commitError);
   if (result.errors.length) {
     for (const error of result.errors) process.stderr.write(`ERROR ${error}\n`);
     throw new Error(`Benchmark validation failed with ${result.errors.length} error(s)`);

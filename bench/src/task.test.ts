@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { benchTaskSchema, validateTasks } from './task.js';
+import { benchTaskSchema, taskCommitFileError, taskCommitShas, validateTasks } from './task.js';
 
 const commit = 'abcdef0123456789abcdef0123456789abcdef01';
 function task(overrides: Record<string, unknown> = {}): unknown {
@@ -66,5 +66,20 @@ describe('validateTasks', () => {
   it('reports schema errors with their origin', () => {
     const result = validateTasks([{ value: task({ split: 'bad' }), origin: 'bad.json:4' }], new Set(), new Set(), new Set());
     expect(result.errors[0]).toContain('bad.json:4: split:');
+  });
+});
+
+describe('task commit leakage list', () => {
+  it('contains sorted unique SHAs for accepted mined tasks only', () => {
+    const mined = benchTaskSchema.parse(task());
+    const hand = benchTaskSchema.parse(task({ id: 'h-01', source: 'hand', commit: undefined }));
+    expect(taskCommitShas([hand, mined, mined])).toEqual([commit]);
+    expect(taskCommitFileError([hand, mined], `${commit}\n`)).toBeNull();
+  });
+
+  it('reports missing, extra, duplicate, or unsorted entries as stale', () => {
+    const mined = benchTaskSchema.parse(task());
+    expect(taskCommitFileError([mined], '')).toMatch(/stale/);
+    expect(taskCommitFileError([mined], `${commit}\n${commit}\n`)).toMatch(/stale/);
   });
 });
