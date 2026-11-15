@@ -128,7 +128,10 @@ describe('pack.strategy (PROMPTS 137 support)', () => {
     const { strategy: _s, ...withoutField } = PRESETS.V3.pack;
     const parsed = resolveConfig({ pack: withoutField }, 'V3');
     expect(parsed.pack.strategy).toBe('body-signature');
-    for (const name of ['V1', 'V2', 'V3', 'V3r', 'V4', 'delivery'] as const) expect(PRESETS[name].pack.strategy).toBe('body-signature');
+    for (const name of ['V1', 'V2', 'V3', 'V3r', 'V4'] as const) expect(PRESETS[name].pack.strategy).toBe('body-signature'); // the ablation arms
+    // delivery is whatever prompt 137 measured as the winner (body-only); it must be one of the strategies and parse as such
+    expect(['body-signature', 'body-only']).toContain(PRESETS.delivery.pack.strategy);
+    expect(resolveConfig(null, 'delivery').pack.strategy).toBe(PRESETS.delivery.pack.strategy);
     expect(() => resolveConfig({ pack: { strategy: 'nope' as never } }, 'V3')).toThrow();
   });
 });

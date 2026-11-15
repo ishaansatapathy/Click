@@ -212,12 +212,17 @@ describe('getContext (PROMPTS 094)', () => {
     expect(packed.text).not.toContain('// edited after indexing');
   });
 
-  it('delivery preset adds conventions and the skeleton prefix; V3 does not', async () => {
+  it('the prefix (conventions + skeleton) appears exactly when the preset turns it on: delivery follows its preset, V3 never has one', async () => {
     const w = await world();
     const d = await getContext(task(TEXT), cfgOf('delivery'), { ...w });
-    expect(d.packed.text).toContain('## Conventions');
-    expect(d.packed.text).toContain('## Skeleton');
+    expect(d.packed.text.includes('## Conventions')).toBe(PRESETS.delivery.pack.prefix);
+    expect(d.packed.text.includes('## Skeleton')).toBe(PRESETS.delivery.pack.prefix);
+    expect(d.packed.items.some((i) => i.mode === 'body')).toBe(true);
     expect(d.packed.tokens).toBeLessThanOrEqual(4000);
+    // and a repo can still switch it on
+    const withPrefix = await getContext(task(TEXT), cfgOf('delivery', { pack: { prefix: true } }), { ...w });
+    expect(withPrefix.packed.text).toContain('## Conventions');
+    expect(withPrefix.packed.text).toContain('## Skeleton');
     const v3 = await getContext(task(TEXT), cfgOf('V3'), { ...w });
     expect(v3.packed.text).not.toContain('## Skeleton');
   });

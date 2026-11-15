@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { PRESETS } from '../../../core/src/config.js';
 import type { BuildResult } from '../../../core/src/indexer/build.js';
 import type { PackedContext } from '../../../core/src/types.js';
 import { SessionMemory, MAX_SESSIONS } from './sessions.js';
@@ -105,7 +106,9 @@ describe('POST /context (PROMPTS 112)', () => {
     expect(v3.body.variant).toBe('V3');
     expect(v3.body.text).not.toContain('## Skeleton'); // V3 has no prefix
     const delivery = await w.json<PackedContext>('/context', { task: TASK });
-    expect(delivery.body.text).toContain('## Skeleton');
+    // the delivery preset decides (prompt 137 measured prefix off as the winner): the response follows it, whichever way it is set
+    expect(delivery.body.text.includes('## Skeleton')).toBe(PRESETS.delivery.pack.prefix);
+    expect(delivery.body.items.some((i) => i.mode === 'body')).toBe(true);
   }, 60_000);
 
   it('uses the repo\'s click.config.json (defaults and the variant\'s settings)', async () => {
