@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { createReadStream, createWriteStream } from 'node:fs';
+import OpenAI from 'openai';
+import { createReadStream, createWriteStream, existsSync } from 'node:fs';
 import { once } from 'node:events';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -11,7 +12,10 @@ import { countTokens } from '../../packages/core/src/util/tokens.js';
 import type { CandidateCommit } from './filter-commits.js';
 import { spawnGit } from './fetch-repo.js';
 
-export const TASK_TEXT_MODEL = 'claude-haiku-5-5';
+export type TaskTextProvider = 'openai' | 'anthropic';
+
+export const DEFAULT_OPENAI_MODEL = 'gpt-6-luna';
+export const DEFAULT_ANTHROPIC_MODEL = 'claude-haiku-5-5';
 export const TASK_TEXT_PROMPT_VERSION = 'task-text-v1';
 export const TASK_TEXT_CONCURRENCY = 4;
 export const MAX_DIFF_TOKENS = 3_000;
@@ -20,12 +24,12 @@ const INPUT_USD_PER_MILLION = 0.1;
 const OUTPUT_USD_PER_MILLION = 0.5;
 const benchDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-export interface MessageResponse {
+interface AnthropicMessageResponse {
   content: { type: string; text?: string }[];
   usage: { input_tokens: number | null; output_tokens: number };
 }
 
-export interface MessageClient {
+export interface AnthropicMessagesClient {
   messages: {
     create(params: {
       model: string;
@@ -33,13 +37,39 @@ export interface MessageClient {
       temperature: number;
       system: string;
       messages: { role: 'user'; content: string }[];
-    }): Promise<MessageResponse>;
+    }): Promise<AnthropicMessageResponse>;
   };
+}
+
+export interface OpenAIResponsesClient {
+  responses: {
+    create(params: {
+      model: string;
+      instructions: string;
+      input: string;
+      max_output_tokens: number;
+      reasoning: { effort: 'none' };
+      temperature: number;
+      store: false;
+    }): Promise<{
+      output_text: string;
+      usage?: { input_tokens: number; output_tokens: number } | null;
+    }>;
+  };
+}
+
+export interface TaskTextClient {
+  create(params: { model: string; system: string; prompt: string }): Promise<{
+    text: string;
+    inputTokens: number;
+    outputTokens: number;
+  }>;
 }
 
 export interface TaskTextRecord extends CandidateCommit {
   text: string;
   taskText: {
+    provider: TaskTextProvider;
     model: string;
     promptVersion: string;
     inputTokens: number;
@@ -59,7 +89,9 @@ export interface GenerationSummary {
 interface GenerateOptions {
   repo: string;
   cache: DiskCache;
-  client?: MessageClient;
+  client?: TaskTextClient;
+  provider?: TaskTextProvider;
+  model?: string;
   concurrency?: number;
   git?: typeof spawnGit;
   sleep?: (milliseconds: number) => Promise<void>;
@@ -72,15 +104,17 @@ export async function generateTaskTexts(
   options: GenerateOptions,
 ): Promise<GenerationSummary> {
   const promptVersion = options.promptVersion ?? TASK_TEXT_PROMPT_VERSION;
+  const provider = options.provider ?? 'anthropic';
+  const model = options.model ?? (provider === 'openai' ? DEFAULT_OPENAI_MODEL : DEFAULT_ANTHROPIC_MODEL);
   const stats = { cacheHits: 0, apiCalls: 0, inputTokens: 0, outputTokens: 0 };
   const records = await mapLimit(candidates, options.concurrency ?? TASK_TEXT_CONCURRENCY, async (candidate) => {
-    const cacheKey = hashOf({ sha: candidate.sha, promptVersion });
+    const cacheKey = hashOf({ provider, model, promptVersion, sha: candidate.sha });
     const hit = await options.cache.get<TaskTextRecord['taskText'] & { text: string }>(cacheKey);
     if (hit) {
       stats.cacheHits++;
       return toRecord(candidate, hit);
     }
-    if (!options.client) throw new Error('ANTHROPIC_API_KEY is required for uncached task text');
+    if (!options.client) throw new Error(`no ${provider} credentials available for uncached task text`);
 
     const git = options.git ?? spawnGit;
     const [diffStat, rawDiff] = await Promise.all([
@@ -89,23 +123,22 @@ export async function generateTaskTexts(
     ]);
     const prompt = buildTaskPrompt(candidate.message, diffStat, truncateTokens(rawDiff, MAX_DIFF_TOKENS));
     const response = await withBackoff(
-      () => options.client!.messages.create({
-        model: TASK_TEXT_MODEL,
-        max_tokens: 180,
-        temperature: 0,
+      () => options.client!.create({
+        model,
         system: options.systemPrompt ?? TASK_TEXT_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: prompt }],
+        prompt,
       }),
       options.sleep,
     );
-    const text = response.content.filter((block) => block.type === 'text').map((block) => block.text ?? '').join('').trim();
-    if (!text) throw new Error(`Anthropic returned no task text for ${candidate.sha}`);
+    const text = response.text.trim();
+    if (!text) throw new Error(`${provider} returned no task text for ${candidate.sha}`);
     const value = {
       text,
-      model: TASK_TEXT_MODEL,
+      provider,
+      model,
       promptVersion,
-      inputTokens: response.usage.input_tokens ?? 0,
-      outputTokens: response.usage.output_tokens,
+      inputTokens: response.inputTokens,
+      outputTokens: response.outputTokens,
     };
     await options.cache.set(cacheKey, value);
     stats.apiCalls++;
@@ -120,6 +153,70 @@ export async function generateTaskTexts(
     estimatedCostUsd:
       (stats.inputTokens * INPUT_USD_PER_MILLION + stats.outputTokens * OUTPUT_USD_PER_MILLION) / 1_000_000,
   };
+}
+
+export function anthropicTaskTextClient(client: AnthropicMessagesClient): TaskTextClient {
+  return {
+    async create({ model, system, prompt }) {
+      const response = await client.messages.create({
+        model,
+        max_tokens: 180,
+        temperature: 0,
+        system,
+        messages: [{ role: 'user', content: prompt }],
+      });
+      return {
+        text: response.content.filter((block) => block.type === 'text').map((block) => block.text ?? '').join(''),
+        inputTokens: response.usage.input_tokens ?? 0,
+        outputTokens: response.usage.output_tokens,
+      };
+    },
+  };
+}
+
+export function openAITaskTextClient(client: OpenAIResponsesClient): TaskTextClient {
+  return {
+    async create({ model, system, prompt }) {
+      const response = await client.responses.create({
+        model,
+        instructions: system,
+        input: prompt,
+        max_output_tokens: 180,
+        reasoning: { effort: 'none' },
+        temperature: 0,
+        store: false,
+      });
+      return {
+        text: response.output_text,
+        inputTokens: response.usage?.input_tokens ?? 0,
+        outputTokens: response.usage?.output_tokens ?? 0,
+      };
+    },
+  };
+}
+
+export function loadTaskTextEnv(path = '.env'): void {
+  if (existsSync(path)) process.loadEnvFile(path);
+}
+
+export function taskTextRuntimeFromEnv(): {
+  provider: TaskTextProvider;
+  model: string;
+  client: TaskTextClient;
+} {
+  const configured = process.env.TASK_TEXT_PROVIDER;
+  const provider: TaskTextProvider = configured === 'openai' || configured === 'anthropic'
+    ? configured
+    : process.env.OPENAI_API_KEY ? 'openai' : 'anthropic';
+  if (provider === 'openai') {
+    if (!process.env.OPENAI_API_KEY) throw new Error('no OpenAI credentials: set OPENAI_API_KEY');
+    const model = process.env.TASK_TEXT_MODEL || DEFAULT_OPENAI_MODEL;
+    const sdk = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0, timeout: 60_000 });
+    return { provider, model, client: openAITaskTextClient(sdk as unknown as OpenAIResponsesClient) };
+  }
+  const model = process.env.TASK_TEXT_MODEL || DEFAULT_ANTHROPIC_MODEL;
+  const sdk = new Anthropic({ maxRetries: 0, timeout: 60_000 });
+  return { provider, model, client: anthropicTaskTextClient(sdk as AnthropicMessagesClient) };
 }
 
 export const TASK_TEXT_SYSTEM_PROMPT = `Turn a historical commit into a plausible developer task request.
@@ -206,16 +303,17 @@ const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).hr
 if (import.meta.url === invokedPath) void main();
 
 async function main(): Promise<void> {
+  loadTaskTextEnv();
   const candidates = await readCandidates(resolve(benchDir, 'data', 'candidates.jsonl'));
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  const client = apiKey ? new Anthropic({ apiKey, maxRetries: 0, timeout: 60_000 }) as MessageClient : undefined;
+  const runtime = taskTextRuntimeFromEnv();
   const summary = await generateTaskTexts(candidates, {
     repo: resolve(benchDir, 'repo'),
     cache: new DiskCache('llm'),
-    client,
+    ...runtime,
   });
   const output = resolve(benchDir, 'data', 'task-texts.jsonl');
   await writeJsonLines(output, summary.records);
+  process.stdout.write(`Provider: ${runtime.provider}; model: ${runtime.model}\n`);
   process.stdout.write(`Wrote ${summary.records.length} tasks to ${output}\n`);
   process.stdout.write(`Cache hits: ${summary.cacheHits}; API calls: ${summary.apiCalls}\n`);
   process.stdout.write(`API tokens: ${summary.inputTokens} input, ${summary.outputTokens} output\n`);

@@ -14,7 +14,7 @@ function record(text: string, sha = 'a'.repeat(40)): TaskTextRecord {
     groundTruthFiles: ['src/views/user-profile/UserSettingsPanel.vue'],
     changedLines: 3,
     text,
-    taskText: { model: 'model', promptVersion: 'v1', inputTokens: 1, outputTokens: 1 },
+    taskText: { provider: 'openai', model: 'model', promptVersion: 'v1', inputTokens: 1, outputTokens: 1 },
   };
 }
 

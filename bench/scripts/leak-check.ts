@@ -1,4 +1,3 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { createReadStream, createWriteStream } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { once } from 'node:events';
@@ -10,7 +9,8 @@ import { DiskCache } from '../../packages/core/src/util/diskCache.js';
 import {
   TASK_TEXT_SYSTEM_PROMPT,
   generateTaskTexts,
-  type MessageClient,
+  loadTaskTextEnv,
+  taskTextRuntimeFromEnv,
   type TaskTextRecord,
 } from './write-task-text.js';
 
@@ -101,15 +101,15 @@ const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).hr
 if (import.meta.url === invokedPath) void main();
 
 async function main(): Promise<void> {
+  loadTaskTextEnv();
   const input = resolve(benchDir, 'data', 'task-texts.jsonl');
   const records = await readTaskTexts(input);
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  const client = apiKey ? new Anthropic({ apiKey, maxRetries: 0, timeout: 60_000 }) as MessageClient : undefined;
+  const runtime = taskTextRuntimeFromEnv();
   const result = await checkLeaks(records, async (record, terms) => {
     const generated = await generateTaskTexts([record], {
       repo: resolve(benchDir, 'repo'),
       cache: new DiskCache('llm'),
-      client,
+      ...runtime,
       promptVersion: LEAK_RETRY_PROMPT_VERSION,
       systemPrompt: stricterSystemPrompt(terms),
     });
