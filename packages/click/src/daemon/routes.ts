@@ -33,6 +33,8 @@ export const contextRequestSchema = z.object({
   sessionId: z.string().min(1).max(200).optional(),
   deadlineMs: z.number().int().min(1).max(5_000).optional(),
   source: z.enum(['hook', 'mcp', 'cli', 'bench']).optional(),
+  /** Hard cap on the text length in characters (the prompt hook uses it: Claude Code truncates hook context above 10,000). */
+  maxChars: z.number().int().min(1_000).max(200_000).optional(),
 });
 export type ContextRequest = z.infer<typeof contextRequestSchema>;
 
@@ -130,6 +132,7 @@ export function createRoutes(d: RouteDeps): Route[] {
         {
           store: d.store, root: d.root, holder, bodies: d.bodies, prefix: d.prefix, now,
           source: req.source ?? 'api',
+          ...(req.maxChars ? { maxChars: req.maxChars } : {}),
           sent: (sid) => d.sessions.sent(sid),
           ...(d.graph ? { graph: d.graph } : {}),
           ...(d.embedder ? { embedder: d.embedder } : {}),

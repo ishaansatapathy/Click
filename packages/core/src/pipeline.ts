@@ -44,6 +44,8 @@ export interface PipelineExtras {
   prefix?: SkeletonProvider;
   /** Node ids already sent in a session (for `pack.sessionDedupe`). */
   sent?: (sessionId: string | undefined) => ReadonlySet<string> | undefined;
+  /** Hard cap on the packed text, in characters. */
+  maxChars?: number;
   /** Who is asking, recorded in the ContextRecord ('hook' | 'mcp' | 'api' | 'bench'…). */
   source?: string;
   newId?: () => string;
@@ -301,6 +303,7 @@ export async function getContext(task: Task, cfg: VariantConfig, deps: PipelineI
       nodes: cg.nodes,
       chunks,
       bodies: bodiesFor(deps),
+      ...(deps.maxChars ? { maxChars: deps.maxChars } : {}),
       ...(sent ? { sent } : {}),
       ...(neighbours ? { neighbours } : {}),
       ...(prefix ? { prefix } : {}),

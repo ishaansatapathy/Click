@@ -219,6 +219,21 @@ describe('budget guarantee (PROMPTS 092, property)', () => {
     }
   });
 
+  it('maxChars: the text never exceeds it, whatever the budget, and what is kept is the best-ranked part', async () => {
+    for (let seed = 1; seed <= 60; seed++) {
+      const { rnd, items, cands } = world(seed);
+      const maxChars = 1_000 + Math.floor(rnd() * 12_000);
+      const r = await pack(cands, setup(items, { budget: 8_000, maxChars }));
+      expect(r.text.length, `seed ${seed}`).toBeLessThanOrEqual(maxChars);
+      expect(r.tokens).toBeLessThanOrEqual(8_000);
+      if (r.text) expect(r.text.endsWith('</click_context>')).toBe(true);
+    }
+    const a = mk('a', 'function', 'src/a.ts', 'a', 1, 'const a = 1;');
+    const b = mk('b', 'function', 'src/b.ts', 'b', 1, 'x'.repeat(3_000));
+    const r = await pack([cand('a', 0.9), cand('b', 0.1)], setup([a, b], { maxChars: 1_500 }));
+    expect(r.items.map((i) => i.nodeId)).toEqual(['a']); // the lower-ranked body is the one that goes
+  });
+
   it('a budget smaller than the frame gives an empty result instead of overshooting', async () => {
     const r = await pack([cand('comp:btn', 1)], setup([BTN], { budget: 20 }));
     expect(r).toMatchObject({ text: '', tokens: 0, items: [] });

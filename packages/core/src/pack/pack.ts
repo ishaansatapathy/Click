@@ -27,6 +27,8 @@ export interface Neighbour {
 
 export interface PackOptions {
   budget: number;
+  /** Hard cap on the text length in characters (Claude Code truncates hook context above 10,000). Blocks are dropped from the end to fit. */
+  maxChars?: number;
   pack: VariantConfig['pack'];
   header: { graph: string; ms: number; degraded: readonly string[] };
   nodes: ReadonlyMap<string, GraphNode>;
@@ -285,6 +287,14 @@ export async function pack(candidates: readonly Candidate[], o: PackOptions): Pr
 function finish(base: PackOptions, blocks: Block[], degraded: string[]): PackResult {
   // flags found while packing (stale-body) belong in the header too
   const o: PackOptions = { ...base, header: { ...base.header, degraded: [...new Set([...base.header.degraded, ...degraded])] } };
+  if (o.maxChars) {
+    // characters first: cheap to measure, and it only ever removes blocks (from the end, like the token guarantee)
+    while (blocks.length > 0) {
+      const r = render(o, blocks, 99_999);
+      if (r.header.length + 1 + r.rest.length <= o.maxChars) break;
+      blocks.pop();
+    }
+  }
   for (;;) {
     // the header holds its own token count: iterate on the (small) header only, the rest is counted once
     const probe = render(o, blocks, o.budget);
