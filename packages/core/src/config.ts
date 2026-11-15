@@ -60,6 +60,11 @@ export const variantConfigSchema = z.object({
     sessionDedupe: z.boolean(),
     /** A symbol too big for `maxBodyTokens` is packed as its best chunk(s) instead of as a bare signature (prompt 134). */
     sliceLarge: z.boolean().default(false),
+    /**
+     * body-signature (default): bodies, and a signature for what does not fit. body-only: bodies only, a candidate that cannot be
+     * shown as code is skipped. whole-file: each ranked candidate becomes its whole file, once per path. For the packer ablation (137).
+     */
+    strategy: z.enum(['body-signature', 'body-only', 'whole-file']).default('body-signature'),
   }),
   learn: z.object({ gitCoChange: z.boolean() }),
 });
@@ -105,6 +110,7 @@ const basePack: VariantConfig['pack'] = {
   neighbourSignatures: false,
   sessionDedupe: false,
   sliceLarge: false,
+  strategy: 'body-signature',
 };
 
 // Symbol units: a symbol over 600 tokens is shown as its best chunk(s) instead of a bare signature (prompt 134: train strict recall
