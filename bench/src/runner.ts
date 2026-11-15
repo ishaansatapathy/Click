@@ -9,7 +9,7 @@ import { parseId } from '../../packages/core/src/util/ids.js';
 import { loadBenchConfig, spawnGit } from '../scripts/fetch-repo.js';
 import { emptyRetriever, gitBaselineRepo, memoizeBaselineRepo, oracleRetriever, randomRetriever } from './dummy-retrievers.js';
 import { perType, percentile, precisionTokens, recallAny, recallStrict, symbolRecall, type SymbolLocation } from './metrics.js';
-import { httpRetriever, inProcessRetriever, type Retriever } from './retriever.js';
+import { httpRetriever, realInProcessRetriever, type Retriever } from './retriever.js';
 import { loadRejected, loadTaskValues, validateTasks, type BenchTask } from './task.js';
 
 export type BenchSplit = 'train' | 'test' | 'all' | 'e2e';
@@ -237,6 +237,11 @@ if (import.meta.url === invokedPath) void main().catch((error: unknown) => {
 });
 
 async function main(): Promise<void> {
+  try {
+    process.loadEnvFile(resolve(benchDir, '..', '.env'));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
   const options = parseRunnerArgs(process.argv.slice(2));
   const config = loadBenchConfig(resolve(benchDir, 'bench.config.json'));
   const repo = resolve(benchDir, 'repo');
@@ -260,7 +265,7 @@ async function main(): Promise<void> {
       : options.retriever === 'oracle' ? oracleRetriever(baseline)
         : options.retriever === 'http' && process.env.CLICK_DAEMON_URL
           ? httpRetriever({ baseUrl: process.env.CLICK_DAEMON_URL, variant: options.variant, token: process.env.CLICK_DAEMON_TOKEN })
-          : options.retriever === 'http' ? httpRetriever() : inProcessRetriever(options.variant);
+          : options.retriever === 'http' ? httpRetriever() : realInProcessRetriever(options.variant, { root: repo, graphSnapshot: index.graph });
   const gitSha = (await spawnGit(['rev-parse', 'HEAD'], resolve(benchDir, '..'))).trim();
   const run = await runBenchmark(tasks, retriever, options, {
     gitSha,
