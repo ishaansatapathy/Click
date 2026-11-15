@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 // Slow integration suites (*.slow.test.ts, real git worktrees) run with `pnpm test:slow`.
 export default defineConfig({
   test: {
-    include: ['packages/*/{src,test}/**/*.test.ts', 'bench/{src,scripts,e2e}/**/*.test.ts', 'infra/**/*.test.ts', 'scripts/**/*.test.ts'],
+    include: ['packages/*/{src,test}/**/*.test.ts', 'bench/{src,scripts,e2e}/**/*.test.ts', 'infra/**/*.test.ts', 'scripts/**/*.test.ts', 'apps/*/{src,scripts}/**/*.test.ts'],
     // These checks are copied into the benchmark repo and run with its Vite aliases and locked dependencies.
     exclude: ['**/fixtures/**', '**/node_modules/**', '**/dist/**', '**/*.slow.test.ts', 'bench/e2e/checks/**'],
     environment: 'node',
