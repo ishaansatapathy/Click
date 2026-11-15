@@ -86,7 +86,7 @@ const hybridSeeds: VariantConfig['seeds'] = {
 const noExpand: VariantConfig['expand'] = {
   kind: 'none', alpha: 0.15, epsilon: 1e-6, maxPushes: 200_000,
   reverseScale: 1, usePriors: false, useLearned: false,
-  graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 120,
+  graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 250,
 };
 
 const pprExpand: VariantConfig['expand'] = {
