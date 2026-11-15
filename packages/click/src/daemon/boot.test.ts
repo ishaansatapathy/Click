@@ -156,3 +156,18 @@ describe('DaemonState.hydraHealth (PROMPTS 111)', () => {
     expect(Date.now() - t0).toBeLessThan(1_000);
   });
 });
+
+describe('warmGraphStore', () => {
+  it('sends one throwaway neighbourhood query, and never throws or waits', async () => {
+    const { warmGraphStore } = await import('./daemon.js');
+    const g = new FakeGraphStore();
+    warmGraphStore(g, 'file:a.ts');
+    expect(g.calls).toBe(1);
+    warmGraphStore(null, 'x');
+    warmGraphStore(g, undefined);
+    expect(g.calls).toBe(1);
+    const failing = new FakeGraphStore({ failWith: new Error('down') });
+    expect(() => warmGraphStore(failing, 'x')).not.toThrow();
+    await new Promise((r) => setTimeout(r, 20)); // the rejection is swallowed, not unhandled
+  });
+});

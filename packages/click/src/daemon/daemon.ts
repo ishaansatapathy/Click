@@ -58,6 +58,16 @@ export interface Daemon {
   settled(): Promise<void>;
 }
 
+/**
+ * One throwaway neighbourhood query right after boot. The very first HydraDB call of a process (connection, token read, JIT) takes
+ * longer than the 250 ms the hot path allows, so without this the first request after every start fell back to the local replica.
+ * Failures are ignored: this is only a warm-up.
+ */
+export function warmGraphStore(graph: GraphStore | null, nodeId: string | undefined): void {
+  if (!graph || !nodeId) return;
+  void graph.neighbourhood([nodeId], { hops: 2, maxFrontier: 50 }, AbortSignal.timeout(5_000)).catch(() => undefined);
+}
+
 export function createDaemon(c: DaemonConfig): Daemon {
   const dir = clickDir(c.root);
   const log = c.log ?? createLogger('daemon', { dir: join(dir, 'logs') });
@@ -94,6 +104,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
         state.bootMs = b.ms.total ?? 0;
         state.status = 'ready';
         if (b.source === 'snapshot') queue.enqueue({}); // the repo may have changed while no daemon was running
+        warmGraphStore(c.graph, b.holder.current().graph.nodes[0]?.id); // the first real request must not pay for opening the connection
       } catch (e) {
         log.error('boot failed; staying in warming (requests get an empty context)', { error: e });
       }
