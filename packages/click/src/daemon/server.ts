@@ -135,7 +135,7 @@ export async function startHttp(opts: HttpOptions): Promise<HttpHandle> {
         try {
           raw = await readBody(req, max);
         } catch (e) {
-          if (e instanceof HttpError) return fail(res, e.status, e.code, e.message, id, { connection: 'close' });
+          if (e instanceof HttpError) return fail(res, e.status, e.code, e.message, id); // no "connection: close": the rest of the upload is drained, so the client finishes sending and reads this answer instead of seeing a reset
           throw e;
         }
         try {
