@@ -74,7 +74,10 @@ function tokenOk(given: string | string[] | undefined, expected: string): boolea
 function readBody(req: IncomingMessage, max: number): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const declared = Number(req.headers['content-length']);
-    if (Number.isFinite(declared) && declared > max) return reject(new HttpError(413, 'payload_too_large', `body is larger than ${max} bytes`));
+    if (Number.isFinite(declared) && declared > max) {
+      req.resume(); // discard what the client is still sending, so it can finish and read our answer instead of seeing a reset
+      return reject(new HttpError(413, 'payload_too_large', `body is larger than ${max} bytes`));
+    }
     const chunks: Buffer[] = [];
     let size = 0;
     req.on('data', (c: Buffer) => {

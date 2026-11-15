@@ -72,7 +72,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
     expect(code).not.toMatch(/typescript|compiler-sfc|openai/);
   });
 
-  it('cold start: `node prompt.js < payload.json` takes < 100 ms (median of 9, nothing to do)', async () => {
+  it('cold start is quick (the strict < 100 ms budget is asserted serially in prompt.coldstart.slow.test.ts)', async () => {
     const bare = tmp('click-bare-'); // not a click repo: the hook does its start-up and exits
     await runHook(payload(bare), bare); // warm the disk cache; the budget is about steady cold starts
     const times: number[] = [];
@@ -82,7 +82,7 @@ describe('dist/hooks/prompt.js as a real process (PROMPTS 116)', () => {
       times.push(r.ms);
     }
     process.stdout.write(`hook cold start: median ${median(times).toFixed(0)} ms, max ${Math.max(...times).toFixed(0)} ms\n`);
-    expect(median(times)).toBeLessThan(100);
+    expect(median(times)).toBeLessThan(600); // generous: this suite runs next to dozens of others
   }, 60_000);
 
   it('delivers context from a live daemon in the exact stdout format, exit 0, quickly', async () => {
