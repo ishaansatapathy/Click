@@ -102,6 +102,9 @@
       ]
     },
     {
+      "prompt": "106b"
+    },
+    {
       "prompt": "070",
       "waits": [
         "sync/build"
