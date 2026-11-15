@@ -24,6 +24,8 @@ export interface ClaudeMcpInstallOptions {
   root: string;
   /** Absolute path of the bundled stdio MCP entry point (`dist/mcp.js`). */
   mcpPath: string;
+  /** Also write Claude's instruction fallback. Generic MCP clients only need `.mcp.json`. Default true. */
+  claudeInstructions?: boolean;
 }
 
 export interface ClaudeMcpInstallResult {
@@ -120,7 +122,7 @@ export async function installClaudeMcp(o: ClaudeMcpInstallOptions): Promise<Clau
     throw new ClaudeMcpInstallError(`${mcpPath} already defines mcpServers.click outside Click's installation`);
   }
   // Validate CLAUDE.md before making either change.
-  const claudeAfter = installClaudeBlock(claudeBefore ?? '');
+  const claudeAfter = o.claudeInstructions === false ? (claudeBefore ?? '') : installClaudeBlock(claudeBefore ?? '');
   const mcpAfterObject = { ...config, mcpServers: { ...servers, click: wanted } };
   const mcpAfter = `${JSON.stringify(mcpAfterObject, null, 2)}\n`;
   const mcpChanged = mcpAfter !== (mcpBefore ?? '');

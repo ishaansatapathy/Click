@@ -30,7 +30,7 @@ interface InstallState {
   statuslineRequested: boolean;
 }
 
-export interface AgentPresence { claude: boolean; codex: boolean }
+export interface AgentPresence { claude: boolean; codex: boolean; cursor?: boolean; vscode?: boolean }
 export interface InitPaths { cli: string; mcp: string; hooks: HookPaths }
 export interface InitDeps {
   agents?: AgentPresence;
@@ -71,10 +71,17 @@ async function commandExists(name: string): Promise<boolean> {
 }
 
 async function detectAgents(root: string): Promise<AgentPresence> {
-  const [claudeCommand, codexCommand] = await Promise.all([commandExists('claude'), commandExists('codex')]);
+  const [claudeCommand, codexCommand, cursorCommand, vscodeCommand] = await Promise.all([
+    commandExists('claude'),
+    commandExists('codex'),
+    commandExists('cursor'),
+    commandExists('code'),
+  ]);
   return {
     claude: claudeCommand || existsSync(join(root, 'CLAUDE.md')) || existsSync(join(root, '.claude')),
     codex: codexCommand || existsSync(join(root, 'AGENTS.md')) || existsSync(join(root, '.codex')),
+    cursor: cursorCommand || existsSync(join(root, '.cursor')),
+    vscode: vscodeCommand || existsSync(join(root, '.vscode')),
   };
 }
 
@@ -159,18 +166,24 @@ export async function runInit(argv: readonly string[], io: InitIo, cwd = process
   try {
     const root = await gitRoot(cwd);
     const detected = deps.agents ?? await detectAgents(root);
-    const agents = { claude: detected.claude, codex: detected.codex && !parsed.flags['no-codex'] };
+    const agents = {
+      claude: detected.claude,
+      codex: detected.codex && !parsed.flags['no-codex'],
+      cursor: Boolean(detected.cursor),
+      vscode: Boolean(detected.vscode),
+    };
+    const mcpHosts = [agents.claude && 'Claude', agents.cursor && 'Cursor', agents.vscode && 'VS Code'].filter(Boolean).join(', ') || 'future MCP clients';
     const paths = deps.paths ?? defaultPaths();
     if (parsed.flags['dry-run']) {
-      io.out(`Would initialize Click in ${root}: ${agents.claude ? 'Claude' : 'no Claude'}; ${agents.codex ? 'Codex' : 'no Codex'}; ${parsed.flags['no-githook'] ? 'no git hook' : 'git hook'}; graph + daemon${parsed.flags.statusline ? '; statusline requested' : ''}`);
+      io.out(`Would initialize Click in ${root}: project MCP (${mcpHosts}); ${agents.claude ? 'Claude hooks' : 'no Claude hooks'}; ${agents.codex ? 'Codex' : 'no Codex'}; ${parsed.flags['no-githook'] ? 'no git hook' : 'git hook'}; graph + daemon${parsed.flags.statusline ? '; statusline requested' : ''}`);
       return 0;
     }
     const state = await prepareState(root, Boolean(parsed.flags.statusline));
     await optIn(root, state);
-    if (agents.claude) {
-      await installClaudeHooks({ root, paths: paths.hooks });
-      await installClaudeMcp({ root, mcpPath: paths.mcp });
-    }
+    // `.mcp.json` is the host-neutral project registration. Install it even when no
+    // currently-known client is detected so a later-installed MCP host works immediately.
+    await installClaudeMcp({ root, mcpPath: paths.mcp, claudeInstructions: agents.claude });
+    if (agents.claude) await installClaudeHooks({ root, paths: paths.hooks });
     if (agents.codex) await installCodex({ root, mcpPath: paths.mcp, promptHookPath: paths.hooks.prompt });
     if (!parsed.flags['no-githook']) await installGitHook({ root, cliPath: paths.cli });
 
@@ -184,7 +197,7 @@ export async function runInit(argv: readonly string[], io: InitIo, cwd = process
       if (code !== 0) return code;
     }
     await (deps.startDaemon ?? (async (repo) => { await new ClickClient({ root: repo, cliPath: paths.cli }).ensureRunning({ waitMs: 90_000 }); }))(root);
-    io.out(`Click initialized in ${root}: .click/enabled; ${agents.claude ? 'Claude hooks + MCP' : 'Claude not detected'}; ${agents.codex ? 'Codex hook + MCP' : 'Codex not detected'}; ${parsed.flags['no-githook'] ? 'no git hook' : 'git hook'}; daemon started.`);
+    io.out(`Click initialized in ${root}: .click/enabled; project MCP (${mcpHosts}); ${agents.claude ? 'Claude hooks' : 'Claude hooks not installed'}; ${agents.codex ? 'Codex hook + MCP' : 'Codex not detected'}; ${parsed.flags['no-githook'] ? 'no git hook' : 'git hook'}; daemon started.`);
     if (parsed.flags.statusline) io.out('Statusline requested; its settings entry is installed by the statusline component when available.');
     io.out('Undo with `click uninstall`.');
     return 0;

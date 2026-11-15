@@ -56,6 +56,16 @@ describe('click init / uninstall (PROMPT 175)', () => {
     for (const [file, text] of once) expect(readFileSync(join(root, file), 'utf8'), file).toBe(text);
   });
 
+  it('installs host-neutral project MCP for Cursor-style and future clients without Claude files', async () => {
+    const d = deps([]);
+    d.agents = { claude: false, codex: false, cursor: true };
+    expect(await runInit([], capture().io, root, d)).toBe(0);
+    expect(JSON.parse(readFileSync(join(root, '.mcp.json'), 'utf8')).mcpServers.click).toBeTruthy();
+    expect(existsSync(join(root, 'CLAUDE.md'))).toBe(false);
+    expect(existsSync(join(root, '.claude', 'settings.json'))).toBe(false);
+    expect(existsSync(join(root, '.codex', 'config.toml'))).toBe(false);
+  });
+
   it('init then uninstall restores original agent files byte-identically', async () => {
     const originals = {
       'CLAUDE.md': '# Claude\r\nKeep.\r\n',

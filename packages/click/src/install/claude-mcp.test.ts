@@ -22,6 +22,12 @@ describe('installClaudeMcp (PROMPT 174)', () => {
     expect(readFileSync(claude(), 'utf8')).toContain('call the `get_context` tool first');
   });
 
+  it('can install the shared project MCP entry without creating Claude instructions', async () => {
+    await installClaudeMcp({ root, mcpPath: server(), claudeInstructions: false });
+    expect(JSON.parse(readFileSync(mcp(), 'utf8'))).toEqual({ mcpServers: { click: { command: 'node', args: [server()] } } });
+    expect(existsSync(claude())).toBe(false);
+  });
+
   it('preserves other servers and root keys, backs up once, and is idempotent', async () => {
     const original = '{"version":1,"mcpServers":{"mine":{"command":"mine"}}}\n';
     writeFileSync(mcp(), original);
