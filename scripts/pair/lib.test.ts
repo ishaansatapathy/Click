@@ -32,7 +32,9 @@ describe('classify (PLAN §14.4)', () => {
     ['bench/src/runner.ts', 'laneA'],
     ['bench/scripts/fixtures/x.txt', 'laneA'],
     ['infra/hydradb/docker-compose.yml', 'laneA'],
-    ['apps/dashboard/src/main.ts', 'laneA'],
+    ['apps/dashboard/src/main.ts', 'laneB'], // the dashboard front end moved to Seat B (2026-11-16)
+    ['apps/dashboard/public/data/results.json', 'open'], // Seat A's export script writes here
+    ['apps/vscode/src/extension.ts', 'laneA'],
     ['packages/core/src/store/hydradb.ts', 'laneA'],
     ['packages/core/src/retrieve/semantic.ts', 'laneA'],
     ['packages/core/src/retrieve/semantic.test.ts', 'laneA'],
