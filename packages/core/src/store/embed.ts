@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { DiskCache, type DiskCacheOptions } from '../util/diskCache.js';
 import { sha1 } from '../util/hash.js';
 import { countTokens } from '../util/tokens.js';
+import { netCounter } from '../util/http.js';
 import type { Embedder } from './types.js';
 
 export { FakeEmbedder } from '../testing/fakes.js';
@@ -97,6 +98,8 @@ export class OpenAIEmbedder implements Embedder {
 
     for (const batch of makeBatches(misses, this.batchSize)) {
       throwIfAborted(signal);
+      netCounter.call();
+      netCounter.attempt();
       const response = await this.client().embeddings.create({
         model: this.model,
         input: batch.map(({ text }) => text),

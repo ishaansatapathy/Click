@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { DiskCache } from '../util/diskCache.js';
+import { netCounter } from '../util/http.js';
 import {
   DEFAULT_OPENAI_EMBEDDING_DIMS,
   DEFAULT_OPENAI_EMBEDDING_MODEL,
@@ -68,6 +69,14 @@ describe('OpenAIEmbedder', () => {
     expect((calls[0]!.params as { input: string[] }).input).toEqual(['alpha', 'beta']);
     expect((calls[1]!.params as { input: string[] }).input).toEqual(['gamma']);
     expect(Array.from(vectors[0]!)).toEqual(Array.from(vectors[2]!));
+  });
+
+  it('counts each SDK batch as one logical network call and attempt', async () => {
+    const calls: { params: unknown; signal?: AbortSignal }[] = [];
+    const embedder = new OpenAIEmbedder({ client: fakeClient(calls), cache: await freshCache(), dims: 3, batchSize: 2 });
+    const counted = await netCounter.run(() => embedder.embed(['alpha', 'beta', 'gamma'], 'document'));
+    expect(counted).toMatchObject({ calls: 2, attempts: 2 });
+    expect(calls).toHaveLength(2);
   });
 
   it('caches each vector by model, input type, and text hash', async () => {
