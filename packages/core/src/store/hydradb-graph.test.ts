@@ -98,26 +98,27 @@ describe('HydraDbGraphStore write side', () => {
 });
 
 describe('HydraDbGraphStore read side', () => {
-  it('runs per-kind and direction neighbourhood reads in parallel under one logical call', async () => {
+  it('uses one MSpaths traversal, decodes directed weights, and counts one logical call', async () => {
     const queries: string[] = [];
     const store = new HydraDbGraphStore({ token: 'secret', fetch: async (_url, init) => {
-      const request = JSON.parse(String(init?.body)) as { query: string; parameters: { ids: number[] } };
+      const request = JSON.parse(String(init?.body)) as { query: string };
       queries.push(request.query);
-      const incoming = request.query.includes('<-[r:CALLS]');
-      const secondHop = request.parameters.ids.includes(vid('dep'));
-      const values = incoming
-        ? secondHop
-          ? [{ src: 'second', dst: 'dep', w: null }]
-          : [{ src: 'dep', dst: 'target', w: 1.5 }]
-        : secondHop ? [{ src: 'dep', dst: 'target', w: 1.5 }] : [];
-      return json({ columns: ['src', 'dst', 'w'], rows: values.map((row) => [
-        { type: 'string', value: row.src }, { type: 'string', value: row.dst },
-        row.w === null ? { type: 'null' } : { type: 'float', value: row.w },
-      ]), next_cursor: null });
+      if (request.query.includes('RETURN n.key AS key')) return json({
+        columns: ['key'], rows: ['target', 'dep', 'second'].map((key) => [{ type: 'string', value: key }]), next_cursor: null,
+      });
+      const vertex = (id: number, key: string) => ({ id, properties: { key: { String: key } } });
+      const first = { edge_type: 'CALLS', src: 2, dst: 1, properties: { w: { Float: 1.5 } } };
+      return json({ columns: ['path'], rows: [
+        [{ type: 'path', value: { nodes: [vertex(1, 'target'), vertex(2, 'dep')], relationships: [first] } }],
+        [{ type: 'path', value: { nodes: [vertex(1, 'target'), vertex(2, 'dep'), vertex(3, 'second')], relationships: [first, { edge_type: 'CALLS', src: 3, dst: 2, properties: {} }] } }],
+      ], next_cursor: null });
     } });
     const counted = await netCounter.run(() => store.neighbourhood(['target'], { hops: 2, kinds: ['calls'] }));
     expect(counted.calls).toBe(1);
-    expect(queries).toHaveLength(4);
+    expect(counted.attempts).toBe(2);
+    expect(queries).toHaveLength(2);
+    expect(queries[1]).toContain('CALL algo.MSpaths');
+    expect(queries[1]).toContain('pathCount: 1');
     expect(counted.result).toEqual([
       { from: 'dep', to: 'target', kind: 'calls', w: 1.5 },
       { from: 'second', to: 'dep', kind: 'calls', w: null },

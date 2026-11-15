@@ -175,6 +175,7 @@ export class HydraDbGraphStore implements GraphStore {
   readonly client: HydraHttpClient;
   private indexVersion: string | undefined;
   private projectedVersion: string | undefined;
+  private nodeKeys: string[] | undefined;
   private readonly hubCache = new Map<number, { id: string; score: number }[]>();
 
   constructor(options: HydraDbGraphStoreOptions = {}) {
@@ -211,6 +212,7 @@ export class HydraDbGraphStore implements GraphStore {
     this.indexVersion = indexVersion;
     this.projectedVersion = undefined;
     this.hubCache.clear();
+    this.nodeKeys = undefined;
     await this.client.query(
       'UNWIND $rows AS row MERGE (n {id: row.id}) SET n:ClickMeta, n.indexVersion = row.version',
       { rows: [{ id: META_ID, version: indexVersion }] },
@@ -243,6 +245,7 @@ export class HydraDbGraphStore implements GraphStore {
     }
     this.projectedVersion = undefined;
     this.hubCache.clear();
+    this.nodeKeys = undefined;
   }
 
   async neighbourhood(ids: string[], opts: NeighbourhoodOptions, signal?: AbortSignal): Promise<EdgeRow[]> {
@@ -250,44 +253,34 @@ export class HydraDbGraphStore implements GraphStore {
     const kinds = opts.kinds ?? EDGE_KINDS;
     assertEdgeKinds(kinds);
     netCounter.call();
-
-    const hop = async (frontier: string[]): Promise<EdgeRow[]> => {
-      const hydraIds = frontier.map(vid);
-      const parts = await Promise.all(kinds.flatMap((kind) => {
-        const type = relationshipType(kind);
-        return [
-          this.client.query(
-            `MATCH (a:CodeNode)-[r:${type}]->(b) WHERE a.id IN $ids RETURN a.key AS src, b.key AS dst, r.w AS w`,
-            { ids: hydraIds }, { signal, countLogical: false },
-          ),
-          this.client.query(
-            `MATCH (a:CodeNode)<-[r:${type}]-(b) WHERE a.id IN $ids RETURN b.key AS src, a.key AS dst, r.w AS w`,
-            { ids: hydraIds }, { signal, countLogical: false },
-          ),
-        ];
-      }));
-      return parts.flatMap((rows, partIndex) => rows.map((row) => ({
-        from: requiredString(row.src, 'src'),
-        to: requiredString(row.dst, 'dst'),
-        kind: kinds[Math.floor(partIndex / 2)]!,
-        w: optionalNumber(row.w, 'w'),
-      })));
-    };
-
-    const seen = new Map<string, EdgeRow>();
-    const add = (rows: EdgeRow[]) => {
-      for (const row of rows) if (seen.size < (opts.maxEdges ?? Infinity)) seen.set(edgeKey(row.from, row.kind, row.to), row);
-    };
-    const first = await hop(ids);
-    add(first);
-    if (opts.hops === 2 && seen.size < (opts.maxEdges ?? Infinity)) {
-      const seeds = new Set(ids);
-      const frontier = [...new Set(first.flatMap((row) => [row.from, row.to]))]
-        .filter((id) => !seeds.has(id))
-        .slice(0, opts.maxFrontier ?? Infinity);
-      if (frontier.length) add(await hop(frontier));
+    const targets = await this.allNodeKeys(signal);
+    const relTypes = kinds.map((kind) => cypherString(relationshipType(kind))).join(',');
+    const sources = ids.map(cypherString).join(',');
+    const maxEdges = opts.maxEdges ?? 2_000;
+    const parts = await Promise.all(chunks(targets, 1_000).map((targetChunk) => this.client.query(
+      `CALL algo.MSpaths({sourceLabel: 'CodeNode', sourceProperty: 'key', sourceValues: [${sources}], targetValues: [${targetChunk.map(cypherString).join(',')}], relTypes: [${relTypes}], relDirection: 'both', maxLen: ${opts.hops}, pathCount: 1, pairwise: false, resultLimit: ${Math.max(maxEdges, 500)}}) YIELD path RETURN path`,
+      {}, { signal, countLogical: false },
+    )));
+    const decoded = new Map<string, EdgeRow>();
+    for (const row of parts.flat()) {
+      for (const edge of decodePathEdges(row.path)) decoded.set(edgeKey(edge.from, edge.kind, edge.to), edge);
     }
-    return [...seen.values()].slice(0, opts.maxEdges ?? Infinity);
+    const seeds = new Set(ids);
+    const first = [...decoded.values()].filter((edge) => seeds.has(edge.from) || seeds.has(edge.to));
+    if (opts.hops === 1) return first.slice(0, maxEdges);
+    const frontier = new Set(first.flatMap((edge) => [edge.from, edge.to])
+      .filter((id) => !seeds.has(id))
+      .slice(0, opts.maxFrontier ?? Infinity));
+    return [...decoded.values()]
+      .filter((edge) => seeds.has(edge.from) || seeds.has(edge.to) || frontier.has(edge.from) || frontier.has(edge.to))
+      .slice(0, maxEdges);
+  }
+
+  private async allNodeKeys(signal?: AbortSignal): Promise<string[]> {
+    if (this.nodeKeys) return this.nodeKeys;
+    const rows = await this.client.query('MATCH (n:CodeNode) RETURN n.key AS key', {}, { signal, countLogical: false });
+    this.nodeKeys = rows.map((row) => requiredString(row.key, 'key'));
+    return this.nodeKeys;
   }
 
   async impact(id: string, opts: ImpactOptions, signal?: AbortSignal): Promise<{ path: string[]; kinds: EdgeKind[] }[]> {
@@ -482,6 +475,36 @@ function decodeImpactPath(value: unknown, targetId: string): { path: string[]; k
   return { path, kinds };
 }
 
+function decodePathEdges(value: unknown): EdgeRow[] {
+  if (!value || typeof value !== 'object') throw new HydraQueryError('HydraDB returned a malformed path');
+  const raw = value as RawPath;
+  const vertices = raw.vertices ?? raw.nodes;
+  const relationships = raw.relationships ?? raw.edges;
+  if (!Array.isArray(vertices) || !Array.isArray(relationships)) throw new HydraQueryError('HydraDB path omitted vertices or relationships');
+  const keys = new Map<unknown, string>();
+  for (const vertex of vertices) {
+    if (!vertex || typeof vertex !== 'object') throw new HydraQueryError('HydraDB path contains a malformed vertex');
+    const record = vertex as Record<string, unknown>;
+    keys.set(record.id, pathNodeKey(vertex));
+  }
+  return relationships.map((relationship) => {
+    if (!relationship || typeof relationship !== 'object') throw new HydraQueryError('HydraDB path contains a malformed relationship');
+    const record = relationship as Record<string, unknown>;
+    const from = keys.get(record.src);
+    const to = keys.get(record.dst);
+    if (!from || !to) throw new HydraQueryError('HydraDB path relationship references an unknown vertex');
+    const properties = record.properties && typeof record.properties === 'object'
+      ? record.properties as Record<string, unknown>
+      : {};
+    return {
+      from,
+      to,
+      kind: pathRelationshipKind(relationship),
+      w: optionalNumber(unwrapPathProperty(properties.w), 'path relationship weight'),
+    };
+  });
+}
+
 function pathNodeKey(value: unknown): string {
   if (typeof value === 'string') return value;
   if (!value || typeof value !== 'object') throw new HydraQueryError('HydraDB path contains a malformed vertex');
@@ -509,6 +532,10 @@ function relationshipKind(type: string): EdgeKind {
   const kind = type.toLowerCase() as EdgeKind;
   if (!EDGE_KINDS.includes(kind)) throw new HydraQueryError(`HydraDB returned unsupported relationship type: ${type}`);
   return kind;
+}
+
+function cypherString(value: string): string {
+  return `'${value.replaceAll('\\', '\\\\').replaceAll("'", "\\'")}'`;
 }
 
 async function mapConcurrent<T>(items: T[], concurrency: number, fn: (item: T) => Promise<void>): Promise<void> {
