@@ -94,7 +94,7 @@ function firstDocLine(node: ts.Node): string | undefined {
   return undefined;
 }
 
-function docStart(node: ts.Node, sf: ts.SourceFile): number {
+export function docStart(node: ts.Node, sf: ts.SourceFile): number {
   const docs = ts.getJSDocCommentsAndTags(node).filter(ts.isJSDoc);
   const start = node.getStart(sf);
   return docs.length ? Math.min(start, docs[0]!.getStart(sf)) : start;
