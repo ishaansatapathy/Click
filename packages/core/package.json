@@ -5,6 +5,8 @@
   "type": "module",
   "main": "src/pipeline.ts",
   "dependencies": {
+    "@vue/compiler-core": "^3.5.45",
+    "@vue/compiler-sfc": "^3.5.45",
     "ignore": "^7.0.14",
     "js-tiktoken": "^1.0.21",
     "zod": "^4.6.7"
