@@ -70,11 +70,19 @@ describe('HydraDbGraphStore write side', () => {
 
     expect(vid(a.id)).toBeLessThan(2 ** 48);
     expect(Number.isSafeInteger(vid(a.id))).toBe(true);
-    expect(bodies).toHaveLength(3);
+    expect(bodies).toHaveLength(4);
     expect(bodies[0]!.query).toContain('SET n:CodeNode');
     expect(bodies[1]!.query).toContain('[:IMPORTS]');
     expect(bodies[2]!.query).toContain('[:CALLS]');
+    expect(bodies[3]!.query).toContain('n.indexVersion = $version');
     expect(bodies[0]!.parameters.rows).toEqual(expect.arrayContaining([expect.objectContaining({ id: vid(a.id), key: a.id })]));
+  });
+
+  it('reads the persisted graph version metadata', async () => {
+    const store = new HydraDbGraphStore({ token: 'secret', fetch: async () => json({
+      columns: ['version'], rows: [[{ type: 'string', value: 'v123' }]], next_cursor: null,
+    }) });
+    await expect(store.getIndexVersion()).resolves.toBe('v123');
   });
 
   it('deletes explicit edges before batched DETACH DELETE nodes', async () => {

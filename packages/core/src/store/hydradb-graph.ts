@@ -15,6 +15,7 @@ export const EDGE_KINDS: EdgeKind[] = [
 ];
 const BATCH_SIZE = 1_000;
 const PAGE_SIZE = 1_024;
+const META_ID = vid('click:graph-metadata');
 
 export type HydraCell = { type: string; value: unknown };
 
@@ -210,6 +211,21 @@ export class HydraDbGraphStore implements GraphStore {
     this.indexVersion = indexVersion;
     this.projectedVersion = undefined;
     this.hubCache.clear();
+    await this.client.query(
+      'MERGE (n {id: $id}) SET n:ClickMeta, n.indexVersion = $version',
+      { id: META_ID, version: indexVersion },
+    );
+  }
+
+  async getIndexVersion(signal?: AbortSignal): Promise<string | null> {
+    const rows = await this.client.query(
+      'MATCH (n:ClickMeta {id: $id}) RETURN n.indexVersion AS version LIMIT 1',
+      { id: META_ID }, { signal },
+    );
+    if (!rows.length || rows[0]!.version === null) return null;
+    const version = requiredString(rows[0]!.version, 'indexVersion');
+    this.indexVersion = version;
+    return version;
   }
 
   async removeGraph(ids: { nodeIds?: string[]; edgeKeys?: string[] }): Promise<void> {
