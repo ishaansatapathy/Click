@@ -165,15 +165,26 @@ const v4: VariantConfig = {
   prune: { ...noPrune, chain: ['jev', 'rerank', 'none'] },
 };
 
-// Until Prompt 149 selects the overall measured winner, delivery uses the V3 base. Prompt 137 selected body-only with
-// no prefix on train: it tied body-signature recall, cut p95, and the prefix cost 4-5 strict-recall points at 4k.
-const delivery: VariantConfig = {
-  ...v3,
-  id: 'delivery',
-  pack: { ...v3.pack, strategy: 'body-only', prefix: false, sessionDedupe: true },
+// Gate G3 winner: V3 is the strongest configuration that exercises the required live HydraDB path. V3r is an
+// informative local-replica ablation, not a shippable replacement for the graph database.
+const winner: VariantConfig = { ...v3, id: 'winner' };
+
+// V5 changes exactly one retrieval input: learned edge weights derived from outcomes.
+const v5: VariantConfig = {
+  ...winner,
+  id: 'V5',
+  expand: { ...winner.expand, useLearned: true },
 };
 
-export const PRESETS = Object.freeze({ V1: v1, V2: v2, V3: v3, V3r: v3r, V4: v4, delivery });
+// Prompt 137 selected body-only with no prefix on train: it tied body-signature recall, cut p95, and the prefix cost
+// 4-5 strict-recall points at 4k. Session dedupe is a delivery-only concern, so benchmark winner/V5 stay unchanged.
+const delivery: VariantConfig = {
+  ...winner,
+  id: 'delivery',
+  pack: { ...winner.pack, strategy: 'body-only', prefix: false, sessionDedupe: true },
+};
+
+export const PRESETS = Object.freeze({ V1: v1, V2: v2, V3: v3, V3r: v3r, V4: v4, winner, V5: v5, delivery });
 export type PresetName = keyof typeof PRESETS;
 
 export function resolveConfig(

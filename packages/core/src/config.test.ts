@@ -20,11 +20,14 @@ describe('variant config presets', () => {
     expect(PRESETS.V2).toMatchObject({ units: 'symbol', expand: { kind: 'none' } });
     expect(PRESETS.V3).toMatchObject({ expand: { kind: 'ppr', usePriors: true } });
     expect(PRESETS.V4.prune.chain).toEqual(['jev', 'rerank', 'none']);
+    expect({ ...PRESETS.winner, id: 'V3' }).toEqual(PRESETS.V3);
+    expect(PRESETS.V5.expand.useLearned).toBe(true);
+    expect({ ...PRESETS.V5, id: 'winner', expand: { ...PRESETS.V5.expand, useLearned: false } }).toEqual(PRESETS.winner);
     expect(PRESETS.delivery.pack).toMatchObject({ strategy: 'body-only', prefix: false, sessionDedupe: true });
   });
 
   it('graph source: HydraDB by default (2 hops, frontier 200, 250 ms deadline); V3r is V3 on the local replica', () => {
-    for (const name of ['V1', 'V2', 'V3', 'V4', 'delivery'] as const) {
+    for (const name of ['V1', 'V2', 'V3', 'V4', 'winner', 'V5', 'delivery'] as const) {
       expect(PRESETS[name].expand, name).toMatchObject({ graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 250 });
     }
     expect(PRESETS.V3r.expand).toMatchObject({ kind: 'ppr', usePriors: true, graphSource: 'replica' });
