@@ -182,6 +182,10 @@ const delivery: VariantConfig = {
   ...winner,
   id: 'delivery',
   pack: { ...winner.pack, strategy: 'body-only', prefix: false, sessionDedupe: true },
+  // A freshly started HydraDB answers the 2-hop neighbourhood in 200-260 ms for the first requests, right at the benchmark's 250 ms
+  // deadline, so live requests kept falling back to the replica. Delivery waits up to 400 ms; the benchmark presets keep 250 so
+  // their recorded rows stay reproducible.
+  expand: { ...winner.expand, graphTimeoutMs: 400 },
 };
 
 export const PRESETS = Object.freeze({ V1: v1, V2: v2, V3: v3, V3r: v3r, V4: v4, winner, V5: v5, delivery });

@@ -27,9 +27,11 @@ describe('variant config presets', () => {
   });
 
   it('graph source: HydraDB by default (2 hops, frontier 200, 250 ms deadline); V3r is V3 on the local replica', () => {
-    for (const name of ['V1', 'V2', 'V3', 'V4', 'winner', 'V5', 'delivery'] as const) {
+    for (const name of ['V1', 'V2', 'V3', 'V4', 'winner', 'V5'] as const) {
       expect(PRESETS[name].expand, name).toMatchObject({ graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 250 });
     }
+    // the delivered preset waits longer for HydraDB than the benchmark presets (a cold HydraDB answers in 200-260 ms)
+    expect(PRESETS.delivery.expand).toMatchObject({ graphSource: 'hydra', hops: 2, maxFrontier: 200, graphTimeoutMs: 400 });
     expect(PRESETS.V3r.expand).toMatchObject({ kind: 'ppr', usePriors: true, graphSource: 'replica' });
     // V3r differs from V3 in the graph source and nothing else
     expect({ ...PRESETS.V3r, id: 'V3', expand: { ...PRESETS.V3r.expand, graphSource: 'hydra' } }).toEqual(PRESETS.V3);
