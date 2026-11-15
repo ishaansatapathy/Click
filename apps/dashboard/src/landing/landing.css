@@ -39,16 +39,7 @@
 .lp-h1 .l2 { padding-left: 15vw; }
 .lp-h1 .l3 { margin-top: 0.42em; margin-left: -6vw; }
 .lp-h1 .l4 { padding-left: 0; }
-.lp-art { position: absolute; z-index: 1; right: 3vw; top: 150px; width: min(44vw, 700px); will-change: transform; }
-.tube { width: 100%; height: auto; display: block; overflow: visible; }
-.tube .tube-o { stroke-dasharray: 1; stroke-dashoffset: 1; }
-.tube.draw .tube-o { animation: tube-draw 2.2s cubic-bezier(0.6, 0.05, 0.2, 1) forwards; }
-.tube .packet { filter: drop-shadow(0 0 8px var(--or)); }
-.tube .blink { animation: blink 1.1s steps(1) infinite; }
-@keyframes tube-draw { to { stroke-dashoffset: 0; } }
 @keyframes blink { 50% { opacity: 0; } }
-.lp-ticks { position: absolute; right: -2vw; top: 18%; display: flex; flex-direction: column; gap: 22px; }
-.lp-ticks i { width: 20px; height: 1px; background: #888; display: block; }
 .lp-hero-foot { position: absolute; z-index: 2; left: 14vw; bottom: 64px; display: grid; grid-template-columns: auto 250px 260px; gap: 40px; align-items: end; }
 .lp-foot-logo { margin-bottom: -4px; }
 .lp-hero-foot p { font-size: 13px; }
@@ -190,8 +181,6 @@
   .lp-h1 { padding-left: 24px; font-size: clamp(38px, 9vw, 90px); }
   .lp-h1 .l2 { padding-left: 10vw; }
   .lp-h1 .l3 { margin-left: 0; }
-  .lp-art { position: relative; right: auto; top: auto; width: 92%; margin: 40px auto 0; transform: none !important; }
-  .lp-ticks { display: none; }
   .lp-hero-foot { position: relative; left: auto; bottom: auto; grid-template-columns: 1fr; gap: 16px; padding: 30px 24px 0; }
   .lp-card { position: relative; right: auto; left: auto; width: auto; margin: 40px 16px 0; }
   .lp-down { display: none; }

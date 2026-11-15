@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { parseResults, type ResultsData } from '../data/types.js';
 import { diffOf, pct, pp, row } from '../format.js';
 import { CountUp, Reveal, Scramble, scrollToId, useLenis, useScrollY } from '../motion.js';
-import { BigPixelLogo, BlockField, Cross, IsoC, NodeGlyph, PixelGraph, PixelLogo, TubeC } from './art.js';
+import { BigPixelLogo, BlockField, Cross, IsoC, NodeGlyph, PixelGraph, PixelLogo } from './art.js';
 import './landing.css';
 
 const GITHUB = 'https://github.com/ishaansatapathy/Click';
@@ -57,7 +57,6 @@ function Nav() {
 }
 
 function Hero({ r }: { r: ResultsData | null }) {
-  const y = useScrollY();
   const nodes = r?.repo.nodes ?? 310;
   const edges = r?.repo.edges ?? 709;
   const ticker = `HYDRADB GRAPH ONLINE · ${nodes} NODES · ${edges} EDGES · ONE CALL: GETCONTEXT(TASK, BUDGET) · `;
@@ -88,15 +87,6 @@ function Hero({ r }: { r: ResultsData | null }) {
           <Scramble text="AGENTS" start delay={950} />
         </span>
       </h1>
-
-      <div className="lp-art" style={{ transform: `translate3d(0, ${y * -0.12}px, 0)` }}>
-        <TubeC />
-        <div className="lp-ticks" aria-hidden>
-          {Array.from({ length: 10 }).map((_, i) => (
-            <i key={i} />
-          ))}
-        </div>
-      </div>
 
       <div className="lp-hero-foot">
         <PixelLogo size={46} className="lp-foot-logo" />

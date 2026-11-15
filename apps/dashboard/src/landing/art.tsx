@@ -1,69 +1,10 @@
 // Line and pixel art for the landing page, all inline SVG in HydraDB orange. Nothing here is copied from the reference:
-// the hero is a "C" drawn as a hollow tube with graph nodes, the block field is a small code graph, the logo is a pixel C.
+// the block field is a small code graph, the logo is a pixel C, the hero card is an isometric wireframe C.
 
 import type { CSSProperties } from 'react';
 import { useInView } from '../motion.js';
 
 export const ORANGE = '#FF571A';
-
-// ---------------------------------------------------------------- hero: a hollow-tube "C" with nodes and a packet
-
-const TUBE_PATHS = [
-  // outer C
-  'M 700 96 H 330 Q 290 96 290 136 V 438 Q 290 478 330 478 H 700',
-  // inner C
-  'M 606 186 H 420 Q 380 186 380 226 V 348 Q 380 388 420 388 H 606',
-  // spine joining the two at the back
-  'M 290 287 H 380',
-  // branch: down and out to a little cluster (the dependents)
-  'M 330 478 V 560 Q 330 590 300 590 H 110',
-  'M 200 590 V 660',
-  'M 110 590 V 470',
-  // a side branch on the right (a store) and up (a route)
-  'M 700 96 V 40',
-  'M 606 388 V 300 H 760',
-];
-const NODES: [number, number, number][] = [
-  [700, 96, 40],
-  [700, 478, 40],
-  [606, 186, 32],
-  [606, 388, 32],
-  [110, 590, 40],
-  [200, 660, 30],
-  [110, 470, 30],
-  [700, 40, 26],
-  [760, 300, 34],
-];
-
-export function TubeC({ style }: { style?: CSSProperties }) {
-  const [ref, seen] = useInView<SVGSVGElement>('0px');
-  return (
-    <svg ref={ref} className={`tube ${seen ? 'draw' : ''}`} viewBox="40 0 780 720" style={style} aria-hidden>
-      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-        {TUBE_PATHS.map((d, i) => (
-          <path key={`o${i}`} d={d} className="tube-o" stroke={ORANGE} strokeWidth={46} pathLength={1} style={{ animationDelay: `${i * 120}ms` }} />
-        ))}
-        {NODES.map(([x, y, r], i) => (
-          <circle key={`no${i}`} cx={x} cy={y} r={r + 2} fill={ORANGE} className="tube-n" style={{ animationDelay: `${500 + i * 90}ms` }} />
-        ))}
-        {TUBE_PATHS.map((d, i) => (
-          <path key={`i${i}`} d={d} stroke="var(--bg)" strokeWidth={43} />
-        ))}
-        {NODES.map(([x, y, r], i) => (
-          <circle key={`ni${i}`} cx={x} cy={y} r={r} fill="var(--bg)" />
-        ))}
-      </g>
-      {/* a packet of context travelling along the C */}
-      <rect width="14" height="14" x="-7" y="-7" fill={ORANGE} className="packet">
-        <animateMotion dur="7s" repeatCount="indefinite" rotate="0" path={TUBE_PATHS[0]} />
-      </rect>
-      <rect width="10" height="10" x="-5" y="-5" fill={ORANGE} className="packet">
-        <animateMotion dur="5s" begin="1.5s" repeatCount="indefinite" path={TUBE_PATHS[3]} />
-      </rect>
-      <rect x="489" y="280" width="14" height="14" fill={ORANGE} className="blink" />
-    </svg>
-  );
-}
 
 // ---------------------------------------------------------------- pixel logo
 
