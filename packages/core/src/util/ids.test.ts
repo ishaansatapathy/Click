@@ -89,4 +89,9 @@ describe('componentName', () => {
     expect(componentName('src/CheckoutButton.vue')).toBe('CheckoutButton');
     expect(componentName('a/b/my_cool.item.vue')).toBe('MyCoolItem');
   });
+  it('uses the parent folder for index.vue', () => {
+    expect(componentName('src/layouts/components/Sidebar/index.vue')).toBe('Sidebar');
+    expect(componentName('src/components/notify-panel/index.vue')).toBe('NotifyPanel');
+    expect(componentName('index.vue')).toBe('Index');
+  });
 });

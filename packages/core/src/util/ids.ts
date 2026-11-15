@@ -86,7 +86,12 @@ export function edgeKey(from: string, kind: EdgeKind, to: string): string {
 
 /** SFC component name: file basename in PascalCase (`order-summary.vue` becomes `OrderSummary`). */
 export function componentName(path: string): string {
-  const base = posix.basename(path).replace(/\.[^.]+$/, '');
+  // `Sidebar/index.vue` is the Sidebar component (that is how barrels re-export it), not "Index".
+  let base = posix.basename(path).replace(/\.[^.]+$/, '');
+  if (base.toLowerCase() === 'index') {
+    const parent = posix.basename(posix.dirname(path));
+    if (parent && parent !== '.' && parent !== '/') base = parent;
+  }
   return base
     .split(/[^A-Za-z0-9]+/)
     .filter(Boolean)
