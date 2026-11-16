@@ -5,6 +5,7 @@
 import { isEntryPoint } from '../entry.js';
 import { VERSION } from '../version.js';
 import { runContext } from './context.js';
+import { runAgents, runNotes, runTasks } from './coordinationCmd.js';
 import { runHooks } from './hooksCmd.js';
 import { runIndex } from './indexCmd.js';
 import { runInit, runUninstall } from './init.js';
@@ -40,6 +41,9 @@ export const COMMANDS: Readonly<Record<string, { run: CommandRunner; help: strin
   weights: { run: runWeights, help: 'what Click has learned: --show | --rollback' },
   statusline: { run: (argv, io, cwd) => runStatusline(argv, io, cwd), help: 'one line for the Claude Code statusLine: last context tokens, files, time' },
   status: { run: runStatus, help: 'is the daemon up, what graph, what it last served [--json]' },
+  notes: { run: runNotes, help: 'read notes or leave one for other agents [--add "text" --as <name>] [--handoff]' },
+  tasks: { run: runTasks, help: 'list, add, claim, or finish shared agent tasks' },
+  agents: { run: runAgents, help: 'show agents recently active in this repository' },
 };
 
 export const USAGE = `click <command>\n\n${Object.entries(COMMANDS)
