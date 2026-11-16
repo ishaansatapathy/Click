@@ -29,6 +29,7 @@
     "build": "tsx packages/click/src/build/run.ts",
     "demo": "tsx scripts/demo.ts",
     "e2e": "tsx packages/core/test/e2e/harness.ts",
+    "readme:tables": "tsx bench/scripts/readme-tables.ts",
     "demo:reset": "tsx scripts/demo.ts"
   },
   "devDependencies": {
