@@ -27,11 +27,13 @@ export interface CoordinationDeps {
   startWaitMs?: number;
 }
 
-export const NOTES_USAGE = 'usage: click notes [--add "text" --as <name>] [--handoff] [--json] [--root <dir>]';
-export const TASKS_USAGE = 'usage: click tasks [--add "title" --as <name>] [--claim <id> --as <name>] [--done <id> [--as <name>]] [--status open|claimed|done] [--json] [--root <dir>]';
+export const NOTES_USAGE = 'usage: click notes [--add "text" --as <name> [--files a.ts,b.ts]] [--handoff] [--json] [--root <dir>]';
+export const TASKS_USAGE = 'usage: click tasks [--add "title" --as <name> [--files a.ts,b.ts]] [--claim <id> --as <name>] [--done <id> [--as <name>]] [--status open|claimed|done] [--json] [--root <dir>]';
 export const AGENTS_USAGE = 'usage: click agents [--json] [--root <dir>]';
 
 const errorText = (error: unknown): string => error instanceof ClientError ? error.message : error instanceof Error ? error.message : String(error);
+/** `--files a.ts,b.ts` -> ['a.ts', 'b.ts'] (undefined when not given). The daemon makes them root-relative. */
+const fileList = (s: string | undefined): string[] | undefined => (s === undefined ? undefined : s.split(',').map((x) => x.trim()).filter(Boolean));
 const asJson = (value: unknown): string => JSON.stringify(value, null, 2);
 
 function clientFor(cwd: string, root: string | undefined, deps: CoordinationDeps): CoordinationClient {
@@ -43,9 +45,9 @@ async function ready(client: CoordinationClient, deps: CoordinationDeps): Promis
 }
 
 export async function runNotes(argv: readonly string[], io: CoordinationIo, cwd = process.cwd(), deps: CoordinationDeps = {}): Promise<number> {
-  const p = parseArgs(argv, { add: 'string', as: 'string', handoff: 'bool', json: 'bool', root: 'string' });
-  if (p.error || p.positionals.length || (p.flags.handoff && !p.flags.add) || (p.flags.add !== undefined && !p.flags.as) || (p.flags.as !== undefined && p.flags.add === undefined)) {
-    const why = p.error ?? (p.positionals.length ? `unexpected argument ${p.positionals[0]}` : p.flags.handoff ? '--handoff needs --add' : '--add needs --as <name>');
+  const p = parseArgs(argv, { add: 'string', as: 'string', files: 'string', handoff: 'bool', json: 'bool', root: 'string' });
+  if (p.error || p.positionals.length || (p.flags.handoff && !p.flags.add) || (p.flags.add !== undefined && !p.flags.as) || (p.flags.as !== undefined && p.flags.add === undefined) || (p.flags.files !== undefined && p.flags.add === undefined)) {
+    const why = p.error ?? (p.positionals.length ? `unexpected argument ${p.positionals[0]}` : p.flags.handoff ? '--handoff needs --add' : p.flags.files !== undefined && p.flags.add === undefined ? '--files needs --add' : '--add needs --as <name>');
     io.err(`${why}\n${NOTES_USAGE}`);
     return 2;
   }
@@ -54,7 +56,7 @@ export async function runNotes(argv: readonly string[], io: CoordinationIo, cwd 
     await ready(client, deps);
     if (p.flags.add !== undefined) {
       const kind = p.flags.handoff ? 'handoff' : 'note';
-      const result = await client.request<NoteWriteResponse>('/notes', { body: { author: p.flags.as!, kind, text: p.flags.add }, deadlineMs: 5_000 });
+      const result = await client.request<NoteWriteResponse>('/notes', { body: { author: p.flags.as!, kind, text: p.flags.add, ...(fileList(p.flags.files) ? { files: fileList(p.flags.files) } : {}) }, deadlineMs: 5_000 });
       io.out(p.flags.json ? asJson(result) : `${kind} ${result.id} saved at ${result.ts}`);
       return 0;
     }
@@ -74,14 +76,15 @@ function defaultAuthor(env: Record<string, string | undefined>): string | undefi
 }
 
 export async function runTasks(argv: readonly string[], io: CoordinationIo, cwd = process.cwd(), deps: CoordinationDeps = {}): Promise<number> {
-  const p = parseArgs(argv, { add: 'string', as: 'string', claim: 'string', done: 'string', summary: 'string', status: 'string', json: 'bool', root: 'string' });
+  const p = parseArgs(argv, { add: 'string', as: 'string', files: 'string', claim: 'string', done: 'string', summary: 'string', status: 'string', json: 'bool', root: 'string' });
   const actions = [p.flags.add, p.flags.claim, p.flags.done].filter((value) => value !== undefined).length;
   const status = p.flags.status as TaskStatus | undefined;
   const badStatus = status !== undefined && !['open', 'claimed', 'done'].includes(status);
   const missingAs = (p.flags.add !== undefined || p.flags.claim !== undefined) && !p.flags.as;
   const straySummary = p.flags.summary !== undefined && p.flags.done === undefined;
-  if (p.error || p.positionals.length || actions > 1 || badStatus || missingAs || straySummary || (actions && status)) {
-    const why = p.error ?? (p.positionals.length ? `unexpected argument ${p.positionals[0]}` : actions > 1 ? 'choose only one of --add, --claim, or --done' : badStatus ? '--status is open, claimed, or done' : missingAs ? '--add and --claim need --as <name>' : straySummary ? '--summary needs --done' : '--status cannot be combined with a write');
+  const strayFiles = p.flags.files !== undefined && p.flags.add === undefined;
+  if (p.error || p.positionals.length || actions > 1 || badStatus || missingAs || straySummary || strayFiles || (actions && status)) {
+    const why = p.error ?? (p.positionals.length ? `unexpected argument ${p.positionals[0]}` : actions > 1 ? 'choose only one of --add, --claim, or --done' : badStatus ? '--status is open, claimed, or done' : missingAs ? '--add and --claim need --as <name>' : straySummary ? '--summary needs --done' : strayFiles ? '--files needs --add' : '--status cannot be combined with a write');
     io.err(`${why}\n${TASKS_USAGE}`);
     return 2;
   }
@@ -96,7 +99,7 @@ export async function runTasks(argv: readonly string[], io: CoordinationIo, cwd 
     await ready(client, deps);
     let result: TaskWriteResponse | TaskMutationResponse | TasksResponse;
     if (p.flags.add !== undefined) {
-      result = await client.request<TaskWriteResponse>('/tasks/add', { body: { author: p.flags.as!, title: p.flags.add }, deadlineMs: 5_000 });
+      result = await client.request<TaskWriteResponse>('/tasks/add', { body: { author: p.flags.as!, title: p.flags.add, ...(fileList(p.flags.files) ? { files: fileList(p.flags.files) } : {}) }, deadlineMs: 5_000 });
     } else if (p.flags.claim !== undefined) {
       result = await client.request<TaskMutationResponse>('/tasks/claim', { body: { id: p.flags.claim, author: p.flags.as! }, deadlineMs: 5_000 });
     } else if (p.flags.done !== undefined) {

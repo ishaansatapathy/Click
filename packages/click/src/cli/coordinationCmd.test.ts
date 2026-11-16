@@ -36,6 +36,19 @@ describe('coordination CLI', () => {
     expect(JSON.parse(b.out()).notes[0].text).toBe('tests pass');
   });
 
+  it('sends --files with a note or a task, and refuses --files on its own', async () => {
+    const client = new FakeClient();
+    const a = capture();
+    expect(await runNotes(['--add', 'x', '--as', 'Codex', '--handoff', '--files', 'src/a.ts, src/b.ts'], a.io, '/repo', { client })).toBe(0);
+    expect(client.calls[0]).toMatchObject({ options: { body: { files: ['src/a.ts', 'src/b.ts'] } } });
+    expect(await runTasks(['--add', 'add test', '--as', 'Claude', '--files', 'src/a.ts'], a.io, '/repo', { client })).toBe(0);
+    expect(client.calls[1]).toMatchObject({ path: '/tasks/add', options: { body: { files: ['src/a.ts'] } } });
+    const b = capture();
+    expect(await runNotes(['--files', 'src/a.ts'], b.io, '/repo', { client })).toBe(2);
+    expect(b.err()).toContain('--files needs --add');
+    expect(await runTasks(['--files', 'src/a.ts'], b.io, '/repo', { client })).toBe(2);
+  });
+
   it('adds, filters, claims, and finishes tasks without anonymous writes', async () => {
     const client = new FakeClient();
     expect(await runTasks(['--add', 'add test', '--as', 'Claude'], capture().io, '/repo', { client })).toBe(0);

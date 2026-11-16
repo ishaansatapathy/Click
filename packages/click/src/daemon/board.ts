@@ -250,11 +250,15 @@ export class Board {
    * handoffs and notes (other agents', from the last day) that name those files, warnings for files another agent changed
    * lately, and a one-line pointer to the open tasks. Empty when there is nothing.
    */
-  contextBlock(o: { files: ReadonlySet<string>; agent?: string | undefined; maxTokens: number; maxChars?: number | undefined }): string {
+  contextBlock(o: { files: ReadonlySet<string>; agent?: string | undefined; task?: string | undefined; maxTokens: number; maxChars?: number | undefined }): string {
     const now = this.now();
     const lines: string[] = [];
+    // a note that names no file is about the repository, so it is matched on the task instead: it must share two words (4+ letters) with it
+    const words = (s: string): Set<string> => new Set(s.toLowerCase().match(/[a-z0-9_]{4,}/g) ?? []);
+    const taskWords = o.task ? words(o.task) : new Set<string>();
+    const aboutTask = (text: string): boolean => [...words(text)].filter((w) => taskWords.has(w)).length >= 2;
     const notes = this.notes
-      .filter((n) => n.author !== o.agent && now - Date.parse(n.ts) <= NOTE_TTL_MS && n.files.some((f) => o.files.has(f)))
+      .filter((n) => n.author !== o.agent && now - Date.parse(n.ts) <= NOTE_TTL_MS && (n.files.length ? n.files.some((f) => o.files.has(f)) : aboutTask(n.text)))
       .sort((a, b) => (a.kind === b.kind ? b.ts.localeCompare(a.ts) : a.kind === 'handoff' ? -1 : 1))
       .slice(0, 3);
     for (const n of notes) lines.push(`- ${n.author}, ${ago(now - Date.parse(n.ts))}, ${n.kind}: ${clip(n.text.replace(/\s+/g, ' '), 320)}`);

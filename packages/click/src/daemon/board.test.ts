@@ -83,6 +83,15 @@ describe('Board', () => {
     expect(EDIT_TTL_MS).toBeLessThan(NOTE_TTL_MS);
   });
 
+  it('puts a note that names no file into a context only when the task shares two words with it', () => {
+    const { board } = fresh();
+    board.addNote({ author: 'codex', kind: 'handoff', text: 'The checkout button submit handler never awaits the order request.' });
+    const asks = (task: string): string => board.contextBlock({ files: new Set(['src/x.ts']), agent: 'claude', task, maxTokens: 300 });
+    expect(asks('fix the checkout button, the order submit does nothing')).toContain('never awaits the order request');
+    expect(asks('add dark mode to the settings page')).toBe('');
+    expect(asks('checkout')).toBe(''); // one shared word is not enough
+  });
+
   it('lists who has been active, with the task they last asked about', () => {
     let t = Date.parse('2026-11-16T12:00:00Z');
     const { board } = fresh(() => t);

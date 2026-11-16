@@ -181,7 +181,7 @@ export function createRoutes(d: RouteDeps): Route[] {
         if (room > 40) {
           const files = new Set(packed.items.flatMap((i) => (i.path ? [i.path] : [])));
           const left = req.maxChars !== undefined ? req.maxChars - packed.text.length - 2 : undefined;
-          const block = d.board.contextBlock({ files, agent, maxTokens: Math.min(room - 4, 350), maxChars: left });
+          const block = d.board.contextBlock({ files, agent, task: req.task, maxTokens: Math.min(room - 4, 350), maxChars: left });
           if (block) {
             packed.text = `${packed.text}\n\n${block}`;
             packed.tokens += countTokens(`\n\n${block}`);
