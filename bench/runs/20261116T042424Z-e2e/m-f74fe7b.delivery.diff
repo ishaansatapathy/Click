@@ -1,0 +1,68 @@
+diff --git a/src/pages/login/index.vue b/src/pages/login/index.vue
+index c413f0a9..a0e30d10 100644
+--- a/src/pages/login/index.vue
++++ b/src/pages/login/index.vue
+@@ -11,6 +11,17 @@ import { useFocus } from "./composables/useFocus"
+ 
+ const router = useRouter()
+ 
++const route = useRoute()
++
++/** 获取登录成功后的跳转地址（仅允许站内路径，防止开放重定向） */
++function getRedirectPath() {
++  const redirect = route.query.redirect
++  if (typeof redirect !== "string") return "/"
++  if (!redirect.startsWith("/") || redirect.startsWith("//") || redirect.startsWith("/\\")) return "/"
++  if (redirect.startsWith("/login")) return "/"
++  return redirect
++}
++
+ const userStore = useUserStore()
+ 
+ const settingsStore = useSettingsStore()
+@@ -57,7 +68,7 @@ function handleLogin() {
+     loading.value = true
+     loginApi(loginFormData).then(({ data }) => {
+       userStore.setToken(data.token)
+-      router.push("/")
++      router.push(getRedirectPath())
+     }).catch(() => {
+       createCode()
+       loginFormData.password = ""
+diff --git a/src/router/guard.ts b/src/router/guard.ts
+index 8f3a7349..8072cefb 100644
+--- a/src/router/guard.ts
++++ b/src/router/guard.ts
+@@ -14,6 +14,12 @@ const { setTitle } = useTitle()
+ 
+ const LOGIN_PATH = "/login"
+ 
++/** 生成登录页地址，并通过 redirect 参数保留原本想访问的地址 */
++function getLoginLocation(fullPath: string) {
++  if (fullPath === "/" || fullPath.startsWith(LOGIN_PATH)) return LOGIN_PATH
++  return { path: LOGIN_PATH, query: { redirect: fullPath } }
++}
++
+ export function registerNavigationGuard(router: Router) {
+   // 全局前置守卫
+   router.beforeEach(async (to, _from) => {
+@@ -24,8 +30,8 @@ export function registerNavigationGuard(router: Router) {
+     if (!getToken()) {
+       // 如果在免登录的白名单中，则直接进入
+       if (isWhiteList(to)) return true
+-      // 其他没有访问权限的页面将被重定向到登录页面
+-      return LOGIN_PATH
++      // 其他没有访问权限的页面将被重定向到登录页面，并携带原本请求的地址，登录成功后跳回
++      return getLoginLocation(to.fullPath)
+     }
+     // 如果已经登录，并准备进入 Login 页面，则重定向到主页
+     if (to.path === LOGIN_PATH) return "/"
+@@ -46,7 +52,7 @@ export function registerNavigationGuard(router: Router) {
+       // 过程中发生任何错误，都直接重置 Token，并重定向到登录页面
+       userStore.resetToken()
+       ElMessage.error((error as Error).message || "路由守卫发生错误")
+-      return LOGIN_PATH
++      return getLoginLocation(to.fullPath)
+     }
+   })
+ 

@@ -1,0 +1,10 @@
+  ➜ MCP:      Mcp server is running at http://localhost:3333/__mcp/sse
+
+ RUN  v4.1.10 C:/Users/IshaanSatapathy/AppData/Local/Temp/click-e2e-m-031c5c1-oOu6DQ
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  09:55:32
+   Duration  28.22s (transform 10.25s, setup 0ms, import 905ms, tests 14.72s, environment 1.25s)
+

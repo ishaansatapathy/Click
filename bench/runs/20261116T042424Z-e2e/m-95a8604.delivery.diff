@@ -1,0 +1,67 @@
+diff --git a/src/http/axios.ts b/src/http/axios.ts
+index 8166fb7e..3d4c48d9 100644
+--- a/src/http/axios.ts
++++ b/src/http/axios.ts
+@@ -10,6 +10,27 @@ function logout() {
+   location.reload()
+ }
+ 
++/** 是否正在处理登录失效（避免并发请求重复提示和刷新） */
++let isHandlingUnauthorized = false
++
++/** 获取服务端返回的提示信息，没有则使用默认提示 */
++function getServerMessage(data: unknown, defaultMessage: string) {
++  const message = get(data, "message")
++  return typeof message === "string" && message.trim() ? message : defaultMessage
++}
++
++/** 处理未授权（401）：先提示，提示关闭后再退出登录 */
++function handleUnauthorized(message: string) {
++  if (isHandlingUnauthorized) return
++  isHandlingUnauthorized = true
++  ElMessage({
++    type: "error",
++    message,
++    duration: 1500,
++    onClose: logout
++  })
++}
++
+ /** 创建请求实例 */
+ function createInstance() {
+   // 创建一个 axios 实例命名为 instance
+@@ -42,7 +63,18 @@ function createInstance() {
+           return apiData
+         case 401:
+           // Token 过期时
+-          return logout()
++          {
++            const message = getServerMessage(apiData, "登录已过期，请重新登录")
++            handleUnauthorized(message)
++            return Promise.reject(new Error(message))
++          }
++        case 403:
++          // 没有权限时
++          {
++            const message = getServerMessage(apiData, "没有权限访问该资源")
++            ElMessage.error(message)
++            return Promise.reject(new Error(message))
++          }
+         default:
+           // 不是正确的 code
+           ElMessage.error(apiData.message || "Error")
+@@ -58,10 +90,11 @@ function createInstance() {
+           break
+         case 401:
+           // Token 过期时
+-          logout()
+-          break
++          error.message = getServerMessage(error.response.data, "登录已过期，请重新登录")
++          handleUnauthorized(error.message)
++          return Promise.reject(error)
+         case 403:
+-          error.message = "拒绝访问"
++          error.message = getServerMessage(error.response.data, "没有权限访问该资源")
+           break
+         case 404:
+           error.message = "请求地址出错"

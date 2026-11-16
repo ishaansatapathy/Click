@@ -1,0 +1,99 @@
+diff --git a/src/http/axios.ts b/src/http/axios.ts
+index 8bc3534b..7428fa82 100644
+--- a/src/http/axios.ts
++++ b/src/http/axios.ts
+@@ -4,12 +4,6 @@ import axios from "axios"
+ import { get, merge } from "lodash-es"
+ import { useUserStore } from "@/pinia/stores/user"
+ 
+-/** 退出登录并强制刷新页面（会重定向到登录页） */
+-function logout() {
+-  useUserStore().logout()
+-  location.reload()
+-}
+-
+ /** 创建请求实例 */
+ function createInstance() {
+   // 创建一个 axios 实例命名为 instance
+@@ -42,7 +36,7 @@ function createInstance() {
+           return apiData
+         case 401:
+           // Token 过期时
+-          return logout()
++          return useUserStore().logout()
+         default:
+           // 不是正确的 code
+           ElMessage.error(apiData.message || "Error")
+@@ -60,7 +54,7 @@ function createInstance() {
+         case 401:
+           // Token 过期时
+           error.message = message || "未授权"
+-          logout()
++          useUserStore().logout()
+           break
+         case 403:
+           error.message = message || "拒绝访问"
+diff --git a/src/layouts/components/NavigationBar/index.vue b/src/layouts/components/NavigationBar/index.vue
+index a4cc3847..76996f91 100644
+--- a/src/layouts/components/NavigationBar/index.vue
++++ b/src/layouts/components/NavigationBar/index.vue
+@@ -15,8 +15,6 @@ const { isMobile } = useDevice()
+ 
+ const { isTop } = useLayoutMode()
+ 
+-const router = useRouter()
+-
+ const appStore = useAppStore()
+ 
+ const userStore = useUserStore()
+@@ -29,12 +27,6 @@ const { showNotify, showThemeSwitch, showScreenfull, showSearchMenu } = storeToR
+ function toggleSidebar() {
+   appStore.toggleSidebar(false)
+ }
+-
+-/** 登出 */
+-function logout() {
+-  userStore.logout()
+-  router.push("/login")
+-}
+ </script>
+ 
+ <template>
+@@ -65,7 +57,7 @@ function logout() {
+             <a target="_blank" href="https://gitee.com/un-pany/v3-admin-vite">
+               <el-dropdown-item>Gitee</el-dropdown-item>
+             </a>
+-            <el-dropdown-item divided @click="logout">
++            <el-dropdown-item divided @click="userStore.logout">
+               退出登录
+             </el-dropdown-item>
+           </el-dropdown-menu>
+diff --git a/src/pinia/stores/user.ts b/src/pinia/stores/user.ts
+index 3429cccc..d58a99d2 100644
+--- a/src/pinia/stores/user.ts
++++ b/src/pinia/stores/user.ts
+@@ -1,7 +1,7 @@
+ import { getCurrentUserApi } from "@@/apis/users"
+ import { setToken as _setToken, getToken, removeToken } from "@@/utils/local-storage"
+ import { pinia } from "@/pinia"
+-import { resetRouter } from "@/router"
++import { resetRouter, router } from "@/router"
+ import { routerConfig } from "@/router/config"
+ import { useSettingsStore } from "./settings"
+ import { useTagsViewStore } from "./tags-view"
+@@ -40,13 +40,14 @@ export const useUserStore = defineStore("user", () => {
+     location.reload()
+   }
+ 
+-  // 登出
++  // 登出（主动退出和凭证过期共用：清理状态并重定向到登录页）
+   const logout = () => {
+     removeToken()
+     token.value = ""
+     roles.value = []
+     resetRouter()
+     resetTagsView()
++    router.push("/login")
+   }
+ 
+   // 重置 Token

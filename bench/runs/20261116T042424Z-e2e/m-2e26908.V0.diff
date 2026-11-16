@@ -1,0 +1,204 @@
+diff --git a/.agents/skills/v3-create-crud/SKILL.md b/.agents/skills/v3-create-crud/SKILL.md
+index 4df41600..21ea6dcb 100644
+--- a/.agents/skills/v3-create-crud/SKILL.md
++++ b/.agents/skills/v3-create-crud/SKILL.md
+@@ -92,7 +92,7 @@ metadata:
+ 
+ 使用 `<script lang="ts" setup>` + `defineOptions({ name: "PascalCase 模块名" })`。
+ 
+-顶部声明共享的 `loading` `ref` 和 `usePagination` 解构。
++顶部声明共享的 `loading` `ref` 和 `usePagination` 解构（传入 `getTableData` 作为请求回调）。
+ 
+ 逻辑按增删改查分区，用 `// #region` 和 `// #endregion` 标记：
+ 
+@@ -179,46 +179,39 @@ function getTableData() {
+   }).finally(() => { loading.value = false })
+ }
+ 
+-function handleSearch() {
+-  paginationData.currentPage === 1 ? getTableData() : (paginationData.currentPage = 1)
+-}
+-
+ function resetSearch() {
+   searchFormRef.value?.resetFields()
+-  handleSearch()
++  resetToFirstPage()
+ }
+-```
+ 
+-**`handleSearch` 的逻辑**：搜索时应从第 1 页开始。如果当前已在第 1 页则直接请求；否则将 `currentPage` 设为 1，由 `watch` 自动触发请求（避免重复调用）。
++// 初始加载（分页变化时由 usePagination 内部的 watch 触发请求）
++getTableData()
++```
+ 
+-### 分页监听
++搜索按钮直接绑定 `@click="resetToFirstPage"`。
+ 
+-```ts
+-watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
+-```
++**`resetToFirstPage` 的逻辑**：搜索时应从第 1 页开始。如果当前已在第 1 页则直接请求；否则将 `currentPage` 设为 1，由 `usePagination` 内部的 `watch` 自动触发请求（避免重复调用）。
+ 
+-**为什么用 `watch` + `immediate` 而不是 `onMounted`**：让分页变化和初始加载共享同一个入口，数据获取逻辑只写一处。
++**为什么 `getTableData()` 要手动调用一次**：`usePagination` 的 `watch` 不会立即执行（立即执行时 `paginationData` 尚未完成解构，会触发暂时性死区错误），所以初始加载在页面中调用一次，之后的分页变化统一由 `onRequest` 回调触发。
+ 
+ ## usePagination 用法
+ 
+ ```ts
+ import { usePagination } from "@@/composables/usePagination"
+ 
+-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
++const { paginationData, resetToFirstPage } = usePagination({}, getTableData)
+ ```
+ 
+-`paginationData` 是 `reactive` 对象，包含：`total`、`currentPage`、`pageSizes`、`pageSize`、`layout`。模板中直接绑定：
++第二个参数 `getTableData` 是请求回调，页码或每页条数变化时自动调用。`paginationData` 是 `reactive` 对象，包含：`total`、`currentPage`、`pageSizes`、`pageSize`、`layout`。模板中使用 `v-model` 双向绑定：
+ 
+ ```html
+ <el-pagination
+   background
++  v-model:current-page="paginationData.currentPage"
++  v-model:page-size="paginationData.pageSize"
+   :layout="paginationData.layout"
+   :page-sizes="paginationData.pageSizes"
+   :total="paginationData.total"
+-  :page-size="paginationData.pageSize"
+-  :current-page="paginationData.currentPage"
+-  @size-change="handleSizeChange"
+-  @current-change="handleCurrentChange"
+ />
+ ```
+ 
+diff --git a/.agents/skills/v3-use-composables/SKILL.md b/.agents/skills/v3-use-composables/SKILL.md
+index 21fbc82f..c18f033c 100644
+--- a/.agents/skills/v3-use-composables/SKILL.md
++++ b/.agents/skills/v3-use-composables/SKILL.md
+@@ -90,27 +90,31 @@ await submitWithLoading(formData)
+ import { usePagination } from "@@/composables/usePagination"
+ 
+ // 使用默认配置
+-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
++const { paginationData } = usePagination()
++
++// 传入请求回调：页码或每页条数变化时自动调用，并返回 resetToFirstPage
++const { paginationData, resetToFirstPage } = usePagination({}, getTableData)
+ 
+ // 或自定义初始值
+-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination({
++const { paginationData, resetToFirstPage } = usePagination({
+   currentPage: 1,
+   pageSize: 20,
+   pageSizes: [10, 20, 50, 100]
+-})
++}, getTableData)
+ ```
+ 
+-在模板中使用：
++- 第二个参数 `onRequest` 为请求回调，传入后会监听 `currentPage` 和 `pageSize` 的变化并触发它（不会立即执行，初始加载需手动调用一次）
++- `resetToFirstPage()`：重置到第一页。已在第一页则直接调用 `onRequest`，否则将 `currentPage` 设为 1，由 watch 触发请求，避免重复请求（适用于搜索、重置搜索）
++
++在模板中通过 `v-model` 双向绑定：
+ 
+ ```html
+ <el-pagination
++  v-model:current-page="paginationData.currentPage"
++  v-model:page-size="paginationData.pageSize"
+   :total="paginationData.total"
+-  :current-page="paginationData.currentPage"
+-  :page-size="paginationData.pageSize"
+   :page-sizes="paginationData.pageSizes"
+   :layout="paginationData.layout"
+-  @current-change="handleCurrentChange"
+-  @size-change="handleSizeChange"
+ />
+ ```
+ 
+diff --git a/src/common/composables/usePagination.ts b/src/common/composables/usePagination.ts
+index 46ef2cd0..a9daa869 100644
+--- a/src/common/composables/usePagination.ts
++++ b/src/common/composables/usePagination.ts
+@@ -16,19 +16,19 @@ const DEFAULT_PAGINATION_DATA = {
+ }
+ 
+ /** 分页 Composable */
+-export function usePagination(initPaginationData: PaginationData = {}) {
++export function usePagination(initPaginationData: PaginationData = {}, onRequest?: () => void) {
+   // 合并分页参数
+   const paginationData = reactive({ ...DEFAULT_PAGINATION_DATA, ...initPaginationData })
+ 
+-  // 改变当前页码
+-  const handleCurrentChange = (value: number) => {
+-    paginationData.currentPage = value
++  // 重置到第一页（已在第一页则直接请求，否则交由 watch 触发请求，避免重复调用）
++  const resetToFirstPage = () => {
++    paginationData.currentPage === 1 ? onRequest?.() : (paginationData.currentPage = 1)
+   }
+ 
+-  // 改变每页显示条数
+-  const handleSizeChange = (value: number) => {
+-    paginationData.pageSize = value
++  // 监听页码和每页显示条数的变化
++  if (onRequest) {
++    watch([() => paginationData.currentPage, () => paginationData.pageSize], () => onRequest())
+   }
+ 
+-  return { paginationData, handleCurrentChange, handleSizeChange }
++  return { paginationData, resetToFirstPage }
+ }
+diff --git a/src/pages/demo/element-plus/index.vue b/src/pages/demo/element-plus/index.vue
+index 14bd6e6a..8f815fdb 100644
+--- a/src/pages/demo/element-plus/index.vue
++++ b/src/pages/demo/element-plus/index.vue
+@@ -13,7 +13,7 @@ defineOptions({
+ 
+ const loading = ref<boolean>(false)
+ 
+-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
++const { paginationData, resetToFirstPage } = usePagination({}, getTableData)
+ 
+ // #region 增
+ const DEFAULT_FORM_DATA: CreateOrUpdateTableRequestData = {
+@@ -106,18 +106,14 @@ function getTableData() {
+   })
+ }
+ 
+-function handleSearch() {
+-  paginationData.currentPage === 1 ? getTableData() : (paginationData.currentPage = 1)
+-}
+-
+ function resetSearch() {
+   searchFormRef.value?.resetFields()
+-  handleSearch()
++  resetToFirstPage()
+ }
+ // #endregion
+ 
+-// 监听分页参数的变化
+-watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
++// 初始加载（分页变化时由 usePagination 内部的 watch 触发请求）
++getTableData()
+ </script>
+ 
+ <template>
+@@ -137,7 +133,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
+           <el-input v-model="searchData.phone" placeholder="请输入" />
+         </el-form-item>
+         <el-form-item>
+-          <el-button type="primary" :icon="Search" @click="handleSearch">
++          <el-button type="primary" :icon="Search" @click="resetToFirstPage">
+             查询
+           </el-button>
+           <el-button :icon="Refresh" @click="resetSearch">
+@@ -210,10 +206,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
+           :layout="paginationData.layout"
+           :page-sizes="paginationData.pageSizes"
+           :total="paginationData.total"
+-          :page-size="paginationData.pageSize"
+-          :current-page="paginationData.currentPage"
+-          @size-change="handleSizeChange"
+-          @current-change="handleCurrentChange"
++          v-model:page-size="paginationData.pageSize"
++          v-model:current-page="paginationData.currentPage"
+         />
+       </div>
+     </el-card>

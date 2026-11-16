@@ -1,0 +1,62 @@
+diff --git a/src/http/axios.ts b/src/http/axios.ts
+index 8166fb7e..fe1e7edd 100644
+--- a/src/http/axios.ts
++++ b/src/http/axios.ts
+@@ -10,6 +10,22 @@ function logout() {
+   location.reload()
+ }
+ 
++/** 是否正在因未授权而退出登录（避免并发请求重复提示） */
++let isLoggingOut = false
++
++/** 取服务端返回的错误信息（若有） */
++function getServerMessage(data: unknown): string | undefined {
++  const message = get(data, "message")
++  return typeof message === "string" && message.trim() ? message : undefined
++}
++
++/** 未授权（401）：优先使用服务端返回的 message，否则使用默认提示，提示结束后退出登录 */
++function handleUnauthorized(message: string) {
++  if (isLoggingOut) return
++  isLoggingOut = true
++  ElMessage.error({ message, duration: 1500, onClose: logout })
++}
++
+ /** 创建请求实例 */
+ function createInstance() {
+   // 创建一个 axios 实例命名为 instance
+@@ -42,7 +58,18 @@ function createInstance() {
+           return apiData
+         case 401:
+           // Token 过期时
+-          return logout()
++        {
++          const message = getServerMessage(apiData) || "登录已过期，请重新登录"
++          handleUnauthorized(message)
++          return Promise.reject(new Error(message))
++        }
++        case 403:
++        {
++          // 没有权限
++          const message = getServerMessage(apiData) || "没有权限执行此操作"
++          ElMessage.error(message)
++          return Promise.reject(new Error(message))
++        }
+         default:
+           // 不是正确的 code
+           ElMessage.error(apiData.message || "Error")
+@@ -58,10 +85,11 @@ function createInstance() {
+           break
+         case 401:
+           // Token 过期时
+-          logout()
+-          break
++          error.message = getServerMessage(get(error, "response.data")) || "登录已过期，请重新登录"
++          handleUnauthorized(error.message)
++          return Promise.reject(error)
+         case 403:
+-          error.message = "拒绝访问"
++          error.message = getServerMessage(get(error, "response.data")) || "没有权限执行此操作"
+           break
+         case 404:
+           error.message = "请求地址出错"

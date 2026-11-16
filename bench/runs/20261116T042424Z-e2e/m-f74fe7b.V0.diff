@@ -1,0 +1,148 @@
+diff --git a/src/common/utils/redirect.ts b/src/common/utils/redirect.ts
+new file mode 100644
+index 00000000..3aa66cf2
+--- /dev/null
++++ b/src/common/utils/redirect.ts
+@@ -0,0 +1,17 @@
++export const LOGIN_PATH = "/login"
++
++/**
++ * 解析登录后的跳转地址
++ * 仅允许站内相对路径，防止开放重定向（如 //evil.com、https://evil.com、/\evil.com）
++ * 不合法、为空或指向登录页时，回退到 fallback
++ */
++export function resolveRedirect(redirect: unknown, fallback = "/"): string {
++  const target = Array.isArray(redirect) ? redirect[0] : redirect
++  if (typeof target !== "string" || target === "") return fallback
++  // 必须以单个 "/" 开头，且第二个字符不能是 "/" 或 "\"
++  if (!target.startsWith("/") || target.startsWith("//") || target.startsWith("/\\")) return fallback
++  // 不能再次跳转回登录页
++  const path = target.split(/[?#]/)[0]
++  if (path === LOGIN_PATH) return fallback
++  return target
++}
+diff --git a/src/pages/login/index.vue b/src/pages/login/index.vue
+index c413f0a9..9ab95180 100644
+--- a/src/pages/login/index.vue
++++ b/src/pages/login/index.vue
+@@ -2,6 +2,7 @@
+ import type { FormRules } from "element-plus"
+ import type { LoginRequestData } from "./apis/type"
+ import ThemeSwitch from "@@/components/ThemeSwitch/index.vue"
++import { resolveRedirect } from "@@/utils/redirect"
+ import { Key, Loading, Lock, Picture, User } from "@element-plus/icons-vue"
+ import { useSettingsStore } from "@/pinia/stores/settings"
+ import { useUserStore } from "@/pinia/stores/user"
+@@ -11,6 +12,8 @@ import { useFocus } from "./composables/useFocus"
+ 
+ const router = useRouter()
+ 
++const route = useRoute()
++
+ const userStore = useUserStore()
+ 
+ const settingsStore = useSettingsStore()
+@@ -57,7 +60,8 @@ function handleLogin() {
+     loading.value = true
+     loginApi(loginFormData).then(({ data }) => {
+       userStore.setToken(data.token)
+-      router.push("/")
++      // 跳转到登录前想访问的页面，没有则回到主页
++      router.push(resolveRedirect(route.query.redirect))
+     }).catch(() => {
+       createCode()
+       loginFormData.password = ""
+diff --git a/src/router/guard.ts b/src/router/guard.ts
+index 8f3a7349..5b689e7c 100644
+--- a/src/router/guard.ts
++++ b/src/router/guard.ts
+@@ -1,7 +1,8 @@
+-import type { Router } from "vue-router"
++import type { RouteLocationRaw, Router } from "vue-router"
+ import { setRouteChange } from "@@/composables/useRouteListener"
+ import { useTitle } from "@@/composables/useTitle"
+ import { getToken } from "@@/utils/cache/cookies"
++import { LOGIN_PATH, resolveRedirect } from "@@/utils/redirect"
+ import NProgress from "nprogress"
+ import { usePermissionStore } from "@/pinia/stores/permission"
+ import { useUserStore } from "@/pinia/stores/user"
+@@ -12,7 +13,11 @@ NProgress.configure({ showSpinner: false })
+ 
+ const { setTitle } = useTitle()
+ 
+-const LOGIN_PATH = "/login"
++/** 生成跳转登录页的路由，携带原目标地址（主页无需携带） */
++function toLogin(fullPath: string): RouteLocationRaw {
++  const redirect = resolveRedirect(fullPath)
++  return redirect === "/" ? LOGIN_PATH : { path: LOGIN_PATH, query: { redirect } }
++}
+ 
+ export function registerNavigationGuard(router: Router) {
+   // 全局前置守卫
+@@ -24,11 +29,11 @@ export function registerNavigationGuard(router: Router) {
+     if (!getToken()) {
+       // 如果在免登录的白名单中，则直接进入
+       if (isWhiteList(to)) return true
+-      // 其他没有访问权限的页面将被重定向到登录页面
+-      return LOGIN_PATH
++      // 其他没有访问权限的页面将被重定向到登录页面，并记录原本想访问的地址，登录成功后跳回
++      return toLogin(to.fullPath)
+     }
+-    // 如果已经登录，并准备进入 Login 页面，则重定向到主页
+-    if (to.path === LOGIN_PATH) return "/"
++    // 如果已经登录，并准备进入 Login 页面，则重定向到之前想访问的页面（没有则到主页）
++    if (to.path === LOGIN_PATH) return resolveRedirect(to.query.redirect)
+     // 如果用户已经获得其权限角色
+     if (userStore.roles.length !== 0) return true
+     // 否则要重新获取权限角色
+@@ -46,7 +51,7 @@ export function registerNavigationGuard(router: Router) {
+       // 过程中发生任何错误，都直接重置 Token，并重定向到登录页面
+       userStore.resetToken()
+       ElMessage.error((error as Error).message || "路由守卫发生错误")
+-      return LOGIN_PATH
++      return toLogin(to.fullPath)
+     }
+   })
+ 
+diff --git a/tests/utils/redirect.test.ts b/tests/utils/redirect.test.ts
+new file mode 100644
+index 00000000..59c08df8
+--- /dev/null
++++ b/tests/utils/redirect.test.ts
+@@ -0,0 +1,36 @@
++import { resolveRedirect } from "@@/utils/redirect"
++import { describe, expect, it } from "vitest"
++
++describe("resolveRedirect", () => {
++  it("keeps internal path with query and hash", () => {
++    expect(resolveRedirect("/table/element-plus?page=2#top")).toBe("/table/element-plus?page=2#top")
++  })
++
++  it("falls back when empty or not a string", () => {
++    expect(resolveRedirect(undefined)).toBe("/")
++    expect(resolveRedirect(null)).toBe("/")
++    expect(resolveRedirect("")).toBe("/")
++    expect(resolveRedirect(123)).toBe("/")
++  })
++
++  it("uses the first value of an array query", () => {
++    expect(resolveRedirect(["/a", "/b"])).toBe("/a")
++  })
++
++  it("rejects external or protocol-relative urls", () => {
++    expect(resolveRedirect("https://evil.com")).toBe("/")
++    expect(resolveRedirect("//evil.com")).toBe("/")
++    expect(resolveRedirect("/\\evil.com")).toBe("/")
++    expect(resolveRedirect("javascript:alert(1)")).toBe("/")
++    expect(resolveRedirect("relative/path")).toBe("/")
++  })
++
++  it("rejects the login page itself", () => {
++    expect(resolveRedirect("/login")).toBe("/")
++    expect(resolveRedirect("/login?redirect=/a")).toBe("/")
++  })
++
++  it("supports a custom fallback", () => {
++    expect(resolveRedirect(undefined, "/home")).toBe("/home")
++  })
++})

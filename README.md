@@ -381,7 +381,7 @@ Strict file recall, %. Symbol recall in brackets.
 - ⚠️ **On whole-file recall, plain vector search ties V3.** We do not claim otherwise. The win over V1 is the precision of what is packed.
 - ⚠️ **Latency has a price**: about +780 ms p95 over V2, almost all of it the HydraDB neighbourhood query. A slow HydraDB degrades to the replica instead of waiting.
 - ⚠️ **One repository.** The benchmark is open so others can add theirs.
-- ⚠️ **The first agent-level run does not establish token savings.** With n=3 tasks, both the stock agent and the agent with Click solved 0/3, so tokens per solved task is undefined. The run is indicative only, not evidence of benefit or harm.
+- ⚠️ **The grader-valid agent run does not establish token savings.** With n=8 tasks, both the stock agent and the agent with Click solved 2/8. Delivery used 29% fewer turns, 18% fewer output tokens, 45% less wall time and 4% less cost overall, but tokens per solved task were 6% higher. This is indicative only, not a savings claim.
 
 ### 5.5 Reproduce
 
@@ -401,25 +401,35 @@ pnpm e2e --tasks 3 --variants V0,delivery       # real: spends API budget, cappe
 
 For each task and variant the harness checks out the benchmark repo **at the parent commit** in a throwaway git worktree, installs Click (or not, for `V0`), runs **Claude Code headless** with a hard wall-clock and dollar cap, then decides "solved" by the task's own check (`vue-tsc` must not get worse and the task's vitest file must pass). It reports **tokens per solved task** (input, output, cache creation) with **cache reads reported separately**, plus turns and wall time.
 
-**n=3, indicative only.** Agents are nondeterministic, and this single small run produced no solved tasks in either arm. Consequently, tokens per solved task cannot be calculated and these rows do **not** support a token-savings claim.
+**n=8, indicative only.** Agents are nondeterministic, and both variants solved the same 2/8 tasks. Delivery used 29% fewer turns, 18% fewer output tokens, 45% less wall time and 4% less cost overall, while tokens per solved task were 6% higher. These mixed results do **not** support a token-savings claim.
 
 <!-- bench:e2e:start -->
 | Variant | Solved | Tokens / solved | Total input | Total output | Run ID |
 | --- | ---: | ---: | ---: | ---: | --- |
-| V0 | 0/3 | — | 56 | 13,824 | `20261116T025135Z-e2e-V0` |
-| delivery | 0/3 | — | 48 | 12,900 | `20261116T025135Z-e2e-delivery` |
+| V0 | 2/8 | 113,471 | 136 | 37,790 | `20261116T042424Z-e2e-V0` |
+| delivery | 2/8 | 120,191 | 102 | 30,815 | `20261116T042424Z-e2e-delivery` |
 
 | Task | Variant | Passed | Input | Output | Cache read | Cache create | Turns | Wall |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `m-031c5c1` | V0 | no | 10 | 1,756 | 134,787 | 17,890 | 5 | 29.2 s |
-| `m-2e26908` | V0 | no | 36 | 10,207 | 729,455 | 37,905 | 29 | 110.8 s |
-| `m-4f4b23d` | V0 | no | 10 | 1,861 | 132,569 | 18,307 | 7 | 24.1 s |
-| `m-031c5c1` | delivery | no | 10 | 1,555 | 146,077 | 20,340 | 5 | 21.6 s |
-| `m-2e26908` | delivery | no | 30 | 9,885 | 674,704 | 43,094 | 24 | 162.5 s |
-| `m-4f4b23d` | delivery | no | 8 | 1,460 | 112,956 | 20,764 | 5 | 29.7 s |
+| `m-031c5c1` | V0 | yes | 8 | 1,193 | 156,862 | 15,655 | 5 | 26.7 s |
+| `m-2e26908` | V0 | no | 22 | 8,833 | 557,070 | 32,550 | 25 | 73.2 s |
+| `m-4f4b23d` | V0 | yes | 12 | 2,014 | 257,306 | 19,897 | 9 | 27.4 s |
+| `m-5f733a8` | V0 | no | 18 | 4,673 | 436,045 | 27,457 | 20 | 57.2 s |
+| `m-95a8604` | V0 | no | 14 | 3,365 | 287,174 | 18,279 | 9 | 41.7 s |
+| `m-caa9c84` | V0 | no | 16 | 4,690 | 366,706 | 25,138 | 20 | 46.4 s |
+| `m-cbd9e02` | V0 | no | 22 | 5,924 | 520,056 | 25,304 | 24 | 133.0 s |
+| `m-f74fe7b` | V0 | no | 24 | 7,098 | 551,472 | 24,736 | 28 | 324.7 s |
+| `m-031c5c1` | delivery | yes | 8 | 903 | 171,828 | 19,715 | 4 | 16.4 s |
+| `m-2e26908` | delivery | no | 16 | 8,162 | 435,705 | 36,578 | 19 | 72.3 s |
+| `m-4f4b23d` | delivery | yes | 8 | 905 | 172,447 | 20,295 | 4 | 31.0 s |
+| `m-5f733a8` | delivery | no | 18 | 5,617 | 472,020 | 31,546 | 20 | 60.7 s |
+| `m-95a8604` | delivery | no | 12 | 3,523 | 268,134 | 22,452 | 8 | 43.8 s |
+| `m-caa9c84` | delivery | no | 14 | 5,190 | 355,503 | 32,117 | 18 | 59.0 s |
+| `m-cbd9e02` | delivery | no | 14 | 3,494 | 323,535 | 24,160 | 14 | 77.6 s |
+| `m-f74fe7b` | delivery | no | 12 | 3,021 | 265,362 | 22,601 | 13 | 37.3 s |
 <!-- bench:e2e:end -->
 
-Raw task rows are in [`bench/runs/20261116T025135Z-e2e.jsonl`](bench/runs/20261116T025135Z-e2e.jsonl); the two `kind: "e2e"` summary rows are in `bench/results.jsonl`.
+Raw task rows are in [`bench/runs/20261116T042424Z-e2e.jsonl`](bench/runs/20261116T042424Z-e2e.jsonl), with per-task diffs and checks in [`bench/runs/20261116T042424Z-e2e/`](bench/runs/20261116T042424Z-e2e/); the two `kind: "e2e"` summary rows are in `bench/results.jsonl`.
 
 ---
 
@@ -655,7 +665,7 @@ The code is **TypeScript in strict mode** with a root `pnpm check` (typecheck, l
 - **One benchmark repository** (233 tasks). The numbers are real and reproducible, but they are one repository's numbers.
 - **On whole-file recall, plain vector search ties Click.** The advantage is symbol-level precision and the graph's gain over the same pipeline without it.
 - **Learning is not shown to pay off.** The gain is small, its interval includes zero, and it was measured on simulated outcomes.
-- **Agent-level token savings are not demonstrated.** The first real end-to-end run was n=3 and both arms solved 0/3, so tokens per solved task is undefined; larger repeated runs are required.
+- **Agent-level token savings are not demonstrated.** In the grader-valid n=8 run both arms solved 2/8; delivery reduced turns, output, wall time and cost overall, but tokens per solved task increased 6%. Larger repeated runs are required.
 - **HydraDB adds latency** (about +780 ms p95 in the benchmark setup).
 - **The Claude Code hook is capped at 10,000 characters** by Claude Code itself; use MCP for larger budgets.
 - **Semantic search needs an `OPENAI_API_KEY`** and is optional; without it Click uses symbols, BM25 and the graph.
