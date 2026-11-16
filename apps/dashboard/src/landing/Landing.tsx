@@ -282,6 +282,7 @@ const FEATURES = [
   { n: '02', t: 'BUDGET-STRICT', d: 'Every answer fits the token budget you give it. Big functions are sliced, not dropped.', lit: [4, 5] },
   { n: '03', t: 'SELF-LEARNING', d: 'Edges that led to code the agent used get stronger; edges that led to noise decay.', lit: [0, 1, 4, 5] },
   { n: '04', t: 'FAIL-SOFT', d: 'HydraDB slow? A local replica answers. Daemon down? The agent carries on, never blocked.', lit: [3, 6, 7] },
+  { n: '05', t: 'SHARED BOARD', d: 'Agents on one repo leave handoffs and tasks for each other, so the next one skips what the first learned.', lit: [1, 3, 5, 7] },
 ];
 
 function Features() {

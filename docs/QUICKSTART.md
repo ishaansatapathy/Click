@@ -79,6 +79,9 @@ The hook never blocks you: if the daemon is down or slow, the prompt goes throug
 | `click map --stats` | what is in the graph |
 | `click status` | is the daemon up, what it served last |
 | `click weights --show` | what Click has learned from your sessions |
+| `click notes [--add "text" --as <name> [--files a.ts] [--handoff]]` | what the agents on this repo left for each other |
+| `click tasks [--add "title" --as <name>] [--claim <id> --as <name>] [--done <id>]` | the shared task list |
+| `click agents` | which agents used the daemon lately, and on what |
 
 ## Run the benchmark or the dashboard
 
