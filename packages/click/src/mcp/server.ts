@@ -106,7 +106,7 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
   server.registerTool(
     'report_outcome',
     {
-      description: 'Report what happened after using Click context. Call this when the task is finished so Click can learn which context helped; include the contextId returned by get_context when available.',
+      description: 'Report what happened after using Click context. Call this when the task is finished; list filesEdited and your agent name so other agents receive edit warnings and an automatic handoff.',
       inputSchema: z.object({
         contextId: z.string().min(1).max(200).optional(),
         taskText: z.string().max(20_000).optional(),

@@ -80,6 +80,7 @@ describe('Click MCP server (PROMPT 170)', () => {
     expect(output[0]).toBe(packed.text);
     expect(JSON.parse(output[1]!)).toEqual({ contextId: 'ctx-1', tokens: 42, items: [{ path: 'src/a.ts', name: 'save', mode: 'body' }] });
     expect(daemon.calls[0]).toMatchObject({ path: '/context', options: { body: { task: 'change save behavior', budgetTokens: 2_000, source: 'mcp' } } });
+    expect((daemon.calls[0]!.options as { body: object }).body).not.toHaveProperty('agent');
     expect(daemon.starts).toBe(1);
   });
 
@@ -100,6 +101,14 @@ describe('Click MCP server (PROMPT 170)', () => {
     expect(result.isError).toBe(true);
     expect(texts(result)[0]).toContain('call get_context first');
     expect(daemon.starts).toBe(0);
+  });
+
+  it('omits agent from context and outcome bodies when the MCP caller does not provide one', async () => {
+    const { client, daemon } = await world();
+    await client.callTool({ name: 'get_context', arguments: { task: 'change save behavior' } });
+    await client.callTool({ name: 'report_outcome', arguments: { filesEdited: ['src/a.ts'] } });
+    expect((daemon.calls[0]!.options as { body: object }).body).not.toHaveProperty('agent');
+    expect((daemon.calls[1]!.options as { body: object }).body).not.toHaveProperty('agent');
   });
 
   it('proxies notes, handoffs, tasks, and presence with an explicit author on every write', async () => {
