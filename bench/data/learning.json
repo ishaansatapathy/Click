@@ -1,0 +1,48 @@
+{
+  "simulated": true,
+  "split": "test",
+  "budget": 4000,
+  "n": 75,
+  "steps": [
+    {
+      "fraction": 0,
+      "events": 0,
+      "weightsVersion": "d6d6b2904c50",
+      "runId": "20261116T001129687Z-a0675a",
+      "strict": 0.7522857142857142,
+      "symbol": 0.7179815209665956
+    },
+    {
+      "fraction": 0.25,
+      "events": 40,
+      "weightsVersion": "4f2e0dcaa915",
+      "runId": "20261116T001145773Z-1edd47",
+      "strict": 0.7389523809523809,
+      "symbol": 0.7030561478322673
+    },
+    {
+      "fraction": 0.5,
+      "events": 79,
+      "weightsVersion": "87b6392c531b",
+      "runId": "20261116T001202856Z-e6ad31",
+      "strict": 0.7356190476190476,
+      "symbol": 0.6993248045486852
+    },
+    {
+      "fraction": 0.75,
+      "events": 119,
+      "weightsVersion": "9e59cb07ca3e",
+      "runId": "20261116T001235351Z-cc5c38",
+      "strict": 0.7733968253968254,
+      "symbol": 0.7130063965884861
+    },
+    {
+      "fraction": 1,
+      "events": 158,
+      "weightsVersion": "5540c1136de0",
+      "runId": "20261116T001256761Z-77f65b",
+      "strict": 0.7656190476190476,
+      "symbol": 0.7167377398720681
+    }
+  ]
+}

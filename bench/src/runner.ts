@@ -176,7 +176,9 @@ export async function writeRunArtifacts(benchRoot: string, run: BenchmarkRun): P
 }
 
 export async function regenerateResultsMarkdown(resultsPath: string, markdownPath: string): Promise<void> {
-  const rows = (await readFile(resultsPath, 'utf8')).split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line) as ResultRow);
+  const rows = (await readFile(resultsPath, 'utf8')).split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line) as ResultRow)
+    // other kinds of rows (latency, e2e) live in the same file and carry other metrics
+    .filter((row) => row.kind === 'retrieval' && typeof row.metrics?.recallStrict === 'number');
   const header = '# Benchmark results\n\nGenerated from `results.jsonl`; do not edit by hand.\n\n';
   const table = [
     '| Run | Variant | Budget | Split | n | Strict | Any | Symbol | Precision | p50 ms | p95 ms |',
