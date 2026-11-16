@@ -1,0 +1,27 @@
+  ➜ MCP:      Mcp server is running at http://localhost:3333/__mcp/sse
+
+ RUN  v4.1.10 C:/Users/IshaanSatapathy/AppData/Local/Temp/click-e2e-m-2e26908-4bXHKU
+
+ ❯ tests/e2e-m-2e26908.test.ts (1 test | 1 failed) 11ms
+     × runs immediately on page one and watches later page changes 8ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  09:59:26
+   Duration  13.09s (transform 58ms, setup 0ms, import 898ms, tests 11ms, environment 1.25s)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/e2e-m-2e26908.test.ts > pagination request coordination > runs immediately on page one and watches later page changes
+TypeError: pagination.resetCurrentPage is not a function
+ ❯ tests/e2e-m-2e26908.test.ts:12:16
+     10|     const callback = vi.fn();
+     11|     const pagination = usePagination({ callback, currentPage: 1 });
+     12|     pagination.resetCurrentPage();
+       |                ^
+     13|     expect(callback).toHaveBeenCalledTimes(1);
+     14|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

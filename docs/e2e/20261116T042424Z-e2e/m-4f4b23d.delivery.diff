@@ -1,0 +1,15 @@
+diff --git a/src/layouts/config.ts b/src/layouts/config.ts
+index ba948907..5da72db3 100644
+--- a/src/layouts/config.ts
++++ b/src/layouts/config.ts
+@@ -52,4 +52,9 @@ const DEFAULT_CONFIG: LayoutsConfig = {
+ }
+ 
+ /** 项目配置 */
+-export const layoutsConfig: LayoutsConfig = { ...DEFAULT_CONFIG, ...getLayoutsConfig() }
++export const layoutsConfig: LayoutsConfig = {
++  ...DEFAULT_CONFIG,
++  ...getLayoutsConfig(),
++  // 设置面板始终以默认值为准，不受缓存影响
++  showSettings: DEFAULT_CONFIG.showSettings
++}

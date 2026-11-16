@@ -1,0 +1,34 @@
+  ➜ MCP:      Mcp server is running at http://localhost:3333/__mcp/sse
+
+ RUN  v4.1.10 C:/Users/IshaanSatapathy/AppData/Local/Temp/click-e2e-m-caa9c84-rgfU8u
+
+ ❯ tests/e2e-m-caa9c84.test.ts (1 test | 1 failed) 25ms
+     × exposes one canonical dashboard and redirect path 22ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  10:14:06
+   Duration  15.94s (transform 133ms, setup 0ms, import 925ms, tests 25ms, environment 1.06s)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/e2e-m-caa9c84.test.ts > shared route paths > exposes one canonical dashboard and redirect path
+AssertionError: expected undefined to be '/dashboard' // Object.is equality
+
+- Expected:
+"/dashboard"
+
++ Received:
+undefined
+
+ ❯ tests/e2e-m-caa9c84.test.ts:10:35
+      8|   it('exposes one canonical dashboard and redirect path', async () => {
+      9|     const config = await import('@/router/config');
+     10|     expect(config.DASHBOARD_PATH).toBe('/dashboard');
+       |                                   ^
+     11|     expect(config.REDIRECT_PATH).toBe('/redirect');
+     12|   }, 30_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

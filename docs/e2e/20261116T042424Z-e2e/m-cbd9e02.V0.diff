@@ -1,0 +1,77 @@
+diff --git a/src/pages/demo/permission/components/SwitchRoles.vue b/src/pages/demo/permission/components/SwitchRoles.vue
+index 2436616f..9c0e27e4 100644
+--- a/src/pages/demo/permission/components/SwitchRoles.vue
++++ b/src/pages/demo/permission/components/SwitchRoles.vue
+@@ -3,18 +3,18 @@ import { useUserStore } from "@/pinia/stores/user"
+ 
+ const userStore = useUserStore()
+ 
+-const switchRoles = ref(userStore.roles[0])
++const account = ref(userStore.roles[0])
+ 
+-watch(switchRoles, (value) => {
+-  userStore.changeRoles(value)
++watch(account, (value) => {
++  userStore.switchAccount(value)
+ })
+ </script>
+ 
+ <template>
+   <el-card shadow="never">
+-    <div class="switch-roles">
+-      <span>切换用户：</span>
+-      <el-radio-group v-model="switchRoles">
++    <div class="switch-account">
++      <span>切换账号：</span>
++      <el-radio-group v-model="account">
+         <el-radio-button label="editor" value="editor" />
+         <el-radio-button label="admin" value="admin" />
+       </el-radio-group>
+@@ -35,7 +35,7 @@ watch(switchRoles, (value) => {
+ </template>
+ 
+ <style lang="scss" scoped>
+-.switch-roles {
++.switch-account {
+   display: flex;
+   align-items: center;
+ }
+diff --git a/src/pages/demo/permission/page-level.vue b/src/pages/demo/permission/page-level.vue
+index 7ae259e5..cbd3f4a2 100644
+--- a/src/pages/demo/permission/page-level.vue
++++ b/src/pages/demo/permission/page-level.vue
+@@ -6,7 +6,7 @@ import SwitchRoles from "./components/SwitchRoles.vue"
+   <div class="app-container">
+     <SwitchRoles />
+     <el-card shadow="never" class="content">
+-      当前页面只有「admin」角色或「permission:page-level」权限可见，切换用户后权限将重新生效
++      当前页面只有「admin」角色或「permission:page-level」权限可见，切换账号后权限将重新生效
+     </el-card>
+   </div>
+ </template>
+diff --git a/src/pinia/stores/user.ts b/src/pinia/stores/user.ts
+index f7f772b1..a598f285 100644
+--- a/src/pinia/stores/user.ts
++++ b/src/pinia/stores/user.ts
+@@ -36,9 +36,9 @@ export const useUserStore = defineStore("user", () => {
+     isGotUserInfo.value = true
+   }
+ 
+-  // 模拟角色变化
+-  const changeRoles = (role: string) => {
+-    const newToken = `token-${role}`
++  // 模拟切换账号
++  const switchAccount = (account: string) => {
++    const newToken = `token-${account}`
+     token.value = newToken
+     _setToken(newToken)
+     // 用刷新页面代替重新登录
+@@ -71,7 +71,7 @@ export const useUserStore = defineStore("user", () => {
+     }
+   }
+ 
+-  return { token, roles, permissions, username, isGotUserInfo, setToken, getInfo, changeRoles, logout, resetToken }
++  return { token, roles, permissions, username, isGotUserInfo, setToken, getInfo, switchAccount, logout, resetToken }
+ })
+ 
+ /**

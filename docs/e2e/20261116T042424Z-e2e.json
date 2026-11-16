@@ -1,0 +1,39 @@
+{
+  "runId": "20261116T042424Z-e2e",
+  "dry": false,
+  "n": 8,
+  "tasks": [
+    "m-031c5c1",
+    "m-2e26908",
+    "m-4f4b23d",
+    "m-5f733a8",
+    "m-95a8604",
+    "m-caa9c84",
+    "m-cbd9e02",
+    "m-f74fe7b"
+  ],
+  "variants": [
+    {
+      "variant": "V0",
+      "n": 8,
+      "solved": 2,
+      "solveRate": 0.25,
+      "tokensPerSolved": 113471,
+      "cacheReadPerSolved": 1566345.5,
+      "turnsPerSolved": 70,
+      "wallSecPerSolved": 365.158,
+      "costUsdPerSolved": 0.7242798500000001
+    },
+    {
+      "variant": "delivery",
+      "n": 8,
+      "solved": 2,
+      "solveRate": 0.25,
+      "tokensPerSolved": 120190.5,
+      "cacheReadPerSolved": 1232267,
+      "turnsPerSolved": 50,
+      "wallSecPerSolved": 198.99849999999998,
+      "costUsdPerSolved": 0.6968592499999999
+    }
+  ]
+}
