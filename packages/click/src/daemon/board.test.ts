@@ -134,6 +134,10 @@ describe('two agents through one daemon', () => {
     expect(second.body.text).toContain('never awaits the API call');
     expect(second.body.text).toContain(`claude-code changed ${files[0]}`);
     expect(second.body.tokens).toBeLessThanOrEqual(4000);
+    // the block is inside the <click_context> element, and the header states the real total
+    expect(second.body.text.indexOf('## From other agents')).toBeLessThan(second.body.text.lastIndexOf('</click_context>'));
+    expect(second.body.text.endsWith('</click_context>')).toBe(true);
+    expect(second.body.text).toContain(`tokens="${second.body.tokens}"`);
 
     // Claude Code does not get its own note back
     const again = await world.json<PackedContext>('/context', { task: TASK, budgetTokens: 4000, agent: 'claude-code', sessionId: 'sess-claude-1' });

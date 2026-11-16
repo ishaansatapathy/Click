@@ -183,8 +183,11 @@ export function createRoutes(d: RouteDeps): Route[] {
           const left = req.maxChars !== undefined ? req.maxChars - packed.text.length - 2 : undefined;
           const block = d.board.contextBlock({ files, agent, task: req.task, maxTokens: Math.min(room - 4, 350), maxChars: left });
           if (block) {
-            packed.text = `${packed.text}\n\n${block}`;
-            packed.tokens += countTokens(`\n\n${block}`);
+            // inside the <click_context> element, before its closing tag, so the whole answer is one element
+            const footer = '</click_context>';
+            const text = packed.text.endsWith(footer) ? `${packed.text.slice(0, -footer.length)}\n${block}\n${footer}` : `${packed.text}\n\n${block}`;
+            packed.tokens += Math.max(0, countTokens(text) - countTokens(packed.text));
+            packed.text = text.replace(/(<click_context [^>]*?tokens=")\d+(")/, `$1${packed.tokens}$2`); // the header states the real total
           }
         }
       }
