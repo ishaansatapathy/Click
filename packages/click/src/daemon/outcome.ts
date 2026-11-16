@@ -50,6 +50,8 @@ export interface OutcomeDeps {
   onKnownResult?: () => void;
   /** The files an agent reports it changed, for the shared board's warnings to the other agents. */
   recordEdits?: (agent: string, files: string[]) => void;
+  /** An automatic handoff for the other agents, written when an agent's outcome changed files (so the agent does not have to call a tool). */
+  handoff?: (agent: string, text: string, files: string[]) => void;
   nodes: () => readonly GraphNode[];
   git: GitOps;
   log: Logger;
@@ -129,7 +131,14 @@ export function outcomeRoute(d: OutcomeDeps): Route {
         repoCommit: req.repoCommit !== undefined ? req.repoCommit : (await d.git.head(d.root)),
       };
       await d.outcomes.append(event);
-      if (filesEdited.length) d.recordEdits?.(req.agent ?? (req.sessionId ? `session-${req.sessionId.slice(0, 6)}` : 'an agent'), filesEdited);
+      if (filesEdited.length) {
+        const agent = req.agent ?? (req.sessionId ? `session-${req.sessionId.slice(0, 6)}` : 'an agent');
+        d.recordEdits?.(agent, filesEdited);
+        const task = (req.taskText ?? contexts[0]?.taskText ?? '').replace(/\s+/g, ' ').trim();
+        const shown = filesEdited.slice(0, 6).join(', ') + (filesEdited.length > 6 ? ` and ${filesEdited.length - 6} more` : '');
+        const result = check.passed === true ? ' Its check passed.' : check.passed === false ? ' Its check FAILED.' : '';
+        d.handoff?.(agent, `(automatic) ${agent} ${task ? `worked on "${task.length > 140 ? `${task.slice(0, 139)}…` : task}" and ` : ''}changed ${shown}.${result}`, filesEdited);
+      }
       d.log.info('outcome', { id: event.id, sessionId: req.sessionId, contexts: contexts.length, edited: filesEdited.length, diffSymbols: diffSymbols.length, check: check.kind, passed: check.passed });
 
       if (check.passed === undefined) d.checks?.enqueue(event);

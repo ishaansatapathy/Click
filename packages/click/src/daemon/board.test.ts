@@ -131,6 +131,22 @@ describe('two agents through one daemon', () => {
     expect(again.body.text).not.toContain('never awaits');
   }, 60_000);
 
+  it('writes a handoff by itself when an agent reports what it changed, so an agent that never calls a tool still informs the others', async () => {
+    const task = 'the cart total ignores the discount code, look at useCartStore';
+    const first = await world.json<PackedContext>('/context', { task, budgetTokens: 4000, agent: 'claude-code-ab12', sessionId: 'sess-auto-1' });
+    const files = [...new Set(first.body.items.flatMap((i) => (i.path ? [i.path] : [])))];
+    await world.json('/outcome', { sessionId: 'sess-auto-1', agent: 'claude-code-ab12', filesEdited: [files[0]!], check: { kind: 'vitest', passed: false } });
+    const notes = await world.json<{ notes: { author: string; kind: string; text: string; files: string[] }[] }>(`/notes?files=${encodeURIComponent(files[0]!)}`);
+    const auto = notes.body.notes.find((n) => n.text.startsWith('(automatic) claude-code-ab12'));
+    expect(auto).toMatchObject({ author: 'claude-code-ab12', kind: 'handoff' });
+    expect(auto?.text).toContain('the cart total ignores the discount code');
+    expect(auto?.text).toContain(`changed ${files[0]}`);
+    expect(auto?.text).toContain('Its check FAILED.');
+
+    const second = await world.json<PackedContext>('/context', { task, budgetTokens: 4000, agent: 'codex' });
+    expect(second.body.text).toContain('(automatic) claude-code-ab12');
+  }, 60_000);
+
   it('never exceeds the character cap the prompt hook asks for', async () => {
     const plain = await world.json<PackedContext>('/context', { task: TASK, budgetTokens: 4000, agent: 'cursor', maxChars: 200_000 });
     const cap = plain.body.text.length - 10;
