@@ -255,7 +255,7 @@ function Integrations() {
             Works with the agent you already use: Claude Code, Codex, Cursor or any MCP client. The MCP server answers on demand; in
             Claude Code a prompt hook also adds context to every message and a Stop hook learns from what the agent actually read.
           </p>
-          <code className="lp-code">npm i -g click-context</code>
+          <code className="lp-code">npm i -g @ishaan_satapathy/click-context</code>
         </Reveal>
       </div>
     </section>

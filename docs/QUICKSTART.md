@@ -5,11 +5,11 @@ Click runs locally: your code never leaves your computer. You need **Node 20+**.
 ## 1. Install
 
 ```bash
-npm install -g click-context        # gives you the `click` command
+npm install -g @ishaan_satapathy/click-context        # gives you the `click` command
 click --version                     # 0.1.0
 ```
 
-(or run any command below as `npx click-context <command>` without installing)
+(or run any command below as `npx -p @ishaan_satapathy/click-context click <command>` without installing)
 
 ## 2. Index a Vue 3 repository
 

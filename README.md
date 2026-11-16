@@ -60,7 +60,7 @@ You need **Node 20+**. Docker is only needed for the full HydraDB setup (step 4)
 ### 2.1 Judge path: five minutes, no Docker
 
 ```bash
-npm install -g click-context          # installs the `click` command
+npm install -g @ishaan_satapathy/click-context          # installs the `click` command
 git clone https://github.com/un-pany/v3-admin-vite && cd v3-admin-vite     # any Vue 3 repo works
 click index                           # builds the code graph (a few seconds)
 click context "when a user logs out, clear the session and the open tabs" --budget 4000

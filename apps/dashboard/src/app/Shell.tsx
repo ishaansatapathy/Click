@@ -103,7 +103,7 @@ function Connect({ onDone }: { onDone: () => void }) {
       setTimeout(() => setCopied(null), 1400);
     });
   };
-  const cmds = ['npm i -g click-context', 'click index', 'click hooks install'];
+  const cmds = ['npm i -g @ishaan_satapathy/click-context', 'click index', 'click hooks install'];
   return (
     <div className="empty">
       <IsoStack />

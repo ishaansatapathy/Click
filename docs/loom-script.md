@@ -31,7 +31,7 @@ Rehearse once without recording.
 | 3:00-3:50 | Site: Benchmark | "We measured it on 233 tasks from this app's own git history, 75 held out. Strict file recall at a fixed budget. The graph adds 4 points at 4k tokens and 10.8 at 8k, both intervals clear of zero. Against plain vector search, file recall is a tie, but Click returns the function that matters three times as often. Learning: the loop works, the gain is not proven yet. We say that on the page." | Show the bar chart, then the interval plot. Hover one bar to show the run id. |
 | 3:50-4:10 | Site: Playground | "And anyone can try the retrieval in the browser, no install." | Pick a chip, Get context, point at "files only the graph found". |
 | 4:10-4:45 | Site: Go to market | "Who pays: small Vue teams and students paying per token. Free and local for one developer; a team plan with a shared learned graph, HydraDB deployed in the customer's own cloud, which is how HydraDB's licence wants it." | Scroll the GTM page. |
-| 4:45-5:00 | README on GitHub | "Open source, MIT, one install command: `npm i -g click-context`, then `click init`. Link below." | Show the README top. |
+| 4:45-5:00 | README on GitHub | "Open source, MIT, one install command: `npm i -g @ishaan_satapathy/click-context`, then `click init`. Link below." | Show the README top. |
 
 ## If something goes wrong while recording
 
