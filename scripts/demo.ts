@@ -10,7 +10,7 @@
 //   DEMO_TASK="..."    the task to ask (default: the logout example the dashboard shows)
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -69,6 +69,16 @@ async function main(): Promise<void> {
   if (ver?.status === 0) ok(`click ${ver.stdout.trim()}`);
   else return void bad('the Click CLI is not built', 'pnpm build');
 
+  // The sample repo's comments are in Chinese. For a demo the daemon blanks their text (line numbers unchanged; strings stay), so the
+  // context on screen reads cleanly. Only the daemon honours this marker, so benchmark runs in-process are never affected;
+  // DEMO_PLAIN=1 removes it (do that before benchmarking through the daemon, i.e. `--retriever http`).
+  const marker = join(repo, '.click', 'blank-cjk-comments');
+  if (existsSync(repo)) {
+    mkdirSync(dirname(marker), { recursive: true });
+    if (process.env.DEMO_PLAIN === '1') rmSync(marker, { force: true });
+    else writeFileSync(marker, 'blank the text of Chinese comments in the code Click returns (demo)\n');
+  }
+
   console.log('\n3. The code graph');
   const idx = click(['index'], 180_000);
   const idxLine = idx.stdout.split('\n').find((l) => l.includes('nodes'));
@@ -119,7 +129,8 @@ async function main(): Promise<void> {
     console.log(`    node packages/click/dist/click.js context "<your task>" --root "${repo}" --budget 4000`);
     console.log('  Claude Code: open the demo repo in VS Code (or run `claude` in it) and paste this prompt:');
     console.log(`    ${task}`);
-    console.log(`  Proof the hook fired: a new "delivered" line in ${join(repo, '.click', 'logs')}\n`);
+    console.log(`  Proof the hook fired: a new "delivered" line in ${join(repo, '.click', 'logs')}`);
+    console.log(existsSync(marker) ? '  Note: Chinese comments of the sample repo are blanked for the demo (DEMO_PLAIN=1 pnpm demo turns that off; do it before benchmarking via the daemon).\n' : '');
   }
   process.exitCode = failed ? 1 : 0;
 }
