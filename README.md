@@ -452,6 +452,10 @@ flowchart TD
 
 **`pnpm drill`** turns the table into ten automated drills that run the *real bundled hook* as a child process. Current result: **9 passed, 0 failed, 1 skipped** (the Jev 429 drill is skipped with its reason: the shipped preset has no pruner, so no request ever calls it). The slowest hook run was **1.5 s** against the 3 s timeout.
 
+In normal use (warm daemon, local HydraDB) the hook answers **20 of 20** held-out prompts with a wall-clock **p50 of 405 ms and p95 of 550 ms**, Node start-up included (a `latency` row in `bench/results.jsonl`).
+
+The package was tested on a **clean Linux machine** (`node:20` container): `npm i -g` → `click init` → `click context` → `click status` → MCP server → `click uninstall`. That run found a real bug (on Linux and macOS npm links the bin as a symlink, and the CLI silently did nothing); it is fixed.
+
 ---
 
 ## 8. Using Click with your agent
@@ -511,6 +515,7 @@ Everything `init` writes is **idempotent** and **byte-exactly reversible**: `cli
 | `click context "<task>" [--budget N] [--json] [--variant V]` | the context for a task |
 | `click serve` | run the per-repository daemon in the foreground |
 | `click status [--json]` | daemon health, graph version, last request, HydraDB state |
+| `click statusline` | one line for Claude Code's status bar: `Click ▸ 3.1k ctx · 7 files · 240 ms` (install with `click init --statusline`) |
 | `click push` / `click pull` | upload the graph to HydraDB / rebuild the local replica from it |
 | `click map --stats \| --node <id> \| --path <file>` | inspect the graph |
 | `click reindex [--changed] [paths…]` | ask the daemon to refresh |
