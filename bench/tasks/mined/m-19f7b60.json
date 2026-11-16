@@ -15,5 +15,6 @@
     ]
   },
   "split": "train",
-  "e2e": false
+  "e2e": true,
+  "check": { "kind": "vue-tsc+vitest", "tests": ["bench/e2e/checks/m-19f7b60.test.ts"] }
 }

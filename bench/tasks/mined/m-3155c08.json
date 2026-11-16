@@ -13,5 +13,6 @@
     "symbols": []
   },
   "split": "train",
-  "e2e": false
+  "e2e": true,
+  "check": { "kind": "vue-tsc+vitest", "tests": ["bench/e2e/checks/m-3155c08.test.ts"] }
 }
