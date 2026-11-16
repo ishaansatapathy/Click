@@ -34,7 +34,19 @@ export interface AgentUsage {
   cacheRead: number;
   cacheCreation: number;
 }
+/** What the agent did, from the stream: how it explored before it started editing. */
+export interface AgentTrace {
+  /** tool name -> number of calls */
+  toolCalls: Record<string, number>;
+  /** Read + Grep + Glob calls */
+  exploreCalls: number;
+  /** distinct file paths the agent opened with Read */
+  filesRead: number;
+  /** the assistant turn (1-based) of the first Edit/Write/MultiEdit, null if it never edited */
+  turnsBeforeFirstEdit: number | null;
+}
 export interface AgentResult {
+  trace?: AgentTrace;
   usage: AgentUsage;
   turns: number;
   costUsd: number;
@@ -63,6 +75,9 @@ export interface VariantSummary {
   turnsPerSolved: number | null;
   wallSecPerSolved: number | null;
   costUsdPerSolved: number | null;
+  /** Over ALL runs of the variant: mean Read+Grep+Glob calls, and mean assistant turn of the first edit (runs that edited), when the stream was traced. */
+  exploreCallsMean: number | null;
+  turnsBeforeFirstEditMean: number | null;
 }
 
 // ------------------------------------------------------------------ pure parts (tested)
@@ -90,6 +105,48 @@ export function parseClaudeJson(stdout: string): Omit<AgentResult, 'wallMs' | 't
   };
 }
 
+const EDIT_TOOLS = new Set(['Edit', 'Write', 'MultiEdit']);
+const EXPLORE_TOOLS = new Set(['Read', 'Grep', 'Glob']);
+
+/** `claude -p --output-format stream-json --verbose`: one JSON object per line. The last "result" line has the usage; the assistant lines have the tool calls. A plain single-JSON answer still parses (without a trace). */
+export function parseClaudeStream(stdout: string): Omit<AgentResult, 'wallMs' | 'timedOut'> {
+  const events: Record<string, unknown>[] = [];
+  for (const line of stdout.split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t.startsWith('{')) continue;
+    try {
+      const e = JSON.parse(t) as unknown;
+      if (typeof e === 'object' && e !== null) events.push(e as Record<string, unknown>);
+    } catch {
+      // a partial line (the run was killed): skip it
+    }
+  }
+  const result = [...events].reverse().find((e) => e.type === 'result');
+  if (!result) return parseClaudeJson(stdout);
+  const base = parseClaudeJson(JSON.stringify(result));
+  const toolCalls: Record<string, number> = {};
+  const files = new Set<string>();
+  const turnIds: string[] = [];
+  let firstEdit: number | null = null;
+  for (const e of events) {
+    if (e.type !== 'assistant') continue;
+    const message = (e.message ?? {}) as { id?: unknown; content?: unknown };
+    const id = typeof message.id === 'string' ? message.id : `#${turnIds.length}`;
+    if (!turnIds.includes(id)) turnIds.push(id);
+    const turn = turnIds.indexOf(id) + 1;
+    for (const block of Array.isArray(message.content) ? (message.content as Record<string, unknown>[]) : []) {
+      if (block.type !== 'tool_use' || typeof block.name !== 'string') continue;
+      toolCalls[block.name] = (toolCalls[block.name] ?? 0) + 1;
+      const input = (block.input ?? {}) as Record<string, unknown>;
+      if (block.name === 'Read' && typeof input.file_path === 'string') files.add(input.file_path);
+      if (EDIT_TOOLS.has(block.name) && firstEdit === null) firstEdit = turn;
+    }
+  }
+  if (turnIds.length === 0) return base; // no assistant lines: not a traced stream, so no trace (an empty one would read as "did nothing")
+  const exploreCalls = Object.entries(toolCalls).filter(([n]) => EXPLORE_TOOLS.has(n)).reduce((a, [, c]) => a + c, 0);
+  return { ...base, trace: { toolCalls, exploreCalls, filesRead: files.size, turnsBeforeFirstEdit: firstEdit } };
+}
+
 export const countTscErrors = (output: string): number => output.split('\n').filter((l) => /error TS\d+/.test(l)).length;
 
 /** A task is solved when the type-check got no worse and the task's own test passes. */
@@ -114,6 +171,8 @@ export function summarise(rows: readonly E2eRow[]): VariantSummary[] {
       turnsPerSolved: per((r) => r.turns),
       wallSecPerSolved: per((r) => r.wallMs / 1000),
       costUsdPerSolved: per((r) => r.costUsd),
+      exploreCallsMean: mean(mine.flatMap((r) => (r.trace ? [r.trace.exploreCalls] : []))),
+      turnsBeforeFirstEditMean: mean(mine.flatMap((r) => (r.trace?.turnsBeforeFirstEdit != null ? [r.trace.turnsBeforeFirstEdit] : []))),
     };
   });
 }
@@ -207,7 +266,7 @@ export function claudeAgent(opts: { exe: string; model?: string; maxUsd: number;
   return (cwd, prompt) =>
     new Promise((resolveRun) => {
       const t0 = Date.now();
-      const args = ['-p', prompt, '--output-format', 'json', '--permission-mode', 'acceptEdits', '--no-session-persistence', '--max-budget-usd', String(opts.maxUsd), '--allowedTools', 'Read', 'Edit', 'Write', 'Glob', 'Grep', 'MultiEdit', 'Bash(npx vitest run:*)', 'Bash(npx vue-tsc:*)', ...(opts.model ? ['--model', opts.model] : [])];
+      const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--no-session-persistence', '--max-budget-usd', String(opts.maxUsd), '--allowedTools', 'Read', 'Edit', 'Write', 'Glob', 'Grep', 'MultiEdit', 'Bash(npx vitest run:*)', 'Bash(npx vue-tsc:*)', ...(opts.model ? ['--model', opts.model] : [])];
       const child = spawn(opts.exe, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
       let out = '';
       let timedOut = false;
@@ -219,7 +278,7 @@ export function claudeAgent(opts: { exe: string; model?: string; maxUsd: number;
       }, opts.timeoutMs);
       child.on('close', () => {
         clearTimeout(timer);
-        resolveRun({ ...parseClaudeJson(out), timedOut, wallMs: Date.now() - t0 });
+        resolveRun({ ...parseClaudeStream(out), timedOut, wallMs: Date.now() - t0 });
       });
       child.on('error', () => {
         clearTimeout(timer);
@@ -270,6 +329,7 @@ async function main(): Promise<void> {
   const flag = (n: string, d?: string): string | undefined => (a.includes(`--${n}`) ? a[a.indexOf(`--${n}`) + 1] : d);
   const dry = a.includes('--dry');
   const limit = Number(flag('tasks', '3'));
+  const repeat = Math.max(1, Number(flag('repeat', '1')));
   const variants = (flag('variants', 'V0,delivery') ?? '').split(',').filter(Boolean);
   const paths = resolvePaths();
   const tasks = loadTasks(paths.mainRoot, limit);
@@ -282,16 +342,16 @@ async function main(): Promise<void> {
   const base = { ...(dry ? {} : clickSetup(paths)) };
   const deps: HarnessDeps = { artifactDir: join(out, runId), agent: dry ? dryAgent : claudeAgent({ exe: exe!, ...(flag('model') ? { model: flag('model')! } : {}), maxUsd: Number(flag('max-usd', '1.5')), timeoutMs: Number(flag('timeout-min', '10')) * 60_000 }), ...base };
   const rows: E2eRow[] = [];
-  for (const t of tasks) {
+  for (let rep = 1; rep <= repeat; rep++) for (const t of tasks) {
     for (const v of variants) {
-      console.log(`${t.id} · ${v} …`);
-      const row = await runTask(t, v, runId, paths, deps);
+      console.log(`${t.id} · ${v}${repeat > 1 ? ` · rep ${rep}/${repeat}` : ''} …`);
+      const row = await runTask(t, v, runId, paths, { ...deps, ...(deps.artifactDir && repeat > 1 ? { artifactDir: join(deps.artifactDir, `rep${rep}`) } : {}) });
       rows.push(row);
       writeFileSync(join(out, `${runId}.jsonl`), rows.map((r) => JSON.stringify(r)).join('\n') + '\n');
       console.log(`  solved=${row.solved} tests=${row.testPassed} tsc ${row.tscErrorsBefore}→${row.tscErrorsAfter} tokens(in/out/cacheR/cacheW)=${row.usage.input}/${row.usage.output}/${row.usage.cacheRead}/${row.usage.cacheCreation} turns=${row.turns} ${Math.round(row.wallMs / 1000)}s $${row.costUsd.toFixed(3)}`);
     }
   }
-  const summary = { runId, dry, n: tasks.length, tasks: tasks.map((t) => t.id), variants: summarise(rows) };
+  const summary = { runId, dry, n: tasks.length, repeat, tasks: tasks.map((t) => t.id), variants: summarise(rows) };
   writeFileSync(join(out, `${runId}.json`), JSON.stringify(summary, null, 2) + '\n');
   console.log('\n' + JSON.stringify(summary.variants, null, 2));
 }
