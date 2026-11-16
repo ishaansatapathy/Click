@@ -191,6 +191,8 @@ export interface E2eRow {
   totals: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheCreationTokens: number; turns: number; wallMs: number; costUsd: number };
 }
 export interface E2eData {
+  /** The run ids (docs/e2e/<runId>.jsonl) the figures add up. */
+  runs?: string[];
   ts: string;
   rows: E2eRow[];
 }

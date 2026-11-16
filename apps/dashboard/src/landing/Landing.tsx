@@ -407,6 +407,7 @@ function E2e() {
     ['Cost', `${a.totals.costUsd.toFixed(2)}`, `${b.totals.costUsd.toFixed(2)}`, change(a.totals.costUsd, b.totals.costUsd)],
     ['Tokens per solved task', a.tokensPerSolved === null ? '–' : Math.round(a.tokensPerSolved).toLocaleString('en-US'), b.tokensPerSolved === null ? '–' : Math.round(b.tokensPerSolved).toLocaleString('en-US'), a.tokensPerSolved && b.tokensPerSolved ? change(a.tokensPerSolved, b.tokensPerSolved) : '–'],
   ];
+  const allBetter = b.totals.turns <= a.totals.turns && b.totals.wallMs <= a.totals.wallMs && !!a.tokensPerSolved && !!b.tokensPerSolved && b.tokensPerSolved <= a.tokensPerSolved;
   return (
     <section className="lp-bench lp-e2e" id="agent-run">
       <h2 className="lp-h2 bench-title">
@@ -421,7 +422,7 @@ function E2e() {
         <span className="lp-orange-tag">n = {a.n} · indicative only</span>
         <Reveal as="p" className="lp-mono small">
           The same {a.n} tasks, once with Claude Code as it is and once with Click. A task counts as solved only when its own test passes and
-          the type-check gets no worse. Eight tasks is a small sample, so read this as a direction, not a result.
+          the type-check gets no worse. {a.n} tasks is a small sample, so read this as a direction, not a result.
         </Reveal>
       </div>
       <div className="lp-table-wrap">
@@ -447,8 +448,8 @@ function E2e() {
         </table>
       </div>
       <p className="lp-mono small dim lp-foot-note">
-        Both agents solved the same tasks. With Click the agent took fewer turns and less time, but tokens per solved task did not go down,
-        so this run does <b>not</b> show token savings. Runs: {a.id}, {b.id}.
+        With Click the agent solved {b.solved} of {b.n} tasks against {a.solved} without: a difference of {Math.abs(b.solved - a.solved)}, well inside the run-to-run noise of an
+        agent. {allBetter ? 'Turns, time and tokens per solved task are all lower or equal with Click, but at this size that is a direction, not proof of token savings.' : 'The measures point in different directions, so this run does not show token savings.'} Runs: {(d.runs ?? [a.id]).join(', ')}.
       </p>
     </section>
   );
