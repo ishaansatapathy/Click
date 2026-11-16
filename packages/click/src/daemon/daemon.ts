@@ -115,7 +115,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
 
   // The re-index queue is created first so a stale body (a file edited since it was indexed) can ask for a re-index.
   const queue = new ReindexQueue({ run: async (job) => void (await reindex(job)), log, ...(c.debounceMs !== undefined ? { debounceMs: c.debounceMs } : {}) });
-  const bodies = new BodyReader(c.root, { onStale: (path) => void queue.enqueue({ paths: [path] }) });
+  const bodies = new BodyReader(c.root, { honorBlankMarker: true, onStale: (path) => void queue.enqueue({ paths: [path] }) });
   const reindex = createReindexer({ root: c.root, buildOptions, state, persist, bodies, log, ...(c.changed ? { changed: c.changed } : {}) });
   const prefix = new SkeletonProvider({ graphStore: c.graph });
 

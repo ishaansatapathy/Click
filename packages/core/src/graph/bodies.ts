@@ -7,11 +7,23 @@
 //     copy is still the file on disk, so a hot request costs one stat, not a read and a hash.
 //   - content is normalised exactly like discovery (BOM stripped, CRLF → LF) before hashing, so Windows files match.
 
+import { existsSync } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { normaliseContent } from '../indexer/discover.js';
 import type { GraphNode } from '../types.js';
+import { blankCjkComments } from '../util/comments.js';
 import { sha1 } from '../util/hash.js';
+
+/** Per-repository opt-in: when this file exists the text of Chinese comments is blanked in the code Click returns (line numbers unchanged). */
+export const BLANK_CJK_MARKER = join('.click', 'blank-cjk-comments');
+
+/** The text to serve: the file as it is, or (opt-in) with Chinese comments blanked. The hash is always of the real file; a transform that changed the line count is dropped. */
+function shown(content: string, blank: boolean): string {
+  if (!blank) return content;
+  const out = blankCjkComments(content);
+  return out.split('\n').length === content.split('\n').length ? out : content;
+}
 
 export type BodyResult = { ok: true; text: string } | { ok: false; reason: 'stale' | 'missing' | 'unreadable' };
 
@@ -20,12 +32,16 @@ export interface BodyReaderOptions {
   maxBytes?: number;
   /** Called once per path when its content stops matching the indexed hash; cleared when the path matches again. */
   onStale?: (path: string) => void;
+  /** Honour the per-repository marker .click/blank-cjk-comments (blank Chinese comments). Only the daemon turns this on: the benchmark and every in-process caller see the code exactly as it is. */
+  honorBlankMarker?: boolean;
 }
 
 interface Entry {
   mtimeMs: number;
   size: number;
   hash: string;
+  /** Whether the lines went through blankCjkComments, so a marker added or removed later is not answered from a stale cache entry. */
+  blanked: boolean;
   lines: string[];
   bytes: number;
 }
@@ -37,6 +53,7 @@ export class BodyReader {
   private bytes = 0;
   private readonly maxBytes: number;
   private readonly onStale: ((path: string) => void) | undefined;
+  private readonly honorBlankMarker: boolean;
   readonly stats = { hits: 0, loads: 0, stale: 0 };
 
   constructor(
@@ -45,6 +62,7 @@ export class BodyReader {
   ) {
     this.maxBytes = opts.maxBytes ?? 32 * 1024 * 1024;
     this.onStale = opts.onStale;
+    this.honorBlankMarker = opts.honorBlankMarker ?? false;
   }
 
   /** Bytes currently held by the cache (never above maxBytes). */
@@ -113,8 +131,9 @@ export class BodyReader {
       this.drop(path);
       return (e as NodeJS.ErrnoException).code === 'ENOENT' ? 'missing' : 'unreadable';
     }
+    const blanked = this.honorBlankMarker && existsSync(join(this.root, BLANK_CJK_MARKER));
     const hit = this.cache.get(path);
-    if (hit && hit.mtimeMs === st.mtimeMs && hit.size === st.size) {
+    if (hit && hit.mtimeMs === st.mtimeMs && hit.size === st.size && hit.blanked === blanked) {
       this.stats.hits++;
       this.cache.delete(path); // refresh recency
       this.cache.set(path, hit);
@@ -128,7 +147,7 @@ export class BodyReader {
       return 'unreadable'; // a directory, a permission problem, a file removed mid-read
     }
     this.stats.loads++;
-    const entry: Entry = { mtimeMs: st.mtimeMs, size: st.size, hash: sha1(content), lines: content.split('\n'), bytes: content.length * 2 };
+    const entry: Entry = { mtimeMs: st.mtimeMs, size: st.size, hash: sha1(content), blanked, lines: shown(content, blanked).split('\n'), bytes: content.length * 2 };
     this.drop(path);
     if (entry.bytes <= this.maxBytes) {
       this.cache.set(path, entry);
