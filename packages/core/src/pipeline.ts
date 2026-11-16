@@ -106,7 +106,8 @@ function bodiesFor(deps: PipelineInput): BodySource {
 
 // ---------------------------------------------------------------- helpers
 
-const isTimeout = (e: unknown): boolean => e instanceof DeadlineError || (e instanceof Error && (e.name === 'DeadlineError' || e.name === 'AbortError'));
+// AbortSignal.timeout() rejects with a DOMException named TimeoutError: that is a timeout too, not an error
+const isTimeout = (e: unknown): boolean => e instanceof DeadlineError || (e instanceof Error && ['DeadlineError', 'AbortError', 'TimeoutError'].includes(e.name));
 
 function csrFromRows(
   rows: readonly { from: string; to: string; kind: CsrEdge['kind']; w: number | null }[],
