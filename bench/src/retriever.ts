@@ -135,7 +135,8 @@ export function httpRetriever(options?: HttpRetrieverOptions): Retriever {
   return async (task, budget) => {
     if (!options) throw new RetrieverNotWiredError('http', 'prompt 115 has not shipped the daemon endpoint yet');
     const request = options.request ?? fetchJson<PackedContext>;
-    const headers = options.token ? { authorization: `Bearer ${options.token}` } : undefined;
+    // the daemon authenticates with its own header (packages/click/src/daemon/server.ts TOKEN_HEADER), not a bearer token
+    const headers = options.token ? { 'x-click-token': options.token } : undefined;
     return request(`${options.baseUrl.replace(/\/$/, '')}/context`, {
       method: 'POST',
       headers,

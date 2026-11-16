@@ -90,7 +90,7 @@ describe('retriever adapters', () => {
     })(task, 4_000)).resolves.toBe(packed);
     expect(request).toHaveBeenCalledWith('http://127.0.0.1:3210/context', {
       method: 'POST',
-      headers: { authorization: 'Bearer secret' },
+      headers: { 'x-click-token': 'secret' },
       body: { task: task.text, budgetTokens: 4_000, variant: 'V4', source: 'bench' },
       timeoutMs: 5_000,
       retries: 0,
