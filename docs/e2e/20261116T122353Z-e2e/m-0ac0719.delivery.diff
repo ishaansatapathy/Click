@@ -1,0 +1,34 @@
+diff --git a/src/layouts/components/Sidebar/index.vue b/src/layouts/components/Sidebar/index.vue
+index fe41db07..3a972161 100644
+--- a/src/layouts/components/Sidebar/index.vue
++++ b/src/layouts/components/Sidebar/index.vue
+@@ -28,6 +28,8 @@ const isLogo = computed(() => isLeft.value && settingsStore.showLogo)
+ const backgroundColor = computed(() => (isLeft.value ? v3SidebarMenuBgColor : undefined))
+ const textColor = computed(() => (isLeft.value ? v3SidebarMenuTextColor : undefined))
+ const activeTextColor = computed(() => (isLeft.value ? v3SidebarMenuActiveTextColor : undefined))
++/** 父级菜单高亮色（非 Left 模式下 activeTextColor 为空，回退到 Element Plus 的激活色） */
++const parentActiveTextColor = computed(() => activeTextColor.value ?? "var(--el-menu-active-color)")
+ const sidebarMenuItemHeight = computed(() => !isTop.value ? "var(--v3-sidebar-menu-item-height)" : "var(--v3-navigationbar-height)")
+ const sidebarMenuHoverBgColor = computed(() => !isTop.value ? "var(--v3-sidebar-menu-hover-bg-color)" : "transparent")
+ const tipLineWidth = computed(() => !isTop.value ? "2px" : "0px")
+@@ -115,7 +117,7 @@ const tipLineWidth = computed(() => !isTop.value ? "2px" : "0px")
+ :deep(.el-sub-menu) {
+   &.is-active {
+     > .el-sub-menu__title {
+-      color: v-bind(activeTextColor);
++      color: v-bind(parentActiveTextColor);
+     }
+   }
+ }
+@@ -126,7 +128,11 @@ const tipLineWidth = computed(() => !isTop.value ? "2px" : "0px")
+ 
+ .el-menu--collapse {
+   :deep(.el-sub-menu.is-active) {
++    // 折叠后只显示图标，保持选中项的父级菜单高亮
+     .el-sub-menu__title {
++      position: relative;
++      color: v-bind(parentActiveTextColor);
++      background-color: v-bind(sidebarMenuHoverBgColor);
+       @extend %tip-line;
+     }
+   }

@@ -1,0 +1,22 @@
+diff --git a/src/layouts/components/NavigationBar/index.vue b/src/layouts/components/NavigationBar/index.vue
+index 76996f91..3ceb180f 100644
+--- a/src/layouts/components/NavigationBar/index.vue
++++ b/src/layouts/components/NavigationBar/index.vue
+@@ -109,6 +109,8 @@ function toggleSidebar() {
+     display: flex;
+     align-items: center;
+     &-item {
++      display: flex;
++      align-items: center;
+       margin: 0 10px;
+       cursor: pointer;
+       &:last-child {
+@@ -116,8 +118,6 @@ function toggleSidebar() {
+       }
+     }
+     .user {
+-      display: flex;
+-      align-items: center;
+       .el-avatar {
+         margin-right: 10px;
+       }

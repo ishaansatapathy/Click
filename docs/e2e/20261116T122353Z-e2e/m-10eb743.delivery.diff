@@ -1,0 +1,23 @@
+diff --git a/src/layouts/modes/LeftMode.vue b/src/layouts/modes/LeftMode.vue
+index 728cef1f..a8bfb300 100644
+--- a/src/layouts/modes/LeftMode.vue
++++ b/src/layouts/modes/LeftMode.vue
+@@ -67,7 +67,8 @@ $transition-time: 0.35s;
+   top: 0;
+   height: 100%;
+   position: absolute;
+-  z-index: 999;
++  // 需高于 Element Plus 的 v-loading 遮罩层（z-index: 2000）
++  z-index: 2001;
+ }
+ 
+ .sidebar-container {
+@@ -79,7 +80,7 @@ $transition-time: 0.35s;
+   top: 0;
+   bottom: 0;
+   left: 0;
+-  z-index: 1001;
++  z-index: 2002;
+   overflow: hidden;
+   border-right: var(--v3-sidebar-border-right);
+ }

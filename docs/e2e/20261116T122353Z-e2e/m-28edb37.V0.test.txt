@@ -1,0 +1,10 @@
+
+ RUN  v4.1.10 C:/Users/IshaanSatapathy/AppData/Local/Temp/click-e2e-m-28edb37-s0fddl
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  18:14:33
+   Duration  1.88s (transform 149ms, setup 0ms, import 177ms, tests 5ms, environment 1.29s)
+
+npm warn Unknown project config "shamefully-hoist". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
