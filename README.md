@@ -374,7 +374,7 @@ Strict file recall, %. Symbol recall in brackets.
 - ⚠️ **On whole-file recall, plain vector search ties V3.** We do not claim otherwise. The win over V1 is the precision of what is packed.
 - ⚠️ **Latency has a price**: about +780 ms p95 over V2, almost all of it the HydraDB neighbourhood query. A slow HydraDB degrades to the replica instead of waiting.
 - ⚠️ **One repository.** The benchmark is open so others can add theirs.
-- ⚠️ **Agent-level token savings are not yet measured here.** The end-to-end harness (`pnpm e2e`, below) measures tokens per solved task for a stock agent against the same agent with Click; its first real runs are what turns "the right code in the budget" into "fewer tokens for the agent". Until they exist, we do not claim it.
+- ⚠️ **The first agent-level run does not establish token savings.** With n=3 tasks, both the stock agent and the agent with Click solved 0/3, so tokens per solved task is undefined. The run is indicative only, not evidence of benefit or harm.
 
 ### 5.5 Reproduce
 
@@ -392,7 +392,22 @@ pnpm e2e --dry --tasks 1 --variants V0          # free: proves the plumbing (wor
 pnpm e2e --tasks 3 --variants V0,delivery       # real: spends API budget, capped per run
 ```
 
-For each task and variant the harness checks out the benchmark repo **at the parent commit** in a throwaway git worktree, installs Click (or not, for `V0`), runs **Claude Code headless** with a hard wall-clock and dollar cap, then decides "solved" by the task's own check (`vue-tsc` must not get worse and the task's vitest file must pass). It reports **tokens per solved task** (input, output, cache creation) with **cache reads reported separately**, plus turns and wall time, and writes `docs/e2e/<run>.json`.
+For each task and variant the harness checks out the benchmark repo **at the parent commit** in a throwaway git worktree, installs Click (or not, for `V0`), runs **Claude Code headless** with a hard wall-clock and dollar cap, then decides "solved" by the task's own check (`vue-tsc` must not get worse and the task's vitest file must pass). It reports **tokens per solved task** (input, output, cache creation) with **cache reads reported separately**, plus turns and wall time.
+
+**n=3, indicative only.** Agents are nondeterministic, and this single small run produced no solved tasks in either arm. Consequently, tokens per solved task cannot be calculated and these rows do **not** support a token-savings claim.
+
+<!-- bench:e2e:start -->
+| Task | Variant | Passed | Input | Output | Cache read | Cache create | Turns | Wall |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `m-031c5c1` | V0 | no | 10 | 1,756 | 134,787 | 17,890 | 5 | 29.2 s |
+| `m-031c5c1` | delivery | no | 10 | 1,555 | 146,077 | 20,340 | 5 | 21.6 s |
+| `m-2e26908` | V0 | no | 36 | 10,207 | 729,455 | 37,905 | 29 | 110.8 s |
+| `m-2e26908` | delivery | no | 30 | 9,885 | 674,704 | 43,094 | 24 | 162.5 s |
+| `m-4f4b23d` | V0 | no | 10 | 1,861 | 132,569 | 18,307 | 7 | 24.1 s |
+| `m-4f4b23d` | delivery | no | 8 | 1,460 | 112,956 | 20,764 | 5 | 29.7 s |
+<!-- bench:e2e:end -->
+
+Raw task rows are in [`bench/runs/20261116T025135Z-e2e.jsonl`](bench/runs/20261116T025135Z-e2e.jsonl); the two `kind: "e2e"` summary rows are in `bench/results.jsonl`.
 
 ---
 
@@ -628,7 +643,7 @@ The code is **TypeScript in strict mode** with a root `pnpm check` (typecheck, l
 - **One benchmark repository** (233 tasks). The numbers are real and reproducible, but they are one repository's numbers.
 - **On whole-file recall, plain vector search ties Click.** The advantage is symbol-level precision and the graph's gain over the same pipeline without it.
 - **Learning is not shown to pay off.** The gain is small, its interval includes zero, and it was measured on simulated outcomes.
-- **Agent-level token savings need the end-to-end runs** (`pnpm e2e`); they are not claimed until those rows exist.
+- **Agent-level token savings are not demonstrated.** The first real end-to-end run was n=3 and both arms solved 0/3, so tokens per solved task is undefined; larger repeated runs are required.
 - **HydraDB adds latency** (about +780 ms p95 in the benchmark setup).
 - **The Claude Code hook is capped at 10,000 characters** by Claude Code itself; use MCP for larger budgets.
 - **Semantic search needs an `OPENAI_API_KEY`** and is optional; without it Click uses symbols, BM25 and the graph.
