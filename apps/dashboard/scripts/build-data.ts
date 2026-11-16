@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { pairedBootstrap } from '../../../bench/src/metrics.js';
 import { normaliseContent } from '../../../packages/core/src/indexer/discover.js';
 import { buildIndex } from '../../../packages/core/src/indexer/build.js';
-import type { DiffRow, ExampleData, GraphData, LearningData, ResultsData, RunRow, TypeRow } from '../src/data/types.js';
+import type { DiffRow, E2eData, ExampleData, GraphData, LearningData, ResultsData, RunRow, TypeRow } from '../src/data/types.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(here, '../../..');
@@ -148,6 +148,18 @@ async function main(): Promise<void> {
     bootstrap: { iterations: 10_000, seed: 42 },
   };
   writeFileSync(join(OUT, 'results.json'), JSON.stringify(data));
+
+  // e2e: the newest real-agent run in results.jsonl (kind "e2e"), both variants of the same run; absent when there is none
+  const e2eRows = readJsonl<Record<string, unknown>>(join(ROOT, 'bench/results.jsonl')).filter((r) => r.kind === 'e2e');
+  const newest = e2eRows.map((r) => String(r.runId).replace(/-(V0|delivery)$/, '')).sort().pop();
+  if (newest) {
+    const mine = e2eRows.filter((r) => String(r.runId).startsWith(newest + '-'));
+    const e2e: E2eData = {
+      ts: String(mine[0]!.ts),
+      rows: mine.map((r) => ({ id: String(r.runId), variant: String(r.variant), n: Number(r.n), solved: Number(r.solved), tokensPerSolved: typeof r.tokensPerSolved === 'number' ? r.tokensPerSolved : null, totals: r.totals as E2eData['rows'][number]['totals'] })),
+    };
+    writeFileSync(join(OUT, 'e2e.json'), JSON.stringify(e2e));
+  }
 
   // learning: the simulated outcomes the V5 weights were derived from (bench/data/bench-sim-weights.json)
   const w = JSON.parse(readFileSync(join(ROOT, 'bench/data/bench-sim-weights.json'), 'utf8')) as { version: string; events: number; multipliers: Record<string, number>; addedEdges?: unknown[]; edges?: unknown[] };

@@ -211,3 +211,6 @@
   .lp-hero { padding-top: 80px; }
   .lp-footer-bar { flex-direction: column; }
 }
+
+.lp-e2e { margin-top: 140px; }
+.lp-table td.num.dim { font-family: var(--font-m); font-size: 13px; text-transform: none; color: var(--or); }

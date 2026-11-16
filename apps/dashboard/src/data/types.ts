@@ -179,3 +179,27 @@ export async function loadData(base: string = import.meta.env.BASE_URL, fetcher:
   const [learning, graph, examples] = await Promise.all([optional('learning.json', parseLearning), optional('graph.json', parseGraph), optional('examples.json', parseExamples)]);
   return { results, learning, graph, examples: examples ?? [] };
 }
+
+/** One variant of the agent run: the stock agent (V0) or the agent with Click (delivery). Every figure is a line of bench/results.jsonl (`kind: "e2e"`). */
+export interface E2eRow {
+  /** The row id in bench/results.jsonl. */
+  id: string;
+  variant: string;
+  n: number;
+  solved: number;
+  tokensPerSolved: number | null;
+  totals: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheCreationTokens: number; turns: number; wallMs: number; costUsd: number };
+}
+export interface E2eData {
+  ts: string;
+  rows: E2eRow[];
+}
+
+export function parseE2e(x: unknown): E2eData {
+  if (!isObj(x) || !isStr(x.ts) || !Array.isArray(x.rows) || x.rows.length < 2) throw new DataError('e2e.json', 'not an e2e document');
+  for (const r of x.rows) {
+    if (!isObj(r) || !isStr(r.id) || !isStr(r.variant) || !isNum(r.n) || !isNum(r.solved) || !isObj(r.totals)) throw new DataError('e2e.json', 'bad row');
+    for (const k of ['outputTokens', 'turns', 'wallMs', 'costUsd']) if (!isNum((r.totals as Record<string, unknown>)[k])) throw new DataError('e2e.json', `bad total ${k}`);
+  }
+  return x as unknown as E2eData;
+}

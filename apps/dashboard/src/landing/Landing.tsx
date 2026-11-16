@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { parseResults, type ResultsData } from '../data/types.js';
+import { parseE2e, parseResults, type E2eData, type ResultsData } from '../data/types.js';
 import { diffOf, pct, pp, row } from '../format.js';
 import { CountUp, Reveal, Scramble, scrollToId, useLenis, useScrollY } from '../motion.js';
 import { BigPixelLogo, BlockField, Cross, IsoC, NodeGlyph, PixelGraph, PixelLogo } from './art.js';
@@ -30,6 +30,21 @@ function useResults(): ResultsData | null {
     };
   }, []);
   return r;
+}
+
+function useE2e(): E2eData | null {
+  const [d, setD] = useState<E2eData | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch('/data/e2e.json')
+      .then((x) => x.json())
+      .then((x) => live && setD(parseE2e(x)))
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, []);
+  return d;
 }
 
 function Nav() {
@@ -376,6 +391,68 @@ function Bench({ r }: { r: ResultsData | null }) {
   );
 }
 
+/** Real agent runs: the stock agent against the agent with Click, same tasks. Every number is a row of bench/results.jsonl. */
+function E2e() {
+  const d = useE2e();
+  const a = d?.rows.find((x) => x.variant === 'V0');
+  const b = d?.rows.find((x) => x.variant === 'delivery');
+  if (!d || !a || !b) return null;
+  const change = (x: number, y: number): string => (x === 0 ? '–' : `${y < x ? '−' : '+'}${Math.abs(Math.round(((y - x) / x) * 100))}%`);
+  const lines: [string, string, string, string][] = [
+    ['Tasks solved', `${a.solved} / ${a.n}`, `${b.solved} / ${b.n}`, a.solved === b.solved ? 'same' : change(a.solved, b.solved)],
+    ['Agent turns', String(a.totals.turns), String(b.totals.turns), change(a.totals.turns, b.totals.turns)],
+    ['Output tokens', a.totals.outputTokens.toLocaleString('en-US'), b.totals.outputTokens.toLocaleString('en-US'), change(a.totals.outputTokens, b.totals.outputTokens)],
+    ['Wall time', `${Math.round(a.totals.wallMs / 1000)} s`, `${Math.round(b.totals.wallMs / 1000)} s`, change(a.totals.wallMs, b.totals.wallMs)],
+    ['Cost', `${a.totals.costUsd.toFixed(2)}`, `${b.totals.costUsd.toFixed(2)}`, change(a.totals.costUsd, b.totals.costUsd)],
+    ['Tokens per solved task', a.tokensPerSolved === null ? '–' : Math.round(a.tokensPerSolved).toLocaleString('en-US'), b.tokensPerSolved === null ? '–' : Math.round(b.tokensPerSolved).toLocaleString('en-US'), a.tokensPerSolved && b.tokensPerSolved ? change(a.tokensPerSolved, b.tokensPerSolved) : '–'],
+  ];
+  return (
+    <section className="lp-bench lp-e2e" id="agent-run">
+      <h2 className="lp-h2 bench-title">
+        <span className="i1">
+          <Scramble text="AND WITH A" />
+        </span>
+        <span className="i2">
+          <Scramble text="REAL AGENT" delay={150} />
+        </span>
+      </h2>
+      <div className="lp-bench-intro">
+        <span className="lp-orange-tag">n = {a.n} · indicative only</span>
+        <Reveal as="p" className="lp-mono small">
+          The same {a.n} tasks, once with Claude Code as it is and once with Click. A task counts as solved only when its own test passes and
+          the type-check gets no worse. Eight tasks is a small sample, so read this as a direction, not a result.
+        </Reveal>
+      </div>
+      <div className="lp-table-wrap">
+        <table className="lp-table">
+          <thead>
+            <tr>
+              <th>Measure</th>
+              <th className="num">Without Click</th>
+              <th className="num">With Click</th>
+              <th className="num">Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lines.map(([k, x, y, c]) => (
+              <tr key={k}>
+                <td>{k}</td>
+                <td className="num">{x}</td>
+                <td className="num">{y}</td>
+                <td className="num dim">{c}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="lp-mono small dim lp-foot-note">
+        Both agents solved the same tasks. With Click the agent took fewer turns and less time, but tokens per solved task did not go down,
+        so this run does <b>not</b> show token savings. Runs: {a.id}, {b.id}.
+      </p>
+    </section>
+  );
+}
+
 const USES = [
   { k: 'IMPACT()', tag: 'Use case 01', body: 'What breaks if I change useUserStore? Click walks incoming edges up to three hops and returns every dependent with the chain that links it, plus the tests that cover them.', lines: ['useUserStore → 27 files within 3 hops', 'router/guard.ts · 1 hop · imports', 'layouts/NavigationBar · 1 hop · uses_store'] },
   { k: 'CONTEXT()', tag: 'Use case 02', body: 'Ask for a change in plain words. Click returns the functions, components and stores that change needs, ranked by the graph and packed to the budget.', lines: ['"clear session on logout"', '→ useUserStore, resetRouter, useTagsViewStore', '→ +8 files only the graph found'] },
@@ -502,6 +579,7 @@ export default function Landing() {
         <Integrations />
         <Features />
         <Bench r={r} />
+        <E2e />
         <UseCases />
         <BuiltOn />
       </main>
