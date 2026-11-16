@@ -23,6 +23,8 @@ const paths = z.array(z.string().min(1).max(2_000)).max(5_000);
 export const outcomeRequestSchema = z
   .object({
     sessionId: z.string().min(1).max(200).optional(),
+    /** Who reports (Claude Code, Codex, ...), shown to the other agents next to the files it changed. */
+    agent: z.string().trim().min(1).max(60).optional(),
     contextIds: z.array(z.string().min(1).max(200)).max(500).optional(),
     taskText: z.string().max(20_000).optional(),
     filesRead: paths.optional(),
@@ -46,6 +48,8 @@ export interface OutcomeDeps {
   checks: Pick<CheckQueue, 'enqueue'> | null;
   /** Something learnable happened: an outcome with a known result. */
   onKnownResult?: () => void;
+  /** The files an agent reports it changed, for the shared board's warnings to the other agents. */
+  recordEdits?: (agent: string, files: string[]) => void;
   nodes: () => readonly GraphNode[];
   git: GitOps;
   log: Logger;
@@ -125,6 +129,7 @@ export function outcomeRoute(d: OutcomeDeps): Route {
         repoCommit: req.repoCommit !== undefined ? req.repoCommit : (await d.git.head(d.root)),
       };
       await d.outcomes.append(event);
+      if (filesEdited.length) d.recordEdits?.(req.agent ?? (req.sessionId ? `session-${req.sessionId.slice(0, 6)}` : 'an agent'), filesEdited);
       d.log.info('outcome', { id: event.id, sessionId: req.sessionId, contexts: contexts.length, edited: filesEdited.length, diffSymbols: diffSymbols.length, check: check.kind, passed: check.passed });
 
       if (check.passed === undefined) d.checks?.enqueue(event);

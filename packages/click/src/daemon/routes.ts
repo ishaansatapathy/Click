@@ -18,6 +18,8 @@ import type { BodySource } from '../../../core/src/pack/pack.js';
 import type { SkeletonProvider } from '../../../core/src/pack/prefix.js';
 import type { PrunerRegistry } from '../../../core/src/prune/chain.js';
 import type { Logger } from '../../../core/src/util/log.js';
+import { countTokens } from '../../../core/src/util/tokens.js';
+import type { Board } from './board.js';
 import type { DaemonState } from './boot.js';
 import type { GitOps } from './gitdiff.js';
 import type { JsonlWriter } from './jsonl.js';
@@ -32,6 +34,8 @@ export const contextRequestSchema = z.object({
   budgetTokens: z.number().int().min(500).max(32_000).optional(),
   variant: z.string().min(1).max(40).optional(),
   sessionId: z.string().min(1).max(200).optional(),
+  /** Who is asking (Claude Code, Codex, Cursor, ...). Shown to the other agents; when absent a session id stands in for it. */
+  agent: z.string().trim().min(1).max(60).optional(),
   deadlineMs: z.number().int().min(1).max(5_000).optional(),
   source: z.enum(['hook', 'mcp', 'cli', 'bench']).optional(),
   /** Hard cap on the text length in characters (the prompt hook uses it: Claude Code truncates hook context above 10,000). */
@@ -52,6 +56,8 @@ export interface RouteDeps {
   sessions: SessionMemory;
   stats: StatsKeeper;
   contexts: JsonlWriter;
+  /** What the agents on this repo tell each other (notes, handoffs, tasks); its relevant part is added to the context. */
+  board?: Board | undefined;
   log: Logger;
   /** `click.config.json` of the repo (a partial VariantConfig). */
   repoConfig?: DeepPartial<VariantConfig> | null | undefined;
@@ -166,6 +172,21 @@ export function createRoutes(d: RouteDeps): Route[] {
           return !i.range || !r || (i.range.startLine === r.startLine && i.range.endLine === r.endLine);
         };
         d.sessions.record(req.sessionId, packed.items.filter((i) => (i.mode === 'body' || i.mode === 'file') && whole(i)).map((i) => i.nodeId), packed.tokens, packed.contextId);
+      }
+      if (d.board) {
+        // the other agents on this repo: who is asking, and what they left for the files this context is about
+        const agent = req.agent ?? (req.sessionId ? `session-${req.sessionId.slice(0, 6)}` : undefined);
+        if (agent) d.board.touchAgent(agent, { task: req.task });
+        const room = budget - packed.tokens;
+        if (room > 40) {
+          const files = new Set(packed.items.flatMap((i) => (i.path ? [i.path] : [])));
+          const left = req.maxChars !== undefined ? req.maxChars - packed.text.length - 2 : undefined;
+          const block = d.board.contextBlock({ files, agent, maxTokens: Math.min(room - 4, 350), maxChars: left });
+          if (block) {
+            packed.text = `${packed.text}\n\n${block}`;
+            packed.tokens += countTokens(`\n\n${block}`);
+          }
+        }
       }
       void d.contexts.append(record);
       d.stats.record(packed, req.sessionId, now() - t0);

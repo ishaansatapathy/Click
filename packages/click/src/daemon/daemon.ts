@@ -18,6 +18,7 @@ import type { PrunerRegistry } from '../../../core/src/prune/chain.js';
 import type { Embedder, GraphStore, Store } from '../../../core/src/store/types.js';
 import { createLogger, type Logger } from '../../../core/src/util/log.js';
 import { clickDir } from '../../../core/src/util/paths.js';
+import { Board, boardRoutes } from './board.js';
 import { boot, DaemonState, type BootDeps } from './boot.js';
 import { realGit, type GitOps } from './gitdiff.js';
 import { GraphSync } from './graphsync.js';
@@ -66,6 +67,7 @@ export interface Daemon {
   sessions: SessionMemory;
   stats: StatsKeeper;
   contexts: JsonlWriter;
+  board: Board;
   outcomes: EventLog<LogEvent>;
   checks: CheckQueue;
   learner: Learner;
@@ -105,6 +107,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
   const contextsFile = join(dir, 'contexts.jsonl');
   const outcomesFile = join(dir, 'outcomes.jsonl');
   const contexts = new JsonlWriter(contextsFile, log);
+  const board = new Board(join(dir, 'board.jsonl'), { root: c.root, log });
 
   // learning: logs -> check -> learner -> weights
   const outcomes = new EventLog<LogEvent>(outcomesFile);
@@ -121,12 +124,13 @@ export function createDaemon(c: DaemonConfig): Daemon {
 
   const routes: Route[] = [
     ...createRoutes({
-      root: c.root, version, state, store: c.store, graph: c.graph, embedder: c.embedder, bodies, prefix, pruners: c.pruners, sessions, stats, contexts, log,
+      root: c.root, version, state, store: c.store, graph: c.graph, embedder: c.embedder, bodies, prefix, pruners: c.pruners, sessions, stats, contexts, board, log,
       repoConfig: c.repoConfig, gitOps, ...(c.defaultVariant ? { defaultVariant: c.defaultVariant } : {}), ...(c.git ? { git: c.git } : {}),
     }),
     reindexRoute(queue, c.root),
-    outcomeRoute({ root: c.root, sessions, outcomes, contextsFile, flushContexts: () => contexts.flush(), checks, onKnownResult: () => learner.notify(), nodes: () => state.holder?.current().graph.nodes ?? [], git: gitOps, log }),
+    outcomeRoute({ root: c.root, sessions, outcomes, contextsFile, flushContexts: () => contexts.flush(), checks, onKnownResult: () => learner.notify(), recordEdits: (agent, files) => board.recordEdits(agent, files), nodes: () => state.holder?.current().graph.nodes ?? [], git: gitOps, log }),
     ...weightsRoutes(learner, weights),
+    ...boardRoutes(board),
     ...impactRoutes({ state, graph: c.graph, store: c.store }),
   ];
 
@@ -150,7 +154,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
     })());
 
   return {
-    state, routes, queue, sessions, stats, contexts, outcomes, checks, learner, weights, sync, persist, bodies,
+    state, routes, queue, sessions, stats, contexts, board, outcomes, checks, learner, weights, sync, persist, bodies,
     boot: bootOnce,
     async start() {
       const handle = await startDaemon({
@@ -161,7 +165,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
           queue.close();
           learner.close();
           checks.close();
-          await Promise.allSettled([contexts.flush(), stats.flush()]);
+          await Promise.allSettled([contexts.flush(), board.flush(), stats.flush()]);
           sync?.close();
           weightSync?.close();
         },
@@ -171,7 +175,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
     },
     async settled() {
       await queue.idle();
-      await Promise.all([sync?.idle(), persist.settled(), contexts.flush(), stats.flush(), checks.idle()]);
+      await Promise.all([sync?.idle(), persist.settled(), contexts.flush(), board.flush(), stats.flush(), checks.idle()]);
       await learner.idle();
       await weightSync?.idle();
     },
