@@ -41,6 +41,8 @@ export interface OutcomeDeps {
   outcomes: Pick<EventLog<LogEvent>, 'append'>;
   /** Where the ContextRecords are (contexts.jsonl). */
   contextsFile: string;
+  /** Resolves when every context appended so far is on disk. /context answers before its line is written, so an outcome that follows at once must wait for it, or it finds no contexts and the learning signal is dropped. */
+  flushContexts?: () => Promise<void>;
   checks: Pick<CheckQueue, 'enqueue'> | null;
   /** Something learnable happened: an outcome with a known result. */
   onKnownResult?: () => void;
@@ -83,6 +85,7 @@ export function outcomeRoute(d: OutcomeDeps): Route {
       const session = req.sessionId ? d.sessions.peek(req.sessionId) : undefined;
 
       // contexts: the ones named, else everything this session was sent (memory first, then the log, which survives a daemon restart)
+      await d.flushContexts?.();
       const all = (await readEvents<ContextRecord>(d.contextsFile)).events;
       const wanted = req.contextIds?.length ? new Set(req.contextIds) : session?.contextIds.length ? new Set(session.contextIds) : null;
       const contexts = all.filter((c) => (wanted ? wanted.has(c.contextId) : c.sessionId === req.sessionId));

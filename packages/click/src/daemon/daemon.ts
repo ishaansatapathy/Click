@@ -125,7 +125,7 @@ export function createDaemon(c: DaemonConfig): Daemon {
       repoConfig: c.repoConfig, gitOps, ...(c.defaultVariant ? { defaultVariant: c.defaultVariant } : {}), ...(c.git ? { git: c.git } : {}),
     }),
     reindexRoute(queue, c.root),
-    outcomeRoute({ root: c.root, sessions, outcomes, contextsFile, checks, onKnownResult: () => learner.notify(), nodes: () => state.holder?.current().graph.nodes ?? [], git: gitOps, log }),
+    outcomeRoute({ root: c.root, sessions, outcomes, contextsFile, flushContexts: () => contexts.flush(), checks, onKnownResult: () => learner.notify(), nodes: () => state.holder?.current().graph.nodes ?? [], git: gitOps, log }),
     ...weightsRoutes(learner, weights),
     ...impactRoutes({ state, graph: c.graph, store: c.store }),
   ];
