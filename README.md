@@ -381,7 +381,7 @@ Strict file recall, %. Symbol recall in brackets.
 - ⚠️ **On whole-file recall, plain vector search ties V3.** We do not claim otherwise. The win over V1 is the precision of what is packed.
 - ⚠️ **Latency has a price**: about +780 ms p95 over V2, almost all of it the HydraDB neighbourhood query. A slow HydraDB degrades to the replica instead of waiting.
 - ⚠️ **One repository.** The benchmark is open so others can add theirs.
-- ⚠️ **The grader-valid agent run does not establish token savings.** With n=8 tasks, both the stock agent and the agent with Click solved 2/8. Delivery used 29% fewer turns, 18% fewer output tokens, 45% less wall time and 4% less cost overall, but tokens per solved task were 6% higher. This is indicative only, not a savings claim.
+- ⚠️ **The two grader-valid agent runs do not establish token savings.** Across 8 + 12 = 20 different tasks, the stock agent solved 7/20 and the agent with Click solved 8/20: the same seven tasks plus one additional task with Click. V0 vs delivery used 228 vs 190 turns, 1,065 s vs 734 s wall time, $2.77 vs $2.77, and 65,440 vs 60,553 tokens per solved task. A one-task difference is within agent noise. On the easy 12-task run alone, turns (88 vs 90), wall time (334 s vs 336 s), and cost ($1.33 vs $1.38) were effectively unchanged. This does **not** show token savings.
 
 ### 5.5 Reproduce
 
@@ -401,13 +401,13 @@ pnpm e2e --tasks 3 --variants V0,delivery       # real: spends API budget, cappe
 
 For each task and variant the harness checks out the benchmark repo **at the parent commit** in a throwaway git worktree, installs Click (or not, for `V0`), runs **Claude Code headless** with a hard wall-clock and dollar cap, then decides "solved" by the task's own check (`vue-tsc` must not get worse and the task's vitest file must pass). It reports **tokens per solved task** (input, output, cache creation) with **cache reads reported separately**, plus turns and wall time.
 
-**n=8, indicative only.** Agents are nondeterministic, and both variants solved the same 2/8 tasks. Delivery used 29% fewer turns, 18% fewer output tokens, 45% less wall time and 4% less cost overall, while tokens per solved task were 6% higher. These mixed results do **not** support a token-savings claim.
+**Two valid runs, 8 + 12 = 20 different tasks; indicative only.** The stock agent solved 7/20 and the agent with Click solved 8/20—the same seven tasks plus one task solved only with Click. V0 vs delivery used 228 vs 190 turns, 1,065 s vs 734 s wall time, $2.77 vs $2.77, and 65,440 vs 60,553 tokens per solved task. Agents are nondeterministic, so a one-task difference is within agent noise. The easy 12-task run alone shows no meaningful change in turns, time, or cost: 88 vs 90 turns, 334 s vs 336 s, and $1.33 vs $1.38. These results do **not** show token savings.
 
 <!-- bench:e2e:start -->
 | Variant | Solved | Tokens / solved | Total input | Total output | Run ID |
 | --- | ---: | ---: | ---: | ---: | --- |
-| V0 | 2/8 | 113,471 | 136 | 37,790 | `20261116T042424Z-e2e-V0` |
-| delivery | 2/8 | 120,191 | 102 | 30,815 | `20261116T042424Z-e2e-delivery` |
+| V0 | 7/20 | 65,440 | 272 | 57,865 | `20261116T042424Z-e2e-V0`, `20261116T122353Z-e2e-V0` |
+| delivery | 8/20 | 60,553 | 232 | 51,637 | `20261116T042424Z-e2e-delivery`, `20261116T122353Z-e2e-delivery` |
 
 | Task | Variant | Passed | Input | Output | Cache read | Cache create | Turns | Wall |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -419,6 +419,18 @@ For each task and variant the harness checks out the benchmark repo **at the par
 | `m-caa9c84` | V0 | no | 16 | 4,690 | 366,706 | 25,138 | 20 | 46.4 s |
 | `m-cbd9e02` | V0 | no | 22 | 5,924 | 520,056 | 25,304 | 24 | 133.0 s |
 | `m-f74fe7b` | V0 | no | 24 | 7,098 | 551,472 | 24,736 | 28 | 324.7 s |
+| `m-05f8cc6` | V0 | yes | 8 | 604 | 151,585 | 15,445 | 4 | 19.9 s |
+| `m-07f321e` | V0 | yes | 12 | 1,975 | 257,576 | 22,845 | 8 | 27.5 s |
+| `m-0ac0719` | V0 | yes | 12 | 2,389 | 250,551 | 18,691 | 8 | 32.2 s |
+| `m-10eb743` | V0 | no | 14 | 3,540 | 311,147 | 23,028 | 11 | 41.2 s |
+| `m-197b3be` | V0 | no | 10 | 879 | 195,277 | 14,764 | 5 | 19.4 s |
+| `m-19f7b60` | V0 | no | 12 | 1,566 | 244,568 | 18,783 | 8 | 26.4 s |
+| `m-1fa9d8c` | V0 | yes | 8 | 864 | 153,881 | 14,685 | 5 | 17.7 s |
+| `m-272642e` | V0 | no | 10 | 1,387 | 194,501 | 15,315 | 7 | 17.8 s |
+| `m-28edb37` | V0 | yes | 14 | 1,424 | 280,467 | 15,315 | 8 | 24.8 s |
+| `m-3155c08` | V0 | no | 10 | 2,268 | 198,498 | 16,600 | 8 | 44.9 s |
+| `m-50fe55b` | V0 | no | 18 | 2,540 | 405,408 | 22,537 | 12 | 44.6 s |
+| `m-663a2c7` | V0 | no | 8 | 639 | 152,177 | 12,922 | 4 | 18.0 s |
 | `m-031c5c1` | delivery | yes | 8 | 903 | 171,828 | 19,715 | 4 | 16.4 s |
 | `m-2e26908` | delivery | no | 16 | 8,162 | 435,705 | 36,578 | 19 | 72.3 s |
 | `m-4f4b23d` | delivery | yes | 8 | 905 | 172,447 | 20,295 | 4 | 31.0 s |
@@ -427,9 +439,21 @@ For each task and variant the harness checks out the benchmark repo **at the par
 | `m-caa9c84` | delivery | no | 14 | 5,190 | 355,503 | 32,117 | 18 | 59.0 s |
 | `m-cbd9e02` | delivery | no | 14 | 3,494 | 323,535 | 24,160 | 14 | 77.6 s |
 | `m-f74fe7b` | delivery | no | 12 | 3,021 | 265,362 | 22,601 | 13 | 37.3 s |
+| `m-05f8cc6` | delivery | yes | 8 | 718 | 152,950 | 13,582 | 5 | 15.4 s |
+| `m-07f321e` | delivery | yes | 14 | 2,155 | 319,733 | 23,092 | 9 | 32.5 s |
+| `m-0ac0719` | delivery | yes | 14 | 3,396 | 297,644 | 21,176 | 11 | 50.2 s |
+| `m-10eb743` | delivery | yes | 14 | 3,626 | 336,549 | 27,453 | 12 | 38.4 s |
+| `m-197b3be` | delivery | no | 8 | 734 | 153,663 | 14,535 | 4 | 18.2 s |
+| `m-19f7b60` | delivery | no | 14 | 1,590 | 286,229 | 17,620 | 8 | 30.2 s |
+| `m-1fa9d8c` | delivery | yes | 8 | 883 | 153,808 | 14,695 | 5 | 21.6 s |
+| `m-272642e` | delivery | no | 14 | 1,867 | 281,883 | 15,235 | 11 | 37.4 s |
+| `m-28edb37` | delivery | yes | 8 | 828 | 161,825 | 16,908 | 5 | 21.4 s |
+| `m-3155c08` | delivery | no | 8 | 2,100 | 168,216 | 20,696 | 7 | 25.7 s |
+| `m-50fe55b` | delivery | no | 12 | 2,353 | 274,128 | 25,250 | 9 | 30.1 s |
+| `m-663a2c7` | delivery | no | 8 | 572 | 152,035 | 12,851 | 4 | 14.6 s |
 <!-- bench:e2e:end -->
 
-Raw task rows are in [`bench/runs/20261116T042424Z-e2e.jsonl`](bench/runs/20261116T042424Z-e2e.jsonl), with per-task diffs and checks in [`bench/runs/20261116T042424Z-e2e/`](bench/runs/20261116T042424Z-e2e/); the two `kind: "e2e"` summary rows are in `bench/results.jsonl`.
+Raw task rows and per-task evidence are preserved for both valid runs: [`20261116T042424Z-e2e`](bench/runs/20261116T042424Z-e2e.jsonl) ([diffs and checks](bench/runs/20261116T042424Z-e2e/)) and [`20261116T122353Z-e2e`](bench/runs/20261116T122353Z-e2e.jsonl) ([diffs and checks](bench/runs/20261116T122353Z-e2e/)). Their four `kind: "e2e"` summary rows are in `bench/results.jsonl`.
 
 ---
 
@@ -688,7 +712,7 @@ The code is **TypeScript in strict mode** with a root `pnpm check` (typecheck, l
 - **One benchmark repository** (233 tasks). The numbers are real and reproducible, but they are one repository's numbers.
 - **On whole-file recall, plain vector search ties Click.** The advantage is symbol-level precision and the graph's gain over the same pipeline without it.
 - **Learning is not shown to pay off.** The gain is small, its interval includes zero, and it was measured on simulated outcomes.
-- **Agent-level token savings are not demonstrated.** In the grader-valid n=8 run both arms solved 2/8; delivery reduced turns, output, wall time and cost overall, but tokens per solved task increased 6%. Larger repeated runs are required.
+- **Agent-level token savings are not demonstrated.** Across two grader-valid runs (20 different tasks), V0 solved 7 and delivery solved 8; that one-task difference is within agent noise. The easy 12-task run alone had essentially unchanged turns, time and cost. Larger repeated runs are required.
 - **The shared board is not live chat and not an orchestrator.** Agents read and write it when they choose to (the tool descriptions and the block `click init` adds tell them when); an agent that never calls it simply does not take part. Edit warnings come from the files an agent *reports* as changed, so they arrive when it reports, not as it types.
 - **HydraDB adds latency** (about +780 ms p95 in the benchmark setup).
 - **The Claude Code hook is capped at 10,000 characters** by Claude Code itself; use MCP for larger budgets.
