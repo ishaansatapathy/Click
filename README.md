@@ -527,7 +527,28 @@ flowchart LR
 
 Everything `init` writes is **idempotent** and **byte-exactly reversible**: `click uninstall` removes only Click's blocks and keeps the graph and cache. Click is **opt-in per repository** (`.click/enabled`); it never acts in your home directory.
 
-**Several agents at once.** The daemon is one per repository, so Claude Code, Codex, Cursor and VS Code can all use it on the same repo at the same time. This is covered by a test (`packages/click/src/daemon/concurrency.test.ts`): four agents, each with its own session, send five tasks each in parallel and then report outcomes. Every request is answered within budget, `contexts.jsonl` and `outcomes.jsonl` keep exactly one whole line per entry, each agent's first context equals what a lone agent gets, and an outcome learns only from the contexts of its own session. Click does **not** coordinate agents: there are no agent-to-agent messages and no hand-off. It gives each of them context, and the lessons from all of them go to the same learned weights.
+**Several agents at once.** The daemon is one per repository, so Claude Code, Codex, Cursor and VS Code can all use it on the same repo at the same time. This is covered by a test (`packages/click/src/daemon/concurrency.test.ts`): four agents, each with its own session, send five tasks each in parallel and then report outcomes. Every request is answered within budget, `contexts.jsonl` and `outcomes.jsonl` keep exactly one whole line per entry, each agent's first context equals what a lone agent gets, and an outcome learns only from the contexts of its own session. The lessons from all of them go to the same learned weights.
+
+**Agents that leave things for each other (the shared board).** Several agents on one repo do not have to work blind. Through the same daemon they share a small board, kept in `.click/board.jsonl`:
+
+```mermaid
+sequenceDiagram
+  participant A as Agent A (for example Claude Code)
+  participant D as Click daemon (one per repo)
+  participant B as Agent B (for example Codex)
+  A->>D: handoff("submit fails: useOrderStore.submit never awaits the API", files)
+  A->>D: report_outcome(files it changed)
+  B->>D: get_context("fix the order submit bug")
+  D-->>B: the code for the task + "From other agents: A's handoff, and A changed useOrderStore.ts 4 min ago"
+  B->>D: list_tasks() then claim_task(id)
+```
+
+- **Notes and handoffs.** An agent writes what it found and decided and which files it is about. When another agent later asks for a context about the same files, the handoff is added to it, newest first, so the second agent does not read the repository again to learn it. It is added **inside the token budget** and the Claude Code hook's character cap, and an agent never gets its own notes back.
+- **Edit warnings.** Files an agent reported as changed in the last 30 minutes are flagged to the other agents whose context includes them.
+- **A shared task list.** One agent adds a task, another claims it and marks it done, so when one agent is free it can pick up what is left. A claimed task cannot be taken twice.
+- **Who is active.** `click agents` lists the agents that used the daemon lately and what they asked about.
+
+The MCP tools are `leave_note`, `handoff`, `read_notes`, `add_task`, `list_tasks`, `claim_task`, `done_task` and `who_is_working`, with the same operations on the CLI (`click notes`, `click tasks`, `click agents`). An agent names itself (`author`), because Codex and Cursor send no session id; the Claude Code hooks name themselves `claude-code-<session>`. This is a board the agents read and write, not live chat and not an orchestrator: Click does not start, stop or direct any agent. It is covered by `packages/click/src/daemon/board.test.ts`.
 
 **MCP tools**
 
@@ -668,7 +689,7 @@ The code is **TypeScript in strict mode** with a root `pnpm check` (typecheck, l
 - **On whole-file recall, plain vector search ties Click.** The advantage is symbol-level precision and the graph's gain over the same pipeline without it.
 - **Learning is not shown to pay off.** The gain is small, its interval includes zero, and it was measured on simulated outcomes.
 - **Agent-level token savings are not demonstrated.** In the grader-valid n=8 run both arms solved 2/8; delivery reduced turns, output, wall time and cost overall, but tokens per solved task increased 6%. Larger repeated runs are required.
-- **Agents share the daemon but do not talk to each other.** Concurrent use is tested at the daemon's HTTP level with separate sessions; Click is not an orchestrator.
+- **The shared board is not live chat and not an orchestrator.** Agents read and write it when they choose to (the tool descriptions and the block `click init` adds tell them when); an agent that never calls it simply does not take part. Edit warnings come from the files an agent *reports* as changed, so they arrive when it reports, not as it types.
 - **HydraDB adds latency** (about +780 ms p95 in the benchmark setup).
 - **The Claude Code hook is capped at 10,000 characters** by Claude Code itself; use MCP for larger budgets.
 - **Semantic search needs an `OPENAI_API_KEY`** and is optional; without it Click uses symbols, BM25 and the graph.
