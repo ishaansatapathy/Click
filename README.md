@@ -527,6 +527,8 @@ flowchart LR
 
 Everything `init` writes is **idempotent** and **byte-exactly reversible**: `click uninstall` removes only Click's blocks and keeps the graph and cache. Click is **opt-in per repository** (`.click/enabled`); it never acts in your home directory.
 
+**Several agents at once.** The daemon is one per repository, so Claude Code, Codex, Cursor and VS Code can all use it on the same repo at the same time. This is covered by a test (`packages/click/src/daemon/concurrency.test.ts`): four agents, each with its own session, send five tasks each in parallel and then report outcomes. Every request is answered within budget, `contexts.jsonl` and `outcomes.jsonl` keep exactly one whole line per entry, each agent's first context equals what a lone agent gets, and an outcome learns only from the contexts of its own session. Click does **not** coordinate agents: there are no agent-to-agent messages and no hand-off. It gives each of them context, and the lessons from all of them go to the same learned weights.
+
 **MCP tools**
 
 | Tool | Use it for |
@@ -666,6 +668,7 @@ The code is **TypeScript in strict mode** with a root `pnpm check` (typecheck, l
 - **On whole-file recall, plain vector search ties Click.** The advantage is symbol-level precision and the graph's gain over the same pipeline without it.
 - **Learning is not shown to pay off.** The gain is small, its interval includes zero, and it was measured on simulated outcomes.
 - **Agent-level token savings are not demonstrated.** In the grader-valid n=8 run both arms solved 2/8; delivery reduced turns, output, wall time and cost overall, but tokens per solved task increased 6%. Larger repeated runs are required.
+- **Agents share the daemon but do not talk to each other.** Concurrent use is tested at the daemon's HTTP level with separate sessions; Click is not an orchestrator.
 - **HydraDB adds latency** (about +780 ms p95 in the benchmark setup).
 - **The Claude Code hook is capped at 10,000 characters** by Claude Code itself; use MCP for larger budgets.
 - **Semantic search needs an `OPENAI_API_KEY`** and is optional; without it Click uses symbols, BM25 and the graph.
