@@ -12,6 +12,16 @@ import { ClickClient } from '../client.js';
 import type { ImpactResult } from '../daemon/impact.js';
 import type { OutcomeResponse } from '../daemon/outcome.js';
 import { VERSION } from '../version.js';
+import {
+  notesPath,
+  tasksPath,
+  type AgentsResponse,
+  type NotesResponse,
+  type NoteWriteResponse,
+  type TasksResponse,
+  type TaskStatus,
+  type TaskWriteResponse,
+} from './coordination.js';
 
 interface RequestOptions { method?: 'GET' | 'POST'; body?: unknown; deadlineMs: number }
 export interface McpDaemonClient {
@@ -32,6 +42,9 @@ const failure = (error: unknown) => ({
   isError: true,
   content: [{ type: 'text' as const, text: `Click error: ${error instanceof Error ? error.message : String(error)}` }],
 });
+const json = (value: unknown) => text(JSON.stringify(value));
+const filesSchema = z.array(z.string().min(1).max(2_000)).max(500).optional();
+const authorSchema = z.string().min(1).max(100).describe('Your agent name, for example "Claude Code", "Codex", or "Cursor".');
 
 export function resolveMcpRoot(options: Pick<ClickMcpOptions, 'root' | 'env' | 'cwd'> = {}): string {
   const env = options.env ?? process.env;
@@ -46,7 +59,12 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
   const ready = async (): Promise<void> => { await client.ensureRunning({ waitMs, ready: true }); };
   const server = new McpServer(
     { name: 'click-context', version: VERSION },
-    { instructions: 'Use get_context before changing code. Click retrieves repository-specific code through the local daemon.' },
+    { instructions: [
+      'At the start of a task, call read_notes and list_tasks so you do not repeat another agent\'s work.',
+      'Call claim_task before taking a task from the shared list.',
+      'Use get_context before changing code; Click retrieves repository-specific code through the local daemon.',
+      'When finished, call handoff with what changed, what remains, and the relevant files.',
+    ].join(' ') },
   );
 
   server.registerTool(
@@ -148,6 +166,152 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
         await ready();
         const result = await client.request<{ items: Convention[] }>('/conventions', { method: 'GET', deadlineMs: 5_000 });
         return text(result.items.length ? result.items.map((item) => `${item.validFrom} · ${item.text}`).join('\n') : 'No current repository conventions were found.');
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'leave_note',
+    {
+      description: 'Leave durable information for other agents when you discover something they should not have to rediscover. Include relevant files; use handoff instead when finishing work.',
+      inputSchema: z.object({
+        author: authorSchema,
+        text: z.string().min(1).max(20_000),
+        files: filesSchema,
+      }),
+    },
+    async ({ author, text: noteText, files }) => {
+      try {
+        await ready();
+        return json(await client.request<NoteWriteResponse>('/notes', {
+          body: { author, kind: 'note', text: noteText, ...(files === undefined ? {} : { files }) },
+          deadlineMs: 5_000,
+        }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'handoff',
+    {
+      description: 'Call when you finish or pause a task. Tell the next agent what changed, what remains, and which files matter so it can continue without re-reading your work.',
+      inputSchema: z.object({
+        author: authorSchema,
+        text: z.string().min(1).max(20_000),
+        files: filesSchema,
+      }),
+    },
+    async ({ author, text: noteText, files }) => {
+      try {
+        await ready();
+        return json(await client.request<NoteWriteResponse>('/notes', {
+          body: { author, kind: 'handoff', text: noteText, ...(files === undefined ? {} : { files }) },
+          deadlineMs: 5_000,
+        }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'read_notes',
+    {
+      description: 'Call at the START of every task, before exploring the repository. Read recent notes and handoffs so you do not repeat work another agent already did.',
+      inputSchema: z.object({
+        since: z.string().min(1).max(100).optional().describe('Optional ISO timestamp; only return newer notes.'),
+        files: filesSchema.describe('Optional repository-relative files; only return notes touching them.'),
+      }),
+    },
+    async ({ since, files }) => {
+      try {
+        await ready();
+        return json(await client.request<NotesResponse>(notesPath({ since, files, limit: 20 }), { method: 'GET', deadlineMs: 5_000 }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'add_task',
+    {
+      description: 'Add a concrete piece of work to the shared task list when another agent can take it independently.',
+      inputSchema: z.object({
+        author: authorSchema,
+        title: z.string().min(1).max(500),
+        details: z.string().max(20_000).optional(),
+        files: filesSchema,
+      }),
+    },
+    async ({ author, title, details, files }) => {
+      try {
+        await ready();
+        return json(await client.request<TaskWriteResponse>('/tasks/add', {
+          body: { author, title, ...(details === undefined ? {} : { details }), ...(files === undefined ? {} : { files }) },
+          deadlineMs: 5_000,
+        }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'list_tasks',
+    {
+      description: 'Call at the start of a task and whenever idle. Check the shared list before inventing new work; claim an open task before starting it.',
+      inputSchema: z.object({
+        status: z.enum(['open', 'claimed', 'done']).optional(),
+      }),
+    },
+    async ({ status }) => {
+      try {
+        await ready();
+        return json(await client.request<TasksResponse>(tasksPath(status as TaskStatus | undefined), { method: 'GET', deadlineMs: 5_000 }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'claim_task',
+    {
+      description: 'Call immediately BEFORE taking a task from list_tasks. This prevents another agent from starting the same work.',
+      inputSchema: z.object({ id: z.string().min(1).max(200), author: authorSchema }),
+    },
+    async ({ id, author }) => {
+      try {
+        await ready();
+        return json(await client.request<TaskWriteResponse>('/tasks/claim', { body: { id, author }, deadlineMs: 5_000 }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'done_task',
+    {
+      description: 'Call after finishing a claimed task. Record a short summary, then leave a handoff when another agent may need the implementation details.',
+      inputSchema: z.object({
+        id: z.string().min(1).max(200),
+        author: authorSchema,
+        summary: z.string().max(20_000).optional(),
+      }),
+    },
+    async ({ id, author, summary }) => {
+      try {
+        await ready();
+        return json(await client.request<TaskWriteResponse>('/tasks/done', {
+          body: { id, author, ...(summary === undefined ? {} : { summary }) },
+          deadlineMs: 5_000,
+        }));
+      } catch (error) { return failure(error); }
+    },
+  );
+
+  server.registerTool(
+    'who_is_working',
+    {
+      description: 'Call before touching shared or high-conflict files to see which agents are active, their latest task, and the files they are working on.',
+      inputSchema: z.object({}),
+    },
+    async () => {
+      try {
+        await ready();
+        return json(await client.request<AgentsResponse>('/agents', { method: 'GET', deadlineMs: 5_000 }));
       } catch (error) { return failure(error); }
     },
   );
