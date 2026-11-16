@@ -348,15 +348,22 @@ flowchart LR
 
 Strict file recall, %. Symbol recall in brackets.
 
-| Variant | 4,000 tokens | 8,000 tokens | p50 / p95 latency (4k) |
-| --- | --- | --- | --- |
-| random | 11.2 | 18.5 | – |
-| V1 vector chunks | 77.0 (symbol 23.8) | 85.4 (27.6) | 326 / 494 ms |
-| V2 no graph | 72.9 (72.8) | 72.9 (72.8) | 166 / 254 ms |
-| **V3 + HydraDB graph** | **77.0 (77.8)** | **83.8 (82.1)** | 773 / 1,032 ms |
-| V3r local replica | 79.6 (77.8) | 84.9 (80.8) | 618 / 862 ms |
-| V5 + learned weights | 78.0 (79.3) | 84.4 (82.4) | 661 / 846 ms |
-| oracle | 98.6 | 99.8 | – |
+<!-- bench:recall:start -->
+| Variant | 4k strict | 4k symbol | 8k strict | 8k symbol | Run IDs |
+| --- | ---: | ---: | ---: | ---: | --- |
+| V1 | 77.0% | 23.8% | 85.4% | 27.6% | `20261116T002451645Z-3f10af`, `20261115T183925911Z-34e024` |
+| V2 | 72.9% | 72.8% | 72.9% | 72.8% | `20261116T002500147Z-65df42`, `20261115T183702220Z-208533` |
+| V3 | 77.0% | 77.8% | 83.8% | 82.1% | `20261116T002518495Z-11a93c`, `20261115T183755417Z-9699b6` |
+| V3r | 79.6% | 77.8% | 84.9% | 80.8% | `20261116T002534881Z-dc39db`, `20261116T002554210Z-e96f6d` |
+| V5 | 76.6% | 71.7% | 84.4% | 82.4% | `20261116T001256761Z-77f65b`, `20261115T194305720Z-dcaa93` |
+<!-- bench:recall:end -->
+
+<!-- bench:latency:start -->
+| Measurement | n | p50 | p95 | Run ID |
+| --- | ---: | ---: | ---: | --- |
+| V3-hydra-offline | 74 | 415 ms | 492 ms | `20261115T211845509Z-2d19a5` |
+| hook | 20 | 405 ms | 550 ms | `20261115T235459555Z-hook` |
+<!-- bench:latency:end -->
 
 **Differences, with 95% intervals** (paired bootstrap, percentage points):
 
@@ -397,13 +404,18 @@ For each task and variant the harness checks out the benchmark repo **at the par
 **n=3, indicative only.** Agents are nondeterministic, and this single small run produced no solved tasks in either arm. Consequently, tokens per solved task cannot be calculated and these rows do **not** support a token-savings claim.
 
 <!-- bench:e2e:start -->
+| Variant | Solved | Tokens / solved | Total input | Total output | Run ID |
+| --- | ---: | ---: | ---: | ---: | --- |
+| V0 | 0/3 | — | 56 | 13,824 | `20261116T025135Z-e2e-V0` |
+| delivery | 0/3 | — | 48 | 12,900 | `20261116T025135Z-e2e-delivery` |
+
 | Task | Variant | Passed | Input | Output | Cache read | Cache create | Turns | Wall |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `m-031c5c1` | V0 | no | 10 | 1,756 | 134,787 | 17,890 | 5 | 29.2 s |
-| `m-031c5c1` | delivery | no | 10 | 1,555 | 146,077 | 20,340 | 5 | 21.6 s |
 | `m-2e26908` | V0 | no | 36 | 10,207 | 729,455 | 37,905 | 29 | 110.8 s |
-| `m-2e26908` | delivery | no | 30 | 9,885 | 674,704 | 43,094 | 24 | 162.5 s |
 | `m-4f4b23d` | V0 | no | 10 | 1,861 | 132,569 | 18,307 | 7 | 24.1 s |
+| `m-031c5c1` | delivery | no | 10 | 1,555 | 146,077 | 20,340 | 5 | 21.6 s |
+| `m-2e26908` | delivery | no | 30 | 9,885 | 674,704 | 43,094 | 24 | 162.5 s |
 | `m-4f4b23d` | delivery | no | 8 | 1,460 | 112,956 | 20,764 | 5 | 29.7 s |
 <!-- bench:e2e:end -->
 
