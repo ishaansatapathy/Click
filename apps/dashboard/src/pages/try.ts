@@ -40,7 +40,13 @@ function resultCard(title: string, sub: string, a: Answer, other: Answer): HTMLE
       }),
     ),
     a.items.length > 16 ? h('p', { class: 'small muted' }, `+ ${a.items.length - 16} more`) : null,
-    h('details', {}, h('summary', { class: 'small' }, 'The text an agent would receive'), h('pre', { class: 'ctx' }, a.text)),
+    h(
+      'details',
+      {},
+      h('summary', { class: 'small' }, 'The text an agent would receive'),
+      h('p', { class: 'small muted' }, 'The sample repository is written by a Chinese-speaking team. In this demo copy the text of its Chinese comments is blanked (line numbers are unchanged); string literals are untouched.'),
+      h('pre', { class: 'ctx' }, a.text),
+    ),
   );
 }
 

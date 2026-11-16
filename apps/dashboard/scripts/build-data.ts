@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { pairedBootstrap } from '../../../bench/src/metrics.js';
 import { normaliseContent } from '../../../packages/core/src/indexer/discover.js';
 import { buildIndex } from '../../../packages/core/src/indexer/build.js';
+import { blankCjkComments } from './demo-text.js';
 import type { DiffRow, E2eData, ExampleData, GraphData, LearningData, ResultsData, RunRow, TypeRow } from '../src/data/types.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -207,7 +208,7 @@ async function main(): Promise<void> {
   writeFileSync(join(OUT, 'graph.json'), JSON.stringify(gdata));
   // the demo repo: its graph and the text of every indexed file, so the browser can run the retrieval code itself
   const demoFiles: Record<string, string> = {};
-  for (const f of files) if (f.path) demoFiles[f.path] = normaliseContent(readFileSync(join(ROOT, 'bench/repo', f.path), 'utf8'));
+  for (const f of files) if (f.path) demoFiles[f.path] = blankCjkComments(normaliseContent(readFileSync(join(ROOT, 'bench/repo', f.path), 'utf8')));
   writeFileSync(join(OUT, 'demo.json'), JSON.stringify({ name: repo.name, sha: repo.sha, graph, files: demoFiles }));
 
   // examples: real held-out tasks, V3 at 8k next to the same task without the graph (V2). Wins first, then one honest miss.
