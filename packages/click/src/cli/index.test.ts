@@ -64,7 +64,7 @@ describe('isEntryPoint (the bin must run when npm links it)', () => {
     const { tmpdir } = await import('node:os');
     const { join } = await import('node:path');
     const { pathToFileURL } = await import('node:url');
-    const { isEntryPoint } = await import('./index.js');
+    const { isEntryPoint } = await import('../entry.js');
     const dir = mkdtempSync(join(tmpdir(), 'click-bin-'));
     try {
       const real = join(dir, 'click.js');

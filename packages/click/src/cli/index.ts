@@ -2,9 +2,7 @@
 // Commands are added by their prompts (115 adds serve / index / context / status; Lane A owns init / push / pull / probe).
 // Every command module exports `run<Name>(argv, io, cwd?) => Promise<exitCode>`.
 
-import { resolve } from 'node:path';
-import { realpathSync } from 'node:fs';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { isEntryPoint } from '../entry.js';
 import { VERSION } from '../version.js';
 import { runContext } from './context.js';
 import { runHooks } from './hooksCmd.js';
@@ -75,19 +73,6 @@ const stdio: CliIo = {
   out: (t) => void process.stdout.write(t.endsWith('\n') ? t : `${t}\n`),
   err: (t) => void process.stderr.write(t.endsWith('\n') ? t : `${t}\n`),
 };
-
-/**
- * Is this module the program being run? npm installs `click` as a SYMLINK on Linux and macOS (a .cmd shim on Windows), so argv[1]
- * is the link, not this file: compare real paths, or the command silently does nothing.
- */
-export function isEntryPoint(metaUrl: string, argv1: string | undefined = process.argv[1]): boolean {
-  if (!argv1) return false;
-  try {
-    return realpathSync(fileURLToPath(metaUrl)) === realpathSync(resolve(argv1));
-  } catch {
-    return metaUrl === pathToFileURL(resolve(argv1)).href;
-  }
-}
 
 if (isEntryPoint(import.meta.url)) {
   dispatch(process.argv.slice(2), stdio).then(
