@@ -1,0 +1,19 @@
+diff --git a/src/layouts/LeftTopMode.vue b/src/layouts/LeftTopMode.vue
+index bf235cc8..ae49652e 100644
+--- a/src/layouts/LeftTopMode.vue
++++ b/src/layouts/LeftTopMode.vue
+@@ -54,10 +54,14 @@ $transition-time: 0.35s;
+   display: flex;
+   .logo {
+     width: var(--v3-sidebar-width);
++    /* 防止 logo 在 flex 布局中被压缩 */
++    flex-shrink: 0;
+   }
+   .content {
+     flex: 1;
+     position: relative;
++    /* 允许内容区收缩，避免撑出屏幕 */
++    min-width: 0;
+   }
+ }
+ 

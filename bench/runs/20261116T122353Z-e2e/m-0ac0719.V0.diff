@@ -1,0 +1,18 @@
+diff --git a/src/layouts/components/Sidebar/index.vue b/src/layouts/components/Sidebar/index.vue
+index fe41db07..761a2efb 100644
+--- a/src/layouts/components/Sidebar/index.vue
++++ b/src/layouts/components/Sidebar/index.vue
+@@ -124,9 +124,12 @@ const tipLineWidth = computed(() => !isTop.value ? "2px" : "0px")
+   @extend %tip-line;
+ }
+ 
++// 折叠时，子菜单项被选中，则保持其父级菜单高亮
+ .el-menu--collapse {
+   :deep(.el-sub-menu.is-active) {
+-    .el-sub-menu__title {
++    > .el-sub-menu__title {
++      color: v-bind(activeTextColor);
++      background-color: v-bind(sidebarMenuHoverBgColor);
+       @extend %tip-line;
+     }
+   }

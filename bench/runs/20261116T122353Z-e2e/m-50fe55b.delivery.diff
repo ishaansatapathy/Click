@@ -1,0 +1,13 @@
+diff --git a/src/layouts/components/NavigationBar/index.vue b/src/layouts/components/NavigationBar/index.vue
+index 76996f91..f81ee358 100644
+--- a/src/layouts/components/NavigationBar/index.vue
++++ b/src/layouts/components/NavigationBar/index.vue
+@@ -110,6 +110,8 @@ function toggleSidebar() {
+     align-items: center;
+     &-item {
+       margin: 0 10px;
++      display: flex;
++      align-items: center;
+       cursor: pointer;
+       &:last-child {
+         margin-left: 20px;

@@ -1,0 +1,9 @@
+
+ RUN  v4.1.10 C:/Users/IshaanSatapathy/AppData/Local/Temp/click-e2e-m-05f8cc6-dinTA3
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  17:55:09
+   Duration  4.17s (transform 19ms, setup 0ms, import 48ms, tests 5ms, environment 3.18s)
+

@@ -1,0 +1,13 @@
+diff --git a/src/layouts/components/NavigationBar/index.vue b/src/layouts/components/NavigationBar/index.vue
+index a61ea8b7..6a755837 100644
+--- a/src/layouts/components/NavigationBar/index.vue
++++ b/src/layouts/components/NavigationBar/index.vue
+@@ -60,7 +60,7 @@ function logout() {
+               <el-dropdown-item>Gitee</el-dropdown-item>
+             </a>
+             <el-dropdown-item divided @click="logout">
+-              <span style="display: block">退出登录</span>
++              退出登录
+             </el-dropdown-item>
+           </el-dropdown-menu>
+         </template>

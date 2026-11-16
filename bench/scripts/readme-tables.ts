@@ -86,7 +86,26 @@ export function renderLatency(rows: readonly ResultRow[]): string {
 
 export function renderE2e(rows: readonly ResultRow[]): string {
   const all = rows.filter((row): row is E2eRow => row.kind === 'e2e');
-  const variants = ['V0', 'delivery'].map((variant) => latest(all, (row) => row.variant === variant, `kind=e2e, variant=${variant}`));
+  const variants = ['V0', 'delivery'].map((variant): E2eRow => {
+    const selected = all.filter((row) => row.variant === variant);
+    if (!selected.length) throw new Error(`Missing benchmark row: kind=e2e, variant=${variant}`);
+    const tasks = selected.flatMap((row) => row.tasks);
+    const solved = selected.reduce((total, row) => total + row.solved, 0);
+    const spent = tasks.reduce((total, task) => total + task.inputTokens + task.outputTokens + task.cacheCreationTokens, 0);
+    return {
+      runId: selected.map((row) => row.runId).join('`, `'),
+      kind: 'e2e',
+      variant,
+      n: selected.reduce((total, row) => total + row.n, 0),
+      solved,
+      tokensPerSolved: solved ? spent / solved : null,
+      totals: {
+        inputTokens: selected.reduce((total, row) => total + row.totals.inputTokens, 0),
+        outputTokens: selected.reduce((total, row) => total + row.totals.outputTokens, 0),
+      },
+      tasks,
+    };
+  });
   const summary = [
     '| Variant | Solved | Tokens / solved | Total input | Total output | Run ID |',
     '| --- | ---: | ---: | ---: | ---: | --- |',

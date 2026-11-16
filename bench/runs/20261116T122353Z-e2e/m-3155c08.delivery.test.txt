@@ -1,0 +1,138 @@
+
+ RUN  v4.1.10 C:/Users/IshaanSatapathy/AppData/Local/Temp/click-e2e-m-3155c08-QMT3pt
+
+ ❯ tests/e2e-m-3155c08.test.ts (1 test | 1 failed) 16ms
+     × wraps titles in the reusable ellipsis treatment 14ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  18:18:03
+   Duration  2.10s (transform 17ms, setup 0ms, import 44ms, tests 16ms, environment 1.41s)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/e2e-m-3155c08.test.ts > long sidebar titles > wraps titles in the reusable ellipsis treatment
+AssertionError: expected '<script lang="ts" setup>\r\nimport ty…' to contain 'class="title"'
+
+- Expected
++ Received
+
+- class="title"
++ <script lang="ts" setup>
++ import type { RouteRecordRaw } from "vue-router"
++ import { isExternal } from "@/utils/validate"
++ import path from "path-browserify"
++ import { computed } from "vue"
++ import SidebarItemLink from "./SidebarItemLink.vue"
++ 
++ interface Props {
++   item: RouteRecordRaw
++   basePath?: string
++ }
++ 
++ const props = withDefaults(defineProps<Props>(), {
++   basePath: ""
++ })
++ 
++ /** 是否始终显示根菜单 */
++ const alwaysShowRootMenu = computed(() => props.item.meta?.alwaysShow)
++ 
++ /** 显示的子菜单 */
++ const showingChildren = computed(() => {
++   return props.item.children?.filter(child => !child.meta?.hidden) ?? []
++ })
++ 
++ /** 显示的子菜单数量 */
++ const showingChildNumber = computed(() => {
++   return showingChildren.value.length
++ })
++ 
++ /** 唯一的子菜单项 */
++ const theOnlyOneChild = computed(() => {
++   const number = showingChildNumber.value
++   switch (true) {
++     case number > 1:
++       return null
++     case number === 1:
++       return showingChildren.value[0]
++     default:
++       return { ...props.item, path: "" }
++   }
++ })
++ 
++ /** 解析路径 */
++ function resolvePath(routePath: string) {
++   switch (true) {
++     case isExternal(routePath):
++       return routePath
++     case isExternal(props.basePath):
++       return props.basePath
++     default:
++       return path.resolve(props.basePath, routePath)
++   }
++ }
++ </script>
++ 
++ <template>
++   <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
++     <SidebarItemLink v-if="theOnlyOneChild.meta" :to="resolvePath(theOnlyOneChild.path)">
++       <el-menu-item :index="resolvePath(theOnlyOneChild.path)">
++         <SvgIcon v-if="theOnlyOneChild.meta.svgIcon" :name="theOnlyOneChild.meta.svgIcon" />
++         <component v-else-if="theOnlyOneChild.meta.elIcon" :is="theOnlyOneChild.meta.elIcon" class="el-icon" />
++         <template v-if="theOnlyOneChild.meta.title" #title>
++           <span class="menu-title">{{ theOnlyOneChild.meta.title }}</span>
++         </template>
++       </el-menu-item>
++     </SidebarItemLink>
++   </template>
++   <el-sub-menu v-else :index="resolvePath(props.item.path)" teleported>
++     <template #title>
++       <SvgIcon v-if="props.item.meta?.svgIcon" :name="props.item.meta.svgIcon" />
++       <component v-else-if="props.item.meta?.elIcon" :is="props.item.meta.elIcon" class="el-icon" />
++       <span v-if="props.item.meta?.title" class="menu-title">{{ props.item.meta.title }}</span>
++     </template>
++     <template v-if="props.item.children">
++       <SidebarItem
++         v-for="child in showingChildren"
++         :key="child.path"
++         :item="child"
++         :base-path="resolvePath(child.path)"
++       />
++     </template>
++   </el-sub-menu>
++ </template>
++ 
++ <style lang="scss" scoped>
++ .menu-title {
++   // 菜单标题过长时显示省略号
++   min-width: 0;
++   overflow: hidden;
++   text-overflow: ellipsis;
++   white-space: nowrap;
++ }
++ 
++ .svg-icon {
++   min-width: 1em;
++   margin-right: 12px;
++   font-size: 18px;
++ }
++ 
++ .el-icon {
++   width: 1em !important;
++   margin-right: 12px !important;
++   font-size: 18px;
++ }
++ </style>
++
+
+ ❯ tests/e2e-m-3155c08.test.ts:9:20
+      7|     expect(path).toBeTruthy();
+      8|     const source = readFileSync(path!, 'utf8');
+      9|     expect(source).toContain('class="title"');
+       |                    ^
+     10|     expect(source).toMatch(/\.title\s*\{\s*@extend\s+%ellipsis;/);
+     11|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

@@ -1,0 +1,12 @@
+diff --git a/src/layouts/components/NavigationBar/index.vue b/src/layouts/components/NavigationBar/index.vue
+index a61ea8b7..29092c5f 100644
+--- a/src/layouts/components/NavigationBar/index.vue
++++ b/src/layouts/components/NavigationBar/index.vue
+@@ -73,6 +73,7 @@ function logout() {
+ .navigation-bar {
+   height: var(--v3-navigationbar-height);
+   overflow: hidden;
++  user-select: none;
+   color: var(--v3-navigationbar-text-color);
+   display: flex;
+   justify-content: space-between;

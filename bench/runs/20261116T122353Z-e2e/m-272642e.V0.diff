@@ -1,0 +1,31 @@
+diff --git a/src/pages/login/index.vue b/src/pages/login/index.vue
+index 6ffd704f..930da158 100644
+--- a/src/pages/login/index.vue
++++ b/src/pages/login/index.vue
+@@ -1,6 +1,7 @@
+ <script lang="ts" setup>
+ import type { FormInstance, FormRules } from "element-plus"
+ import type { LoginRequestData } from "./apis/type"
++import { useSettingsStore } from "@/pinia/stores/settings"
+ import { useUserStore } from "@/pinia/stores/user"
+ import ThemeSwitch from "@@/components/ThemeSwitch/index.vue"
+ import { Key, Loading, Lock, Picture, User } from "@element-plus/icons-vue"
+@@ -12,6 +13,9 @@ const router = useRouter()
+ 
+ const userStore = useUserStore()
+ 
++const settingsStore = useSettingsStore()
++const { showThemeSwitch } = storeToRefs(settingsStore)
++
+ const { isFocus, handleBlur, handleFocus } = useFocus()
+ 
+ /** 登录表单元素的引用 */
+@@ -82,7 +86,7 @@ createCode()
+ 
+ <template>
+   <div class="login-container">
+-    <ThemeSwitch class="theme-switch" />
++    <ThemeSwitch v-if="showThemeSwitch" class="theme-switch" />
+     <Owl :close-eyes="isFocus" />
+     <div class="login-card">
+       <div class="title">

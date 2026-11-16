@@ -16,11 +16,14 @@ const retrieval = (variant: string, budget: number, strict = 0.75) => ({
 function rows(): Record<string, unknown>[] {
   const retrievals = ['V1', 'V2', 'V3', 'V3r', 'V5'].flatMap((variant) => [retrieval(variant, 4_000), retrieval(variant, 8_000, 0.8)]);
   const task = { taskId: 't1', inputTokens: 10, outputTokens: 20, cacheReadTokens: 30, cacheCreationTokens: 40, turns: 2, wallMs: 1_500, passed: false };
+  const second = { ...task, taskId: 't2', inputTokens: 5, outputTokens: 10, cacheCreationTokens: 15, passed: true };
   return [
     ...retrievals,
     { runId: 'latency-1', kind: 'latency', variant: 'hook', n: 20, metrics: { p50ms: 123, p95ms: 456 } },
     { runId: 'e2e-v0', kind: 'e2e', variant: 'V0', n: 1, solved: 0, tokensPerSolved: null, totals: { inputTokens: 10, outputTokens: 20 }, tasks: [task] },
     { runId: 'e2e-click', kind: 'e2e', variant: 'delivery', n: 1, solved: 0, tokensPerSolved: null, totals: { inputTokens: 8, outputTokens: 18 }, tasks: [task] },
+    { runId: 'e2e-v0-2', kind: 'e2e', variant: 'V0', n: 1, solved: 1, tokensPerSolved: 30, totals: { inputTokens: 5, outputTokens: 10 }, tasks: [second] },
+    { runId: 'e2e-click-2', kind: 'e2e', variant: 'delivery', n: 1, solved: 1, tokensPerSolved: 30, totals: { inputTokens: 5, outputTokens: 10 }, tasks: [second] },
   ];
 }
 
@@ -37,7 +40,9 @@ describe('README benchmark tables (PROMPT 200)', () => {
     expect(once.startsWith('before\n<!-- bench:recall:start -->')).toBe(true);
     expect(once.endsWith('<!-- bench:e2e:end -->\nafter\n')).toBe(true);
     expect(once).toContain('| V3 | 75.0% | 65.0% | 80.0% | 70.0% |');
+    expect(once).toContain('| V0 | 1/2 | 100 | 15 | 30 | `e2e-v0`, `e2e-v0-2` |');
     expect(once).toContain('| `t1` | delivery | no | 10 | 20 | 30 | 40 | 2 | 1.5 s |');
+    expect(once).toContain('| `t2` | delivery | yes | 5 | 10 | 30 | 15 | 2 | 1.5 s |');
     await generateReadmeTables(results, readme);
     expect(readFileSync(readme, 'utf8')).toBe(once);
   });

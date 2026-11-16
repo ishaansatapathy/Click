@@ -1,0 +1,13 @@
+diff --git a/src/layouts/components/Sidebar/index.vue b/src/layouts/components/Sidebar/index.vue
+index 2e83b137..ab631d0c 100644
+--- a/src/layouts/components/Sidebar/index.vue
++++ b/src/layouts/components/Sidebar/index.vue
+@@ -43,7 +43,7 @@ const tipLineWidth = computed(() => !isTop.value ? "2px" : "0px")
+         :background-color="backgroundColor"
+         :text-color="textColor"
+         :active-text-color="activeTextColor"
+-        :unique-opened="true"
++        :unique-opened="false"
+         :collapse-transition="false"
+         :mode="isTop && !isMobile ? 'horizontal' : 'vertical'"
+       >

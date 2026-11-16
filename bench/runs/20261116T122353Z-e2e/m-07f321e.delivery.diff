@@ -1,0 +1,36 @@
+diff --git a/src/layouts/components/TagsView/index.vue b/src/layouts/components/TagsView/index.vue
+index 13eab213..0827a901 100644
+--- a/src/layouts/components/TagsView/index.vue
++++ b/src/layouts/components/TagsView/index.vue
+@@ -1,5 +1,5 @@
+ <script lang="ts" setup>
+-import { getCurrentInstance, onMounted, ref, watch } from "vue"
++import { getCurrentInstance, ref, watch } from "vue"
+ import { type RouteLocationNormalizedLoaded, type RouteRecordRaw, RouterLink, useRoute, useRouter } from "vue-router"
+ import { type TagView, useTagsViewStore } from "@/store/modules/tags-view"
+ import { usePermissionStore } from "@/store/modules/permission"
+@@ -149,19 +149,17 @@ const closeMenu = () => {
+   visible.value = false
+ }
+ 
+-/** 监听路由变化 */
++/** 先初始化固定标签页，保证其排在当前路由标签页之前 */
++initTags()
++
++/** 监听路由变化（立即执行一次，将当前路由加入标签页，无需再在 onMounted 中重复添加） */
+ listenerRouteChange((route) => {
+   addTags(route)
+-})
++}, true)
+ 
+ watch(visible, (value) => {
+   value ? document.body.addEventListener("click", closeMenu) : document.body.removeEventListener("click", closeMenu)
+ })
+-
+-onMounted(() => {
+-  initTags()
+-  addTags(route)
+-})
+ </script>
+ 
+ <template>
