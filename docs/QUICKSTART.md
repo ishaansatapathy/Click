@@ -6,7 +6,7 @@ Click runs locally: your code never leaves your computer. You need **Node 20+**.
 
 ```bash
 npm install -g @ishaan_satapathy/click-context        # gives you the `click` command
-click --version                     # 0.1.0
+click --version                     # prints the installed version
 ```
 
 (or run any command below as `npx -p @ishaan_satapathy/click-context click <command>` without installing)
@@ -53,7 +53,15 @@ click status                        # the daemon now reads its graph neighbourho
 
 Click is agent-agnostic. Any MCP client (Claude Code, Codex, Cursor, VS Code and others) can ask it for context through the MCP server, and Claude Code can also get it injected into every prompt by a hook.
 
-> Status: the Claude Code hook below works today. The MCP server and the one-command installer (`click init`, which detects your agents and wires all of them) are being finished; until then use the hook or the CLI.
+From inside your project, one command detects the agents you use and wires all of them:
+
+```bash
+click init                          # Claude Code, Codex, Cursor, VS Code: hook and/or MCP server, whichever each one supports
+click init --dry-run                # shows what it would write, writes nothing
+click uninstall                     # removes exactly what init wrote (the graph and cache stay)
+```
+
+Or only the Claude Code hook:
 
 ```bash
 click hooks install                 # Claude Code: every prompt gets Click's context automatically
