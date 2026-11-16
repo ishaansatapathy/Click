@@ -1,5 +1,5 @@
 {
-  "name": "click-context",
+  "name": "@ishaan_satapathy/click-context",
   "version": "0.1.0",
   "description": "Structure-aware context for coding agents on Vue 3 projects: a code graph in a self-hosted HydraDB picks the right code for a task, inside a token budget.",
   "license": "MIT",
