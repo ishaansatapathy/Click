@@ -21,6 +21,7 @@ which is exactly where a graph beats search.
 1. **One command** in the agent they already use: `npm i -g @ishaan_satapathy/click-context`, then `click init`.
 2. **Visible**: the statusline shows what was sent (`Click ▸ 3.1k ctx · 7 files · 240 ms`); every item says why it is there.
 3. **Never in the way**: if anything is slow or down, the prompt goes through unchanged (tested by ten drills).
+4. **Teams of agents**: the moment a second agent (Codex next to Claude Code, Cursor next to both) works on the same repo, they share a board: handoffs, a task list, edit warnings. The second agent does not re-read what the first already worked out.
 
 ## Model
 

@@ -32,6 +32,10 @@ The agent's own behaviour (what it used, what it ignored, what it needed and did
 HydraDB. The loop works end to end; on simulated outcomes the held-out gain is **+1.0 pp [−1.3, +4.3]**: small and not proven.
 Real sessions are the next evidence.
 
+## 4b. Agents that share what they learned
+
+One daemon per repository means every agent on it (Claude Code, Codex, Cursor, VS Code, any MCP client) can leave a handoff, add or claim a task, and is warned when another agent changed the files its context is about. Claude Code's Stop hook writes the handoff by itself from what the session read and changed, so no agent has to be taught anything. It is a board the agents read and write, not an orchestrator, and it is tested with two agents on one daemon.
+
 ## 5. Go to market and scale
 
 - **For** small Vue/frontend teams and students who pay per token.
