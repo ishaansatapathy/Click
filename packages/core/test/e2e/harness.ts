@@ -14,7 +14,7 @@
 //   --dry runs the whole pipeline (worktree, index, check, cleanup) with a no-op agent: it costs nothing and proves the plumbing.
 
 import { spawn, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -128,6 +128,8 @@ export interface HarnessDeps {
   /** Make Click available in `cwd` for this variant (index, hook, daemon). Absent for V0. */
   setupClick?: (cwd: string, variant: string) => void;
   teardownClick?: (cwd: string) => void;
+  /** Where to keep, per run, what the agent changed (.diff) and the check's output (.test.txt). */
+  artifactDir?: string;
 }
 
 interface Paths {
@@ -165,7 +167,8 @@ const sh = (cmd: string, args: string[], cwd: string, timeoutMs = 600_000) => sp
 
 /** Run one task under one variant in its own worktree; the worktree is always removed. */
 export async function runTask(task: E2eTask, variant: string, runId: string, paths: Paths, deps: HarnessDeps): Promise<E2eRow> {
-  const wt = mkdtempSync(join(tmpdir(), `click-e2e-${task.id}-`));
+  // the real (long) path: a Windows 8.3 short temp path (ISHAAN~1) makes vitest unable to resolve the copied-in test file
+  const wt = mkdtempSync(join(realpathSync.native(tmpdir()), `click-e2e-${task.id}-`));
   rmSync(wt, { recursive: true, force: true }); // git wants to create it
   const add = sh('git', ['worktree', 'add', '--detach', wt, task.parentCommit], paths.repo, 120_000);
   if (add.status !== 0) throw new Error(`git worktree add failed: ${add.stderr.trim()}`);
@@ -177,6 +180,8 @@ export async function runTask(task: E2eTask, variant: string, runId: string, pat
     if (deps.setupClick && variant !== 'V0') deps.setupClick(wt, variant);
     const agent = await deps.agent(wt, task.text);
     deps.teardownClick?.(wt);
+    // what the agent changed (before the check's own test is copied in); Click's own files and the shared dependencies are not part of it
+    const diff = deps.artifactDir ? (sh('git', ['add', '-A', '--', '.', ':!node_modules', ':!.click', ':!.claude'], wt), sh('git', ['diff', '--cached'], wt).stdout ?? '') : '';
     // the check: copy the task's test in, then type-check and run it
     for (const t of task.checkTests) {
       mkdirSync(join(wt, 'tests'), { recursive: true });
@@ -185,6 +190,11 @@ export async function runTask(task: E2eTask, variant: string, runId: string, pat
     const tscAfter = countTscErrors(sh('npx', ['vue-tsc', '--noEmit'], wt).stdout ?? '');
     const test = sh('npx', ['vitest', 'run', `tests/e2e-${task.id}.test.ts`], wt, 300_000);
     const testPassed = test.status === 0;
+    if (deps.artifactDir) {
+      mkdirSync(deps.artifactDir, { recursive: true });
+      writeFileSync(join(deps.artifactDir, task.id + '.' + variant + '.diff'), diff);
+      writeFileSync(join(deps.artifactDir, task.id + '.' + variant + '.test.txt'), ((test.stdout ?? '') + (test.stderr ?? '')).slice(-6000));
+    }
     return { runId, taskId: task.id, variant, ...agent, solved: isSolved(tscBefore, tscAfter, testPassed), tscErrorsBefore: tscBefore, tscErrorsAfter: tscAfter, testPassed };
   } finally {
     sh('git', ['worktree', 'remove', '--force', wt], paths.repo, 120_000);
@@ -270,7 +280,7 @@ async function main(): Promise<void> {
   const out = join(worktreeRoot, 'docs', 'e2e');
   mkdirSync(out, { recursive: true });
   const base = { ...(dry ? {} : clickSetup(paths)) };
-  const deps: HarnessDeps = { agent: dry ? dryAgent : claudeAgent({ exe: exe!, ...(flag('model') ? { model: flag('model')! } : {}), maxUsd: Number(flag('max-usd', '1.5')), timeoutMs: Number(flag('timeout-min', '10')) * 60_000 }), ...base };
+  const deps: HarnessDeps = { artifactDir: join(out, runId), agent: dry ? dryAgent : claudeAgent({ exe: exe!, ...(flag('model') ? { model: flag('model')! } : {}), maxUsd: Number(flag('max-usd', '1.5')), timeoutMs: Number(flag('timeout-min', '10')) * 60_000 }), ...base };
   const rows: E2eRow[] = [];
   for (const t of tasks) {
     for (const v of variants) {
