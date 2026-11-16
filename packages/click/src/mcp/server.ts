@@ -1,10 +1,10 @@
 // PROMPT 170 / SPEC §13: host-neutral MCP stdio server. Claude Code, Codex, Cursor, VS Code and any other MCP host launch the
 // same dist/mcp.js. Stdout belongs exclusively to JSON-RPC; diagnostics, if any, go to stderr.
 
+import { isEntryPoint } from '../entry.js';
 import { McpServer } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import * as z from 'zod/v4';
 
 import type { Convention, PackedContext } from '../../../core/src/types.js';
@@ -159,7 +159,8 @@ export async function runClickMcpStdio(options: ClickMcpOptions = {}): Promise<v
   await serveStdio(() => createClickMcpServer(options));
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+// real paths: an MCP host may start this file through a symlink (npm's global bin on Linux and macOS)
+if (isEntryPoint(import.meta.url)) {
   runClickMcpStdio().catch((error: unknown) => {
     process.stderr.write(`click MCP: ${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
