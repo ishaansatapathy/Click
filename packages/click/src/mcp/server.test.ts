@@ -2,6 +2,7 @@ import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PackedContext } from '../../../core/src/types.js';
+import { cleanupTemps, reference, startWorld, type World } from '../daemon/testkit.js';
 import { createClickMcpServer, resolveMcpRoot, type McpDaemonClient } from './server.js';
 
 const packed: PackedContext = {
@@ -32,7 +33,8 @@ class FakeDaemon implements McpDaemonClient {
     if (path === '/conventions') return { items: [{ id: 'c1', text: 'Keep handlers small.', source: 'AGENTS.md', validFrom: '2026-11-15', validTo: null }] } as T;
     if (path === '/notes') return { ok: true, id: 'n1', ts: '2026-11-16T12:00:00.000Z' } as T;
     if (path.startsWith('/notes?')) return { ok: true, notes: [{ id: 'n1', ts: '2026-11-16T12:00:00.000Z', author: 'A', kind: 'handoff', text: 'done', files: ['src/a.ts'] }] } as T;
-    if (path === '/tasks/add' || path === '/tasks/claim' || path === '/tasks/done') return { ok: true, id: 't1' } as T;
+    if (path === '/tasks/add') return { ok: true, id: 't1' } as T;
+    if (path === '/tasks/claim' || path === '/tasks/done') return { ok: true, task: { id: 't1', ts: '2026-11-16T12:00:00.000Z', author: 'A', title: 'Test save', files: [], status: 'done' } } as T;
     if (path.startsWith('/tasks')) return { ok: true, tasks: [{ id: 't1', title: 'Test save', status: 'open' }] } as T;
     if (path === '/agents') return { ok: true, agents: [{ name: 'A', lastSeen: '2026-11-16T12:00:00.000Z', lastTask: 'save', files: ['src/a.ts'] }] } as T;
     throw new Error(`unexpected ${path}`);
@@ -83,9 +85,9 @@ describe('Click MCP server (PROMPT 170)', () => {
 
   it('reports outcomes using the last context id and proxies impact plus conventions', async () => {
     const { client, daemon } = await world();
-    await client.callTool({ name: 'get_context', arguments: { task: 'change save behavior' } });
+    await client.callTool({ name: 'get_context', arguments: { task: 'change save behavior', agent: 'Codex' } });
     expect(texts(await client.callTool({ name: 'report_outcome', arguments: { filesEdited: ['src/a.ts'], checkPassed: true } }))).toEqual(['ok']);
-    expect(daemon.calls[1]).toMatchObject({ path: '/outcome', options: { body: { contextIds: ['ctx-1'], filesEdited: ['src/a.ts'], check: { kind: 'none', passed: true }, source: 'agent' } } });
+    expect(daemon.calls[1]).toMatchObject({ path: '/outcome', options: { body: { contextIds: ['ctx-1'], filesEdited: ['src/a.ts'], check: { kind: 'none', passed: true }, source: 'agent', agent: 'Codex' } } });
     const impact = texts(await client.callTool({ name: 'impact_of', arguments: { symbol: 'save()', depth: 2 } }))[0]!;
     expect(daemon.calls[2]!.path).toBe('/impact?symbol=save()&depth=2');
     expect(impact).toContain('src/X.vue · X · via component:x|calls|fn:save');
@@ -135,4 +137,48 @@ describe('Click MCP server (PROMPT 170)', () => {
     expect(resolveMcpRoot({ env: { CLAUDE_PROJECT_DIR: '/project' }, cwd: '/elsewhere' })).toBe(resolveMcpRoot({ root: '/project' }));
     expect(resolveMcpRoot({ env: {}, cwd: '/launch' })).toBe(resolveMcpRoot({ root: '/launch' }));
   });
+
+  it('lets one MCP client hand off knowledge that a second client receives through real daemon context', async () => {
+    const ref = await reference();
+    const real = await startWorld({ ref });
+    const adapter = (world: World): McpDaemonClient => ({
+      ensureRunning: async () => undefined,
+      request: async <T>(path: string, options: { method?: 'GET' | 'POST'; body?: unknown }): Promise<T> => {
+        const method = options.method ?? (options.body === undefined ? 'GET' : 'POST');
+        const response = await world.call(path, {
+          method,
+          ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+        });
+        const body = await response.json() as T;
+        if (!response.ok) throw new Error(`daemon answered ${response.status}`);
+        return body;
+      },
+    });
+    const connect = async (name: string) => {
+      const server = createClickMcpServer({ root: real.root, client: adapter(real) });
+      const client = new Client({ name, version: '1.0.0' });
+      const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+      await server.connect(serverTransport);
+      await client.connect(clientTransport);
+      return { server, client };
+    };
+    const a = await connect('agent-a');
+    const b = await connect('agent-b');
+    try {
+      const task = 'submitting the order fails, inspect useOrderStore and the checkout button';
+      const first = texts(await a.client.callTool({ name: 'get_context', arguments: { task, agent: 'Claude Code', budgetTokens: 4_000 } }));
+      const files = (JSON.parse(first[1]!) as { items: { path?: string }[] }).items.flatMap((item) => item.path ? [item.path] : []).slice(0, 5);
+      expect(files.length).toBeGreaterThan(0);
+      await a.client.callTool({ name: 'handoff', arguments: { author: 'Claude Code', text: 'The order submit path must await the API call.', files } });
+
+      const second = texts(await b.client.callTool({ name: 'get_context', arguments: { task, agent: 'Codex', budgetTokens: 4_000 } }));
+      expect(second[0]).toContain('## From other agents on this repo');
+      expect(second[0]).toContain('must await the API call');
+    } finally {
+      await a.client.close(); await a.server.close();
+      await b.client.close(); await b.server.close();
+      await real.close();
+      cleanupTemps();
+    }
+  }, 120_000);
 });

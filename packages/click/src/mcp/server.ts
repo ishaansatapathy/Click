@@ -20,6 +20,7 @@ import {
   type NoteWriteResponse,
   type TasksResponse,
   type TaskStatus,
+  type TaskMutationResponse,
   type TaskWriteResponse,
 } from './coordination.js';
 
@@ -43,8 +44,8 @@ const failure = (error: unknown) => ({
   content: [{ type: 'text' as const, text: `Click error: ${error instanceof Error ? error.message : String(error)}` }],
 });
 const json = (value: unknown) => text(JSON.stringify(value));
-const filesSchema = z.array(z.string().min(1).max(2_000)).max(500).optional();
-const authorSchema = z.string().min(1).max(100).describe('Your agent name, for example "Claude Code", "Codex", or "Cursor".');
+const filesSchema = z.array(z.string().min(1).max(500)).max(20).optional();
+const authorSchema = z.string().min(1).max(60).describe('Your agent name, for example "Claude Code", "Codex", or "Cursor".');
 
 export function resolveMcpRoot(options: Pick<ClickMcpOptions, 'root' | 'env' | 'cwd'> = {}): string {
   const env = options.env ?? process.env;
@@ -56,6 +57,7 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
   const client = options.client ?? new ClickClient({ root });
   const waitMs = options.startWaitMs ?? 90_000;
   let lastContextId: string | undefined;
+  let lastAgent: string | undefined;
   const ready = async (): Promise<void> => { await client.ensureRunning({ waitMs, ready: true }); };
   const server = new McpServer(
     { name: 'click-context', version: VERSION },
@@ -70,20 +72,22 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
   server.registerTool(
     'get_context',
     {
-      description: 'Call this FIRST for any task that changes code. It returns the relevant code from this repository within a token budget, so you do not need to search the whole repo.',
+      description: 'Call this FIRST for any task that changes code. Name your agent so Click can include other agents\' relevant handoffs and avoid showing your own.',
       inputSchema: z.object({
         task: z.string().min(1).max(20_000).describe('The coding task or question, with enough detail to retrieve the right symbols.'),
         budgetTokens: z.number().int().min(500).max(32_000).optional().describe('Maximum context tokens; omit to use the repository default.'),
+        agent: authorSchema.optional().describe('Your stable agent name; use the same value for handoff and report_outcome.'),
       }),
     },
-    async ({ task, budgetTokens }) => {
+    async ({ task, budgetTokens, agent }) => {
       try {
         await ready();
         const packed = await client.request<PackedContext>('/context', {
-          body: { task, source: 'mcp', ...(budgetTokens === undefined ? {} : { budgetTokens }) },
+          body: { task, source: 'mcp', ...(budgetTokens === undefined ? {} : { budgetTokens }), ...(agent === undefined ? {} : { agent }) },
           deadlineMs: 15_000,
         });
         lastContextId = packed.contextId;
+        if (agent !== undefined) lastAgent = agent;
         const metadata = {
           contextId: packed.contextId,
           tokens: packed.tokens,
@@ -108,11 +112,13 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
         taskText: z.string().max(20_000).optional(),
         filesEdited: z.array(z.string().min(1).max(2_000)).max(5_000).optional(),
         checkPassed: z.boolean().optional(),
+        agent: authorSchema.optional().describe('Your agent name; omit only when get_context already received it in this MCP session.'),
       }),
     },
-    async ({ contextId, taskText, filesEdited, checkPassed }) => {
+    async ({ contextId, taskText, filesEdited, checkPassed, agent }) => {
       const selected = contextId ?? lastContextId;
       if (!selected) return failure(new Error('report_outcome needs contextId, or call get_context first in this MCP session'));
+      const selectedAgent = agent ?? lastAgent;
       try {
         await ready();
         await client.request<OutcomeResponse>('/outcome', {
@@ -122,6 +128,7 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
             ...(filesEdited === undefined ? {} : { filesEdited }),
             check: { kind: 'none', ...(checkPassed === undefined ? {} : { passed: checkPassed }) },
             source: 'agent',
+            ...(selectedAgent === undefined ? {} : { agent: selectedAgent }),
           },
           deadlineMs: 10_000,
         });
@@ -176,13 +183,14 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
       description: 'Leave durable information for other agents when you discover something they should not have to rediscover. Include relevant files; use handoff instead when finishing work.',
       inputSchema: z.object({
         author: authorSchema,
-        text: z.string().min(1).max(20_000),
+        text: z.string().min(1).max(2_000),
         files: filesSchema,
       }),
     },
     async ({ author, text: noteText, files }) => {
       try {
         await ready();
+        lastAgent = author;
         return json(await client.request<NoteWriteResponse>('/notes', {
           body: { author, kind: 'note', text: noteText, ...(files === undefined ? {} : { files }) },
           deadlineMs: 5_000,
@@ -197,13 +205,14 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
       description: 'Call when you finish or pause a task. Tell the next agent what changed, what remains, and which files matter so it can continue without re-reading your work.',
       inputSchema: z.object({
         author: authorSchema,
-        text: z.string().min(1).max(20_000),
+        text: z.string().min(1).max(2_000),
         files: filesSchema,
       }),
     },
     async ({ author, text: noteText, files }) => {
       try {
         await ready();
+        lastAgent = author;
         return json(await client.request<NoteWriteResponse>('/notes', {
           body: { author, kind: 'handoff', text: noteText, ...(files === undefined ? {} : { files }) },
           deadlineMs: 5_000,
@@ -235,14 +244,15 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
       description: 'Add a concrete piece of work to the shared task list when another agent can take it independently.',
       inputSchema: z.object({
         author: authorSchema,
-        title: z.string().min(1).max(500),
-        details: z.string().max(20_000).optional(),
+        title: z.string().min(1).max(200),
+        details: z.string().max(2_000).optional(),
         files: filesSchema,
       }),
     },
     async ({ author, title, details, files }) => {
       try {
         await ready();
+        lastAgent = author;
         return json(await client.request<TaskWriteResponse>('/tasks/add', {
           body: { author, title, ...(details === undefined ? {} : { details }), ...(files === undefined ? {} : { files }) },
           deadlineMs: 5_000,
@@ -271,12 +281,13 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
     'claim_task',
     {
       description: 'Call immediately BEFORE taking a task from list_tasks. This prevents another agent from starting the same work.',
-      inputSchema: z.object({ id: z.string().min(1).max(200), author: authorSchema }),
+      inputSchema: z.object({ id: z.string().min(1).max(100), author: authorSchema }),
     },
     async ({ id, author }) => {
       try {
         await ready();
-        return json(await client.request<TaskWriteResponse>('/tasks/claim', { body: { id, author }, deadlineMs: 5_000 }));
+        lastAgent = author;
+        return json(await client.request<TaskMutationResponse>('/tasks/claim', { body: { id, author }, deadlineMs: 5_000 }));
       } catch (error) { return failure(error); }
     },
   );
@@ -286,15 +297,16 @@ export function createClickMcpServer(options: ClickMcpOptions = {}): McpServer {
     {
       description: 'Call after finishing a claimed task. Record a short summary, then leave a handoff when another agent may need the implementation details.',
       inputSchema: z.object({
-        id: z.string().min(1).max(200),
+        id: z.string().min(1).max(100),
         author: authorSchema,
-        summary: z.string().max(20_000).optional(),
+        summary: z.string().max(1_000).optional(),
       }),
     },
     async ({ id, author, summary }) => {
       try {
         await ready();
-        return json(await client.request<TaskWriteResponse>('/tasks/done', {
+        lastAgent = author;
+        return json(await client.request<TaskMutationResponse>('/tasks/done', {
           body: { id, author, ...(summary === undefined ? {} : { summary }) },
           deadlineMs: 5_000,
         }));

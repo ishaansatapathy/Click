@@ -15,10 +15,12 @@ export interface AgentNote {
 
 export interface SharedTask {
   id: string;
+  ts: string;
   title: string;
   details?: string;
-  files?: string[];
+  files: string[];
   status: TaskStatus;
+  author: string;
   by?: string;
   summary?: string;
 }
@@ -27,7 +29,8 @@ export interface ActiveAgent {
   name: string;
   lastSeen: string;
   lastTask?: string;
-  files?: string[];
+  files: string[];
+  active: boolean;
 }
 
 export interface NotesResponse { ok: boolean; notes: AgentNote[] }
@@ -35,6 +38,7 @@ export interface TasksResponse { ok: boolean; tasks: SharedTask[] }
 export interface AgentsResponse { ok: boolean; agents: ActiveAgent[] }
 export interface NoteWriteResponse { ok: boolean; id: string; ts: string }
 export interface TaskWriteResponse { ok: boolean; id: string }
+export interface TaskMutationResponse { ok: boolean; task: SharedTask }
 
 export function notesPath(options: { since?: string; files?: string[]; limit?: number } = {}): string {
   const query = new URLSearchParams();
