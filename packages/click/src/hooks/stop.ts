@@ -150,7 +150,7 @@ export async function runStopHook(raw: string, deps: StopDeps = {}): Promise<Sto
     const filesEdited = relativeTo(root, activity.edited);
     if (filesRead.length === 0 && filesEdited.length === 0) return { outcome: 'skip:no-file-activity' };
 
-    const body = { sessionId, source: 'agent', filesRead, filesEdited, check: { kind: checkKindFor(filesEdited) } };
+    const body = { sessionId, agent: `claude-code-${sessionId.slice(0, 4)}`, source: 'agent', filesRead, filesEdited, check: { kind: checkKindFor(filesEdited) } };
     const client = (deps.clientFor ?? ((r) => new ClickClient({ root: r })))(root);
     const answer = await client.tryRequest<{ ok?: boolean }>('/outcome', { body, deadlineMs: deps.deadlineMs ?? STOP_DEADLINE_MS, autostart: false });
     return { outcome: answer?.ok ? 'sent' : 'no-daemon', body };

@@ -101,7 +101,7 @@ export async function runPromptHook(raw: string, deps: HookDeps = {}): Promise<H
     const deadline = Math.max(50, (deps.deadlineMs ?? HOOK_DEADLINE_MS) - ((deps.now ?? Date.now)() - t0));
     const client = (deps.clientFor ?? ((r) => new ClickClient({ root: r })))(root);
     const packed = await client.tryRequest<{ text?: unknown; tokens?: number; degraded?: string[] }>('/context', {
-      body: { task: prompt.slice(0, MAX_TASK_CHARS), source: 'hook', budgetTokens: cfg.budgetTokens, maxChars: MAX_CONTEXT_CHARS, ...(sessionId ? { sessionId } : {}) },
+      body: { task: prompt.slice(0, MAX_TASK_CHARS), source: 'hook', budgetTokens: cfg.budgetTokens, maxChars: MAX_CONTEXT_CHARS, ...(sessionId ? { sessionId, agent: `claude-code-${sessionId.slice(0, 4)}` } : {}) },
       deadlineMs: deadline,
     });
     if (!packed) return done({ stdout: null, outcome: 'no-context:daemon' });

@@ -123,7 +123,7 @@ describe('runStopHook (PROMPTS 153)', () => {
     expect(calls).toHaveLength(1);
     expect(calls[0]).toMatchObject({ path: '/outcome', autostart: false });
     expect(calls[0]!.deadlineMs).toBeLessThanOrEqual(300);
-    expect(calls[0]!.body).toEqual({ sessionId: 's1', source: 'agent', filesRead: ['src/a.ts'], filesEdited: ['src/a.test.ts', 'src/a.ts'], check: { kind: 'vue-tsc+vitest' } });
+    expect(calls[0]!.body).toEqual({ sessionId: 's1', agent: 'claude-code-s1', source: 'agent', filesRead: ['src/a.ts'], filesEdited: ['src/a.test.ts', 'src/a.ts'], check: { kind: 'vue-tsc+vitest' } });
   });
 
   it('stop_hook_active (the hook\'s own loop guard) exits at once; so do other events, bad input and non-Click repos', async () => {
@@ -214,7 +214,7 @@ describe('dist/hooks/stop.js as a real process (PROMPTS 153)', () => {
     const r = await run(JSON.stringify({ session_id: 'sess', transcript_path: tPath, cwd: repo, hook_event_name: 'Stop', stop_hook_active: false }), repo);
     expect(r).toMatchObject({ code: 0, stdout: '' });
     expect(r.ms).toBeLessThan(3_000);
-    expect(seen).toEqual([{ sessionId: 'sess', source: 'agent', filesRead: ['src/a.ts'], filesEdited: ['src/a.ts'], check: { kind: 'vue-tsc' } }]);
+    expect(seen).toEqual([{ sessionId: 'sess', agent: 'claude-code-sess', source: 'agent', filesRead: ['src/a.ts'], filesEdited: ['src/a.ts'], check: { kind: 'vue-tsc' } }]);
   });
 
   it('no daemon: exits 0 silently and does NOT start one; stop_hook_active and garbage exit 0 at once', async () => {
