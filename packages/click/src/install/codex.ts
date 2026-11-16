@@ -12,7 +12,12 @@ export const CODEX_END = '# <<< click <<<';
 export const AGENTS_START = '<!-- click:start -->';
 export const AGENTS_END = '<!-- click:end -->';
 
-const INSTRUCTION = 'For any task that changes code, call the `get_context` tool first unless a `<click_context>` block is already present.';
+export const AGENT_INSTRUCTIONS = [
+  'At the start of a task, call `read_notes` and `list_tasks` so you do not repeat another agent\'s work.',
+  'Before taking a listed task, call `claim_task` with your agent name.',
+  'Before changing code, call `get_context` with your agent name unless a `<click_context>` block is already present.',
+  'When you finish or pause, call `handoff` with what changed, what remains, and the relevant files.',
+] as const;
 
 export class CodexInstallError extends Error {
   constructor(message: string) {
@@ -99,7 +104,7 @@ export function codexConfigBlock(mcpPath: string, promptHookPath: string): Manag
 }
 
 export function codexAgentsBlock(): ManagedBlock {
-  const body = [AGENTS_START, '## Click context', '', INSTRUCTION, AGENTS_END].join('\n');
+  const body = [AGENTS_START, '## Click context', '', ...AGENT_INSTRUCTIONS.map((line) => `- ${line}`), AGENTS_END].join('\n');
   return { start: AGENTS_START, end: AGENTS_END, body, label: 'AGENTS.md' };
 }
 

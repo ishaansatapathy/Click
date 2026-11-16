@@ -6,9 +6,8 @@ import { readFile, rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 import { writeFileAtomic } from '../../../core/src/util/atomic.js';
-import { AGENTS_END as CLAUDE_END, AGENTS_START as CLAUDE_START } from './codex.js';
+import { AGENT_INSTRUCTIONS, AGENTS_END as CLAUDE_END, AGENTS_START as CLAUDE_START } from './codex.js';
 
-const INSTRUCTION = 'For any task that changes code, call the `get_context` tool first unless a `<click_context>` block is already present.';
 const BACKUP_SUFFIX = '.click-bak';
 
 type JsonObject = Record<string, unknown>;
@@ -85,7 +84,7 @@ function locateClaudeBlock(text: string): { start: number; end: number } | null 
   return { start, end: endMarker + CLAUDE_END.length };
 }
 
-const claudeBlock = (): string => [CLAUDE_START, '## Click context', '', INSTRUCTION, CLAUDE_END].join('\n');
+const claudeBlock = (): string => [CLAUDE_START, '## Click context', '', ...AGENT_INSTRUCTIONS.map((line) => `- ${line}`), CLAUDE_END].join('\n');
 
 function installClaudeBlock(text: string): string {
   const found = locateClaudeBlock(text);

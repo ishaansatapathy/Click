@@ -19,7 +19,11 @@ describe('installClaudeMcp (PROMPT 174)', () => {
     const result = await installClaudeMcp({ root, mcpPath: server() });
     expect(result).toMatchObject({ changed: true, backedUp: false, mcpPath: mcp(), claudePath: claude() });
     expect(JSON.parse(readFileSync(mcp(), 'utf8'))).toEqual({ mcpServers: { click: { command: 'node', args: [server()] } } });
-    expect(readFileSync(claude(), 'utf8')).toContain('call the `get_context` tool first');
+    const instructions = readFileSync(claude(), 'utf8');
+    expect(instructions).toContain('call `read_notes` and `list_tasks`');
+    expect(instructions).toContain('call `claim_task`');
+    expect(instructions).toContain('call `get_context` with your agent name');
+    expect(instructions).toContain('call `handoff`');
   });
 
   it('can install the shared project MCP entry without creating Claude instructions', async () => {

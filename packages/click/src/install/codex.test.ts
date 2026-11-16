@@ -38,7 +38,10 @@ describe('installCodex (PROMPT 173)', () => {
     ].join('\n'));
     expect(readFileSync(agents(), 'utf8')).toBe([
       '# Existing rules', '', '- Keep this.', '', AGENTS_START, '## Click context', '',
-      'For any task that changes code, call the `get_context` tool first unless a `<click_context>` block is already present.',
+      '- At the start of a task, call `read_notes` and `list_tasks` so you do not repeat another agent\'s work.',
+      '- Before taking a listed task, call `claim_task` with your agent name.',
+      '- Before changing code, call `get_context` with your agent name unless a `<click_context>` block is already present.',
+      '- When you finish or pause, call `handoff` with what changed, what remains, and the relevant files.',
       '<!-- click:end -->', '',
     ].join('\n'));
   });

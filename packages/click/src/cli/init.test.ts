@@ -49,6 +49,12 @@ describe('click init / uninstall (PROMPT 175)', () => {
     expect(readFileSync(join(root, '.codex', 'config.toml'), 'utf8')).toContain('[mcp_servers.click]');
     expect(readFileSync(join(root, 'CLAUDE.md'), 'utf8')).toContain('get_context');
     expect(readFileSync(join(root, 'AGENTS.md'), 'utf8')).toContain('get_context');
+    for (const file of ['CLAUDE.md', 'AGENTS.md']) {
+      const rules = readFileSync(join(root, file), 'utf8');
+      expect(rules).toContain('`read_notes` and `list_tasks`');
+      expect(rules).toContain('`claim_task`');
+      expect(rules).toContain('`handoff`');
+    }
     expect(readFileSync(join(root, '.git', 'hooks', 'post-commit'), 'utf8')).toContain('reindex --changed');
     const files = ['.mcp.json', 'CLAUDE.md', 'AGENTS.md', '.codex/config.toml', '.claude/settings.json', '.git/info/exclude', '.git/hooks/post-commit', '.click/enabled'];
     const once = new Map(files.map((file) => [file, readFileSync(join(root, file), 'utf8')]));
