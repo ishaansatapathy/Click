@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countTscErrors, isSolved, parseClaudeJson, parseClaudeStream, summarise, type E2eRow } from './harness.js';
+import { countTscErrors, isGraderError, isSolved, parseClaudeJson, parseClaudeStream, summarise, type E2eRow } from './harness.js';
 
 const row = (variant: string, solved: boolean, over: Partial<E2eRow> = {}): E2eRow => ({
   runId: 'r', taskId: 't', variant, solved, usage: { input: 100, output: 50, cacheRead: 1000, cacheCreation: 200 }, turns: 5, costUsd: 0.1, isError: false, timedOut: false, wallMs: 20_000,
@@ -81,5 +81,23 @@ describe('parseClaudeStream', () => {
     const v = summarise([row('V0', true, { trace: t(4, 2) }), row('V0', false, { trace: t(8, null) })])[0];
     expect(v?.exploreCallsMean).toBe(6);
     expect(v?.turnsBeforeFirstEditMean).toBe(2);
+  });
+});
+
+describe('grader errors', () => {
+  it('recognises a vitest that never ran the check', () => {
+    expect(isGraderError("Startup Error\nError [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-vue-jsx'")).toBe(true);
+    expect(isGraderError('MISSING DEPENDENCY  Cannot find dependency jsdom')).toBe(true);
+    expect(isGraderError(' Test Files  1 failed (1)\n      Tests  no tests')).toBe(true);
+  });
+
+  it('does not mistake a real failing assertion for one', () => {
+    expect(isGraderError("AssertionError: expected '<script' to contain 'x'\n Tests  1 failed (1)")).toBe(false);
+  });
+
+  it('leaves runs that could not be graded out of the summary, so they count neither as solved nor as unsolved', () => {
+    const v = summarise([row('V0', true), row('V0', false, { gradeError: true }), row('V0', false)])[0];
+    expect(v?.n).toBe(2);
+    expect(v?.solved).toBe(1);
   });
 });
